@@ -24,7 +24,8 @@
             "reqd": 1,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "in_preview": 1
+            "in_preview": 1,
+            "read_only": 1
         },
         {
             "fieldname": "supplier",
@@ -34,7 +35,8 @@
             "reqd": 1,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "in_preview": 1
+            "in_preview": 1,
+            "read_only": 1
         },
         {
             "fieldname": "supplier_part_number",
@@ -44,7 +46,8 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "bold": 1,
-            "description": "Supplier's own SKU or part number"
+            "description": "Supplier's own SKU or part number",
+            "read_only": 1
         },
         {
             "fieldname": "column_break_1",
@@ -55,20 +58,23 @@
             "fieldtype": "Int",
             "label": "MOQ",
             "in_list_view": 1,
-            "description": "Minimum order quantity"
+            "description": "Minimum order quantity",
+            "read_only": 1
         },
         {
             "fieldname": "lead_time_days",
             "fieldtype": "Int",
             "label": "Lead Time (Days)",
             "in_list_view": 1,
-            "description": "Typical shipping lead time in days"
+            "description": "Typical shipping lead time in days",
+            "read_only": 1
         },
         {
             "fieldname": "unit_cost_usd",
             "fieldtype": "Currency",
             "label": "Unit Cost (USD)",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         },
         {
             "fieldname": "currency",
@@ -77,7 +83,8 @@
             "options": "Currency",
             "default": "USD",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -120,5 +127,6 @@
     "title_field": "supplier_part_number",
     "show_title_field_in_link": 1,
     "allow_import": 1,
-    "search_fields": "supplier_part_number,part_catalog,supplier"
+    "search_fields": "supplier_part_number,part_catalog,supplier",
+    "in_create": 1
 }

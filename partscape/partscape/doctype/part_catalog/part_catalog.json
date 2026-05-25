@@ -37,7 +37,8 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "in_preview": 1,
-            "bold": 1
+            "bold": 1,
+            "read_only": 1
         },
         {
             "fieldname": "part_number",
@@ -47,7 +48,8 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "bold": 1,
-            "description": "Official part number"
+            "description": "Official part number",
+            "read_only": 1
         },
         {
             "fieldname": "part_name",
@@ -57,7 +59,8 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "in_preview": 1,
-            "description": "Common description of the part"
+            "description": "Common description of the part",
+            "read_only": 1
         },
         {
             "fieldname": "vehicle_make",
@@ -66,7 +69,8 @@
             "options": "Vehicle Make",
             "description": "OEM vehicle manufacturer (auto-sets is_oem)",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "is_oem",
@@ -75,7 +79,8 @@
             "default": 0,
             "description": "Auto-set when brand matches vehicle make",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "category",
@@ -83,12 +88,14 @@
             "label": "Category",
             "options": "Part Category",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "description",
             "fieldtype": "Text",
-            "label": "Description"
+            "label": "Description",
+            "read_only": 1
         },
         {
             "fieldname": "column_break_1",
@@ -98,25 +105,29 @@
             "fieldname": "diagram_reference",
             "fieldtype": "Data",
             "label": "Diagram Reference",
-            "description": "e.g. B-15 in exploded view"
+            "description": "e.g. B-15 in exploded view",
+            "read_only": 1
         },
         {
             "fieldname": "weight_kg",
             "fieldtype": "Float",
-            "label": "Weight (kg)"
+            "label": "Weight (kg)",
+            "read_only": 1
         },
         {
             "fieldname": "dimensions",
             "fieldtype": "Data",
             "label": "Dimensions",
-            "description": "LxWxH in mm"
+            "description": "LxWxH in mm",
+            "read_only": 1
         },
         {
             "fieldname": "estimated_cost_usd",
             "fieldtype": "Currency",
             "label": "Estimated Cost (USD)",
             "in_list_view": 1,
-            "description": "Approximate landed cost before local duties"
+            "description": "Approximate landed cost before local duties",
+            "read_only": 1
         },
         {
             "fieldname": "steering_position",
@@ -125,7 +136,8 @@
             "options": "Universal\nRHD\nLHD",
             "default": "Universal",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "market_restriction",
@@ -133,7 +145,8 @@
             "label": "Market Restriction",
             "description": "e.g. JDM-only",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "is_active",
@@ -141,7 +154,8 @@
             "label": "Is Active",
             "default": 1,
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "section_break_1",
@@ -151,13 +165,15 @@
         {
             "fieldname": "images",
             "fieldtype": "Attach Image",
-            "label": "Images"
+            "label": "Images",
+            "read_only": 1
         },
         {
             "fieldname": "superseded_by",
             "fieldtype": "Link",
             "label": "Superseded By",
-            "options": "Part Catalog"
+            "options": "Part Catalog",
+            "read_only": 1
         },
         {
             "fieldname": "section_break_2",
@@ -235,5 +251,6 @@
     "title_field": "part_name",
     "show_title_field_in_link": 1,
     "allow_import": 1,
-    "search_fields": "brand,part_number,part_name,description"
+    "search_fields": "brand,part_number,part_name,description",
+    "in_create": 1
 }

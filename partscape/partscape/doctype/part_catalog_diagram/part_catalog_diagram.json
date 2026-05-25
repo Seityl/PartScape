@@ -18,21 +18,24 @@
             "options": "Part Diagram",
             "reqd": 1,
             "in_list_view": 1,
-            "description": "Link to the diagram image"
+            "description": "Link to the diagram image",
+            "read_only": 1
         },
         {
             "fieldname": "callout_number",
             "fieldtype": "Data",
             "label": "Callout Number",
             "description": "Circled number on the diagram",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         },
         {
             "fieldname": "parts_group",
             "fieldtype": "Data",
             "label": "Parts Group",
             "description": "e.g. Brake System, Engine",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         }
     ],
     "index_web_pages_for_search": 1,

@@ -22,20 +22,23 @@
             "in_standard_filter": 1,
             "in_preview": 1,
             "bold": 1,
-            "description": "Official manufacturer name"
+            "description": "Official manufacturer name",
+            "read_only": 1
         },
         {
             "fieldname": "wmi_codes",
             "fieldtype": "Data",
             "label": "WMI Codes",
             "description": "World Manufacturer Identifier prefixes, comma-separated",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         },
         {
             "fieldname": "country_of_origin",
             "fieldtype": "Data",
             "label": "Country of Origin",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         },
         {
             "fieldname": "is_jdm_primary",
@@ -44,7 +47,8 @@
             "default": 0,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "description": "Check if this make is primarily Japanese-market"
+            "description": "Check if this make is primarily Japanese-market",
+            "read_only": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -75,5 +79,6 @@
     "title_field": "make_name",
     "show_title_field_in_link": 1,
     "allow_import": 1,
-    "search_fields": "make_name,country_of_origin"
+    "search_fields": "make_name,country_of_origin",
+    "in_create": 1
 }

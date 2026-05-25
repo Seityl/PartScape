@@ -25,7 +25,8 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "in_preview": 1,
-            "bold": 1
+            "bold": 1,
+            "read_only": 1
         },
         {
             "fieldname": "make",
@@ -35,7 +36,8 @@
             "reqd": 1,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "in_preview": 1
+            "in_preview": 1,
+            "read_only": 1
         },
         {
             "fieldname": "model_code",
@@ -43,7 +45,8 @@
             "label": "Model Code",
             "description": "Chassis/frame code (e.g., KDH201, NCP91)",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "body_type",
@@ -51,7 +54,8 @@
             "label": "Body Type",
             "options": "Sedan\nHatch\nSUV\nVan\nPickup\nMPV\nWagon\nCoupe\nConvertible",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "column_break_1",
@@ -61,13 +65,15 @@
             "fieldname": "year_start",
             "fieldtype": "Int",
             "label": "Year Start",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         },
         {
             "fieldname": "year_end",
             "fieldtype": "Int",
             "label": "Year End",
-            "in_list_view": 1
+            "in_list_view": 1,
+            "read_only": 1
         },
         {
             "fieldname": "steering_position",
@@ -76,7 +82,8 @@
             "options": "RHD\nLHD\nBoth",
             "default": "RHD",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         },
         {
             "fieldname": "primary_market",
@@ -85,7 +92,8 @@
             "options": "JDM\nUKDM\nAUM\nUSDM\nEUDM\nGlobal",
             "default": "JDM",
             "in_list_view": 1,
-            "in_standard_filter": 1
+            "in_standard_filter": 1,
+            "read_only": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -116,5 +124,6 @@
     "title_field": "model_name",
     "show_title_field_in_link": 1,
     "allow_import": 1,
-    "search_fields": "model_name,model_code,make"
+    "search_fields": "model_name,model_code,make",
+    "in_create": 1
 }
