@@ -2,18 +2,24 @@
 PartScape — VIN Decoder Service
 
 Strategy: Cache-first with fallback chain.
-- Primary: NHTSA vPIC (free, US-market 17-char VINs)
-- Fallback: JDM frame-number prefix lookup (manual mapping)
-- Cache: VIN Decode Cache DocType (90-day TTL)
+- Primary:   NHTSA vPIC      (free, US-market 17-char VINs)
+- Secondary: VIN Decoder EU  (Vincario, European/global coverage, requires API key)
+- Fallback:  JDM frame-number prefix lookup (manual mapping)
+- Cache:     VIN Decode Cache DocType (90-day TTL)
 """
 
+import hashlib
 import json
 import requests
 import frappe
 from frappe.utils import now, add_days, cint
 from frappe import _
 
+# ── Data Sources ────────────────────────────────────────────────────────────
+
 NHTSA_VPIC_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/{vin}?format=json"
+VINDECODER_EU_BASE = "https://api.vindecoder.eu/3.2"
+
 JDM_FRAME_PREFIXES = {
     # Toyota Hiace (H200 series)
     "KDH201": {"make": "Toyota", "model": "Hiace Van", "engine_code": "2KD-FTV", "fuel": "Diesel", "steering": "RHD"},
@@ -60,6 +66,8 @@ JDM_FRAME_PREFIXES = {
 }
 
 
+# ── Public API ──────────────────────────────────────────────────────────────
+
 def decode_vin(vin: str, force_refresh: bool = False) -> dict:
     """
     Main entry point. Returns decoded vehicle dict.
@@ -74,28 +82,51 @@ def decode_vin(vin: str, force_refresh: bool = False) -> dict:
         cache = frappe.db.get_value(
             "VIN Decode Cache",
             {"vin": vin},
-            ["name", "decoded_json", "last_decoded"],
+            ["name", "decoded_json", "last_decoded", "hit_count"],
             as_dict=True,
         )
         if cache and cache.last_decoded and cache.last_decoded >= add_days(now(), -90):
-            frappe.db.set_value("VIN Decode Cache", cache.name, "hit_count", cache.hit_count + 1) if hasattr(cache, 'hit_count') else None
+            new_hits = cint(cache.hit_count) + 1
+            frappe.db.set_value("VIN Decode Cache", cache.name, "hit_count", new_hits)
             return json.loads(cache.decoded_json or "{}")
 
-    # 2. Try NHTSA (17-char VINs)
-    result = {}
+    # 2. Try sources in priority order
+    result = None
+    source_used = None
+
     if len(vin) == 17:
+        # 2a. NHTSA vPIC (primary, free, US-market)
         result = _decode_nhtsa(vin)
+        if result:
+            source_used = "NHTSA_vPIC"
+
+        # 2b. VIN Decoder EU (secondary, global/European, requires API key)
+        if not result:
+            result = _decode_vindecoder_eu(vin)
+            if result:
+                source_used = "VINDecoderEU"
 
     # 3. Fallback: JDM frame number prefix
     if not result:
         result = _decode_jdm_frame(vin)
+        if result:
+            source_used = "JDM_MANUAL"
 
     # 4. Persist cache
-    _persist_cache(vin, result, source="NHTSA" if len(vin) == 17 and result else "JDM_MANUAL")
-    return result
+    if result:
+        _persist_cache(vin, result, source=source_used)
+    return result or {}
 
 
-def _decode_nhtsa(vin: str) -> dict:
+@frappe.whitelist()
+def decode_vin_api(vin: str, force_refresh: bool = False):
+    """Whitelist wrapper for client-side calls."""
+    return decode_vin(vin, force_refresh=force_refresh)
+
+
+# ── Source Handlers ─────────────────────────────────────────────────────────
+
+def _decode_nhtsa(vin: str) -> dict | None:
     """Call NHTSA vPIC API."""
     try:
         url = NHTSA_VPIC_URL.format(vin=vin)
@@ -120,20 +151,69 @@ def _decode_nhtsa(vin: str) -> dict:
                 "plant": r.get("PlantCity", ""),
                 "raw": r,
             }
-    except Exception as e:
+    except Exception:
         frappe.log_error(title="NHTSA VIN Decode Failed", message=frappe.get_traceback())
-    return {}
+    return None
 
 
-def _decode_jdm_frame(frame_no: str) -> dict:
+def _decode_vindecoder_eu(vin: str) -> dict | None:
+    """Call VIN Decoder EU (Vincario) API.
+
+    Requires site config keys:
+        vindecoder_eu_api_key
+        vindecoder_eu_secret_key
+
+    API docs: https://vindecoder.eu/api/
+    """
+    api_key = frappe.conf.get("vindecoder_eu_api_key")
+    secret_key = frappe.conf.get("vindecoder_eu_secret_key")
+
+    if not api_key or not secret_key:
+        return None
+
+    try:
+        control_sum = hashlib.sha1(
+            f"{vin}|decode|{api_key}|{secret_key}".encode()
+        ).hexdigest()[:10]
+
+        url = f"{VINDECODER_EU_BASE}/{api_key}/{control_sum}/decode/{vin}.json"
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+
+        if not data or data.get("error"):
+            return None
+
+        # VIN Decoder EU returns label/value pairs
+        decoded = {item["label"].replace(" ", "_").lower(): item["value"] for item in data.get("decode", [])}
+
+        return {
+            "vin": vin,
+            "make": decoded.get("make", ""),
+            "model": decoded.get("model", ""),
+            "year": cint(decoded.get("model_year", 0)),
+            "engine_code": decoded.get("engine_type", ""),
+            "engine_cylinders": cint(decoded.get("number_of_cylinders", 0)),
+            "engine_displacement": "",
+            "transmission": decoded.get("number_of_gears", ""),
+            "steering_location": decoded.get("steering_type", ""),
+            "body_class": decoded.get("body", ""),
+            "fuel_type": decoded.get("fuel_type_-_primary", ""),
+            "plant": decoded.get("plant_country", ""),
+            "raw": data,
+        }
+    except Exception:
+        frappe.log_error(title="VIN Decoder EU Failed", message=frappe.get_traceback())
+    return None
+
+
+def _decode_jdm_frame(frame_no: str) -> dict | None:
     """
     Japanese frame numbers are often {prefix}-{serial}.
     We match the prefix against our manual mapping table.
     """
-    # Normalize: remove hyphen, uppercase
     clean = frame_no.replace("-", "").upper()
 
-    # Try longest prefix match
     for prefix in sorted(JDM_FRAME_PREFIXES.keys(), key=len, reverse=True):
         if clean.startswith(prefix):
             info = JDM_FRAME_PREFIXES[prefix].copy()
@@ -142,8 +222,10 @@ def _decode_jdm_frame(frame_no: str) -> dict:
             info["source"] = "JDM_MANUAL"
             return info
 
-    return {}
+    return None
 
+
+# ── Cache Persistence ───────────────────────────────────────────────────────
 
 def _persist_cache(vin: str, result: dict, source: str):
     """Upsert VIN Decode Cache document."""
@@ -183,11 +265,7 @@ def _persist_cache(vin: str, result: dict, source: str):
     frappe.db.commit()
 
 
-@frappe.whitelist()
-def decode_vin_api(vin: str, force_refresh: bool = False):
-    """Whitelist wrapper for client-side calls."""
-    return decode_vin(vin, force_refresh=force_refresh)
-
+# ── Scheduled Job ───────────────────────────────────────────────────────────
 
 def process_pending_vin_decodes():
     """Scheduled job: find Vehicles without decoded data and process them."""
