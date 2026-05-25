@@ -38,7 +38,9 @@
             "fieldname": "variant",
             "fieldtype": "Link",
             "label": "Variant",
-            "options": "Vehicle Engine Variant"
+            "options": "Vehicle Engine Variant",
+            "in_list_view": 1,
+            "description": "Specific engine variant (optional)"
         },
         {
             "fieldname": "column_break_1",
@@ -47,36 +49,43 @@
         {
             "fieldname": "year_start",
             "fieldtype": "Int",
-            "label": "Year Start"
+            "label": "Year Start",
+            "in_list_view": 1
         },
         {
             "fieldname": "year_end",
             "fieldtype": "Int",
-            "label": "Year End"
+            "label": "Year End",
+            "in_list_view": 1
         },
         {
             "default": "Universal",
             "fieldname": "steering_position",
             "fieldtype": "Select",
             "label": "Steering Position",
-            "options": "Universal\nRHD\nLHD"
+            "options": "Universal\nRHD\nLHD",
+            "in_list_view": 1
         },
         {
             "fieldname": "market_code",
             "fieldtype": "Data",
-            "label": "Market Code"
+            "label": "Market Code",
+            "in_list_view": 1
         },
         {
             "description": "Link to the exploded view diagram showing this part",
             "fieldname": "part_diagram",
             "fieldtype": "Link",
             "label": "Part Diagram",
-            "options": "Part Diagram"
+            "options": "Part Diagram",
+            "in_list_view": 1
         },
         {
             "fieldname": "diagram_page",
             "fieldtype": "Data",
-            "label": "Diagram Page"
+            "label": "Diagram Page",
+            "in_list_view": 1,
+            "description": "Page number within the parts group"
         }
     ],
     "index_web_pages_for_search": 1,

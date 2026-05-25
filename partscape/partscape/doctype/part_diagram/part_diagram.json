@@ -1,6 +1,6 @@
 {
     "actions": [],
-    "allow_rename": 1,
+    "allow_rename": 0,
     "creation": "2026-05-24 00:00:00.000000",
     "doctype": "DocType",
     "editable_grid": 1,
@@ -23,25 +23,33 @@
             "fieldtype": "Link",
             "label": "Vehicle Model",
             "options": "Vehicle Model",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1
         },
         {
             "fieldname": "parts_group",
             "fieldtype": "Data",
             "label": "Parts Group",
-            "description": "e.g. Brake System, Engine, Suspension"
+            "description": "E.g., Brakes, Engine, Suspension",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "diagram_page",
             "fieldtype": "Data",
             "label": "Diagram Page",
-            "description": "e.g. B-15, Group 22"
+            "description": "e.g. B-15, Group 22",
+            "in_list_view": 1
         },
         {
             "fieldname": "diagram_number",
             "fieldtype": "Data",
             "label": "Diagram Number",
-            "description": "Manufacturer-specific diagram identifier"
+            "description": "Manufacturer-specific diagram identifier",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "column_break_1",
@@ -57,13 +65,17 @@
             "fieldname": "source_brand",
             "fieldtype": "Data",
             "label": "Source Brand",
-            "description": "e.g. Toyota, 7zap, RealOEM"
+            "description": "e.g. Toyota, 7zap, RealOEM",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "is_active",
             "fieldtype": "Check",
             "label": "Is Active",
-            "default": 1
+            "default": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "section_break_1",
@@ -123,9 +135,11 @@
             "write": 0
         }
     ],
-    "sort_field": "modified",
-    "sort_order": "DESC",
+    "sort_field": "vehicle_model",
+    "sort_order": "ASC",
     "track_changes": 1,
     "autoname": "hash",
-    "title_field": "parts_group"
+    "title_field": "parts_group",
+    "allow_import": 1,
+    "search_fields": "vehicle_model,parts_group,diagram_number"
 }

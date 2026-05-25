@@ -36,7 +36,12 @@
             "fieldtype": "Data",
             "label": "VIN / Frame Number",
             "reqd": 1,
-            "unique": 1
+            "unique": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1,
+            "bold": 1,
+            "description": "VIN or frame number"
         },
         {
             "fieldname": "chassis_number",
@@ -48,20 +53,26 @@
             "fieldtype": "Link",
             "label": "Make",
             "options": "Vehicle Make",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "model",
             "fieldtype": "Link",
             "label": "Model",
             "options": "Vehicle Model",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "variant",
             "fieldtype": "Link",
             "label": "Engine Variant",
-            "options": "Vehicle Engine Variant"
+            "options": "Vehicle Engine Variant",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "column_break_1",
@@ -71,7 +82,8 @@
             "fieldname": "year",
             "fieldtype": "Int",
             "label": "Year",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1
         },
         {
             "fieldname": "engine_code",
@@ -86,18 +98,24 @@
         {
             "fieldname": "color",
             "fieldtype": "Data",
-            "label": "Color"
+            "label": "Color",
+            "in_list_view": 1
         },
         {
             "fieldname": "registration_no",
             "fieldtype": "Data",
-            "label": "Registration No"
+            "label": "Registration No",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "description": "Local registration plate"
         },
         {
             "fieldname": "customer",
             "fieldtype": "Link",
             "label": "Customer",
-            "options": "Customer"
+            "options": "Customer",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "section_break_1",
@@ -117,7 +135,8 @@
         {
             "fieldname": "mileage",
             "fieldtype": "Int",
-            "label": "Mileage (km)"
+            "label": "Mileage (km)",
+            "in_list_view": 1
         },
         {
             "fieldname": "column_break_2",
@@ -128,7 +147,9 @@
             "fieldtype": "Select",
             "label": "Steering Position",
             "options": "RHD\nLHD",
-            "default": "RHD"
+            "default": "RHD",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "market_code",
@@ -141,7 +162,9 @@
             "fieldtype": "Select",
             "label": "Status",
             "options": "Active\nWorkshop\nScrapped\nSold",
-            "default": "Active"
+            "default": "Active",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "section_break_2",
@@ -211,5 +234,7 @@
     "sort_order": "DESC",
     "track_changes": 1,
     "autoname": "field:vin",
-    "title_field": "vin"
+    "title_field": "vin",
+    "allow_import": 1,
+    "search_fields": "vin,chassis_number,registration_no,customer"
 }

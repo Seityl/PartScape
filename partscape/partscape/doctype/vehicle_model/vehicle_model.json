@@ -21,26 +21,37 @@
             "fieldname": "model_name",
             "fieldtype": "Data",
             "label": "Model Name",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1,
+            "bold": 1
         },
         {
             "fieldname": "make",
             "fieldtype": "Link",
             "label": "Make",
             "options": "Vehicle Make",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1
         },
         {
             "fieldname": "model_code",
             "fieldtype": "Data",
             "label": "Model Code",
-            "description": "e.g. KDH201, GD1"
+            "description": "Chassis/frame code (e.g., KDH201, NCP91)",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "body_type",
             "fieldtype": "Select",
             "label": "Body Type",
-            "options": "Sedan\nHatch\nSUV\nVan\nPickup\nMPV\nWagon\nCoupe\nConvertible"
+            "options": "Sedan\nHatch\nSUV\nVan\nPickup\nMPV\nWagon\nCoupe\nConvertible",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "column_break_1",
@@ -49,26 +60,32 @@
         {
             "fieldname": "year_start",
             "fieldtype": "Int",
-            "label": "Year Start"
+            "label": "Year Start",
+            "in_list_view": 1
         },
         {
             "fieldname": "year_end",
             "fieldtype": "Int",
-            "label": "Year End"
+            "label": "Year End",
+            "in_list_view": 1
         },
         {
             "fieldname": "steering_position",
             "fieldtype": "Select",
             "label": "Steering Position",
             "options": "RHD\nLHD\nBoth",
-            "default": "RHD"
+            "default": "RHD",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "primary_market",
             "fieldtype": "Select",
             "label": "Primary Market",
             "options": "JDM\nUKDM\nAUM\nUSDM\nEUDM\nGlobal",
-            "default": "JDM"
+            "default": "JDM",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -92,10 +109,12 @@
             "write": 1
         }
     ],
-    "sort_field": "modified",
-    "sort_order": "DESC",
+    "sort_field": "make",
+    "sort_order": "ASC",
     "track_changes": 1,
     "autoname": "format:{make}-{model_code}",
     "title_field": "model_name",
-    "show_title_field_in_link": 1
+    "show_title_field_in_link": 1,
+    "allow_import": 1,
+    "search_fields": "model_name,model_code,make"
 }

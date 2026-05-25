@@ -1,6 +1,6 @@
 {
     "actions": [],
-    "allow_rename": 1,
+    "allow_rename": 0,
     "creation": "2026-05-24 00:00:00.000000",
     "doctype": "DocType",
     "editable_grid": 1,
@@ -21,20 +21,30 @@
             "fieldtype": "Link",
             "label": "Part Catalog",
             "options": "Part Catalog",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1
         },
         {
             "fieldname": "supplier",
             "fieldtype": "Link",
             "label": "Supplier",
             "options": "Supplier",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1
         },
         {
             "fieldname": "supplier_part_number",
             "fieldtype": "Data",
             "label": "Supplier Part Number",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "bold": 1,
+            "description": "Supplier's own SKU or part number"
         },
         {
             "fieldname": "column_break_1",
@@ -43,24 +53,31 @@
         {
             "fieldname": "moq",
             "fieldtype": "Int",
-            "label": "MOQ"
+            "label": "MOQ",
+            "in_list_view": 1,
+            "description": "Minimum order quantity"
         },
         {
             "fieldname": "lead_time_days",
             "fieldtype": "Int",
-            "label": "Lead Time (Days)"
+            "label": "Lead Time (Days)",
+            "in_list_view": 1,
+            "description": "Typical shipping lead time in days"
         },
         {
             "fieldname": "unit_cost_usd",
             "fieldtype": "Currency",
-            "label": "Unit Cost (USD)"
+            "label": "Unit Cost (USD)",
+            "in_list_view": 1
         },
         {
             "fieldname": "currency",
             "fieldtype": "Link",
             "label": "Currency",
             "options": "Currency",
-            "default": "USD"
+            "default": "USD",
+            "in_list_view": 1,
+            "in_standard_filter": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -96,10 +113,12 @@
             "write": 1
         }
     ],
-    "sort_field": "modified",
-    "sort_order": "DESC",
+    "sort_field": "part_catalog",
+    "sort_order": "ASC",
     "track_changes": 1,
     "autoname": "hash",
     "title_field": "supplier_part_number",
-    "show_title_field_in_link": 1
+    "show_title_field_in_link": 1,
+    "allow_import": 1,
+    "search_fields": "supplier_part_number,part_catalog,supplier"
 }

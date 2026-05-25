@@ -17,13 +17,14 @@
             "label": "Part Diagram",
             "options": "Part Diagram",
             "reqd": 1,
-            "in_list_view": 1
+            "in_list_view": 1,
+            "description": "Link to the diagram image"
         },
         {
             "fieldname": "callout_number",
             "fieldtype": "Data",
             "label": "Callout Number",
-            "description": "The number on the diagram pointing to this part",
+            "description": "Circled number on the diagram",
             "in_list_view": 1
         },
         {

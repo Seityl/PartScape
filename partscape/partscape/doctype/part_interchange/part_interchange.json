@@ -1,6 +1,6 @@
 {
     "actions": [],
-    "allow_rename": 1,
+    "allow_rename": 0,
     "creation": "2026-05-24 00:00:00.000000",
     "doctype": "DocType",
     "editable_grid": 1,
@@ -20,14 +20,23 @@
             "fieldtype": "Link",
             "label": "Part A",
             "options": "Part Catalog",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1,
+            "bold": 1,
+            "description": "First part in the interchange pair"
         },
         {
             "fieldname": "part_b",
             "fieldtype": "Link",
             "label": "Part B",
             "options": "Part Catalog",
-            "reqd": 1
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "bold": 1,
+            "description": "Second part in the interchange pair"
         },
         {
             "fieldname": "column_break_1",
@@ -38,26 +47,34 @@
             "fieldtype": "Select",
             "label": "Relationship Type",
             "options": "Equivalent\nSuperseded By\nAftermarket Alternative",
-            "default": "Equivalent"
+            "default": "Equivalent",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "description": "Equivalent, Superseded By, or Aftermarket Alternative"
         },
         {
             "fieldname": "quality_tier",
             "fieldtype": "Select",
             "label": "Quality Tier",
             "options": "OEM\nOEM Equivalent\nAftermarket\nPerformance",
-            "default": "Aftermarket"
+            "default": "Aftermarket",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "description": "OEM, OEM Equivalent, Aftermarket, or Performance"
         },
         {
             "fieldname": "confidence_score",
             "fieldtype": "Float",
             "label": "Confidence Score",
-            "description": "0.0 to 1.0"
+            "description": "0.0\u20131.0 confidence in this interchange",
+            "in_list_view": 1
         },
         {
             "fieldname": "source",
             "fieldtype": "Data",
             "label": "Source",
-            "description": "Where this cross-reference was confirmed"
+            "description": "Where this interchange claim came from",
+            "in_list_view": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -96,5 +113,7 @@
     "sort_field": "modified",
     "sort_order": "DESC",
     "track_changes": 1,
-    "autoname": "hash"
+    "autoname": "hash",
+    "allow_import": 1,
+    "search_fields": "part_a,part_b"
 }

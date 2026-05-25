@@ -1,6 +1,6 @@
 {
     "actions": [],
-    "allow_rename": 1,
+    "allow_rename": 0,
     "creation": "2026-05-24 00:00:00.000000",
     "doctype": "DocType",
     "editable_grid": 1,
@@ -25,31 +25,41 @@
             "fieldtype": "Data",
             "label": "VIN / Frame Number",
             "reqd": 1,
-            "unique": 1
+            "unique": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1,
+            "bold": 1
         },
         {
             "fieldname": "make",
             "fieldtype": "Data",
             "label": "Make",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "model",
             "fieldtype": "Data",
             "label": "Model",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "year",
             "fieldtype": "Int",
             "label": "Year",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1
         },
         {
             "fieldname": "engine_code",
             "fieldtype": "Data",
             "label": "Engine Code",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1
         },
         {
             "fieldname": "column_break_1",
@@ -59,25 +69,32 @@
             "fieldname": "steering_location",
             "fieldtype": "Data",
             "label": "Steering Location",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "source_api",
             "fieldtype": "Data",
             "label": "Source API",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "last_decoded",
             "fieldtype": "Datetime",
             "label": "Last Decoded",
-            "read_only": 1
+            "read_only": 1,
+            "in_list_view": 1
         },
         {
             "fieldname": "hit_count",
             "fieldtype": "Int",
             "label": "Hit Count",
-            "default": 0
+            "default": 0,
+            "in_list_view": 1,
+            "description": "How many times this VIN has been looked up"
         },
         {
             "fieldname": "section_break_1",
@@ -123,9 +140,11 @@
             "write": 0
         }
     ],
-    "sort_field": "modified",
+    "sort_field": "last_decoded",
     "sort_order": "DESC",
     "track_changes": 1,
     "autoname": "field:vin",
-    "title_field": "vin"
+    "title_field": "vin",
+    "allow_import": 0,
+    "search_fields": "vin,make,model"
 }

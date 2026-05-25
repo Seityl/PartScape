@@ -1,6 +1,6 @@
 {
     "actions": [],
-    "allow_rename": 1,
+    "allow_rename": 0,
     "creation": "2026-05-24 00:00:00.000000",
     "doctype": "DocType",
     "editable_grid": 1,
@@ -21,7 +21,10 @@
             "label": "Vehicle",
             "options": "Vehicle",
             "reqd": 1,
-            "in_list_view": 1
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "in_preview": 1,
+            "bold": 1
         },
         {
             "fieldname": "vin",
@@ -29,7 +32,8 @@
             "label": "VIN / Frame No",
             "fetch_from": "vehicle.vin",
             "read_only": 1,
-            "in_list_view": 1
+            "in_list_view": 1,
+            "in_standard_filter": 1
         },
         {
             "fieldname": "make_model",
@@ -56,13 +60,16 @@
             "fieldtype": "Check",
             "label": "Is Primary Vehicle",
             "default": 0,
-            "in_list_view": 1
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "description": "Customer's main/primary vehicle"
         },
         {
             "fieldname": "date_added",
             "fieldtype": "Date",
             "label": "Date Added",
-            "default": "Today"
+            "default": "Today",
+            "in_list_view": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -73,10 +80,12 @@
     "name": "Customer Vehicle",
     "owner": "Administrator",
     "permissions": [],
-    "sort_field": "modified",
+    "sort_field": "date_added",
     "sort_order": "DESC",
     "track_changes": 1,
     "autoname": "hash",
     "title_field": "vehicle",
-    "show_title_field_in_link": 1
+    "show_title_field_in_link": 1,
+    "allow_import": 1,
+    "search_fields": "vehicle,vin"
 }
