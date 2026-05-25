@@ -17,7 +17,7 @@
         "transmission",
         "color",
         "registration_no",
-        "owner",
+        "customer",
         "section_break_1",
         "country_of_origin",
         "import_date",
@@ -94,9 +94,9 @@
             "label": "Registration No"
         },
         {
-            "fieldname": "owner",
+            "fieldname": "customer",
             "fieldtype": "Link",
-            "label": "Owner",
+            "label": "Customer",
             "options": "Customer"
         },
         {

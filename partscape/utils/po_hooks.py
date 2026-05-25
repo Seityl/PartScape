@@ -11,7 +11,7 @@ def validate_purchase_order(doc, method):
     Validate PO items: if part_catalog_reference is set, ensure consistency with vehicle.
     """
     for item in doc.items:
-        if item.part_catalog_reference and item.vehicle:
+        if hasattr(item, 'part_catalog_reference') and hasattr(item, 'vehicle') and item.part_catalog_reference and item.vehicle:
             # Verify part applicability for this vehicle
             vehicle = frappe.get_doc("Vehicle", item.vehicle)
             if not vehicle.model:

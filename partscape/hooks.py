@@ -61,8 +61,8 @@ doctype_js = {
 
 doc_events = {
     "Vehicle": {
-        "validate": "partscape.doctype.vehicle.vehicle.validate_vehicle",
-        "after_insert": "partscape.doctype.vehicle.vehicle.after_insert_vehicle",
+        "validate": "partscape.partscape.doctype.vehicle.vehicle.validate_vehicle",
+        "after_insert": "partscape.partscape.doctype.vehicle.vehicle.after_insert_vehicle",
     },
     "Purchase Order": {
         "validate": "partscape.utils.po_hooks.validate_purchase_order",
