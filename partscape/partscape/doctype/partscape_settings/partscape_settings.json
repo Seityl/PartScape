@@ -8,6 +8,7 @@
   "item_defaults_section",
   "default_warehouse",
   "default_item_group",
+  "default_root_item_group",
   "default_uom",
   "column_break_1",
   "default_income_account",
@@ -32,6 +33,13 @@
    "fieldtype": "Link",
    "label": "Default Item Group",
    "options": "Item Group"
+  },
+  {
+   "fieldname": "default_root_item_group",
+   "fieldtype": "Link",
+   "label": "Default Root Item Group",
+   "options": "Item Group",
+   "description": "Fallback group when category mapping fails (e.g. Auto Parts)"
   },
   {
    "fieldname": "default_uom",

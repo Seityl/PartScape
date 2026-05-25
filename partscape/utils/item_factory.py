@@ -201,29 +201,37 @@ def _generate_item_code(pc) -> str:
 def _map_category_to_item_group(category: str, settings: dict = None) -> str:
     """
     Map Part Catalog category to ERPNext Item Group.
-    Falls back to settings default_item_group or 'Auto Parts'.
+    Priority:
+      1. Cached item_group on the Part Category doc
+      2. Keyword mapper (runtime fallback)
+      3. PartScape Settings default_item_group
+      4. PartScape Settings default_root_item_group
+      5. Hard fallback 'Auto Parts'
     """
+    from partscape.utils.category_mapper import map_category_to_item_group
+
     if not category:
-        return settings.get("default_item_group") if settings else "Auto Parts"
+        return _fallback_item_group(settings)
 
-    mapping = {
-        "Brake": "Brake System",
-        "Suspension": "Suspension & Steering",
-        "Engine": "Engine Components",
-        "Electrical": "Electrical",
-        "Body": "Body Parts",
-        "Transmission": "Transmission",
-        "Cooling": "Cooling System",
-        "Fuel": "Fuel System",
-        "Exhaust": "Exhaust System",
-        "Interior": "Interior Parts",
-    }
-    if category in mapping:
-        return mapping[category]
+    # 1. Check cached mapping on Part Category
+    cached = frappe.db.get_value("Part Category", {"category_name": category}, "item_group")
+    if cached and frappe.db.exists("Item Group", cached):
+        return cached
 
-    groups = frappe.get_all("Item Group", filters={"name": ("like", f"%{category}%")}, limit=1)
-    if groups:
-        return groups[0].name
+    # 2. Runtime keyword mapper
+    mapped = map_category_to_item_group(category)
+    if mapped:
+        return mapped
 
-    fallback = settings.get("default_item_group") if settings else None
-    return fallback or "Auto Parts"
+    # 3-5. Fallback chain
+    return _fallback_item_group(settings)
+
+
+def _fallback_item_group(settings: dict = None) -> str:
+    """Return the best available fallback Item Group."""
+    if settings:
+        if settings.get("default_item_group"):
+            return settings["default_item_group"]
+        if settings.get("default_root_item_group"):
+            return settings["default_root_item_group"]
+    return "Auto Parts"

@@ -8,6 +8,7 @@
     "field_order": [
         "category_name",
         "parent_category",
+        "item_group",
         "description"
     ],
     "fields": [
@@ -29,6 +30,14 @@
             "options": "Part Category",
             "in_list_view": 1,
             "in_standard_filter": 1
+        },
+        {
+            "fieldname": "item_group",
+            "fieldtype": "Link",
+            "label": "ERPNext Item Group",
+            "options": "Item Group",
+            "description": "Mapped Item Group for Items created from this category",
+            "in_list_view": 1
         },
         {
             "fieldname": "description",
