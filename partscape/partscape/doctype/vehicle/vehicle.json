@@ -41,14 +41,12 @@
             "in_standard_filter": 1,
             "in_preview": 1,
             "bold": 1,
-            "description": "VIN or frame number",
-            "read_only": 1
+            "description": "VIN or frame number"
         },
         {
             "fieldname": "chassis_number",
             "fieldtype": "Data",
-            "label": "Chassis Number (JDM)",
-            "read_only": 1
+            "label": "Chassis Number (JDM)"
         },
         {
             "fieldname": "make",
@@ -57,8 +55,7 @@
             "options": "Vehicle Make",
             "reqd": 1,
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "model",
@@ -67,8 +64,7 @@
             "options": "Vehicle Model",
             "reqd": 1,
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "variant",
@@ -76,8 +72,7 @@
             "label": "Engine Variant",
             "options": "Vehicle Engine Variant",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "column_break_1",
@@ -88,27 +83,23 @@
             "fieldtype": "Int",
             "label": "Year",
             "reqd": 1,
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "engine_code",
             "fieldtype": "Data",
-            "label": "Engine Code",
-            "read_only": 1
+            "label": "Engine Code"
         },
         {
             "fieldname": "transmission",
             "fieldtype": "Data",
-            "label": "Transmission",
-            "read_only": 1
+            "label": "Transmission"
         },
         {
             "fieldname": "color",
             "fieldtype": "Data",
             "label": "Color",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "registration_no",
@@ -116,8 +107,7 @@
             "label": "Registration No",
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "description": "Local registration plate",
-            "read_only": 1
+            "description": "Local registration plate"
         },
         {
             "fieldname": "customer",
@@ -125,8 +115,7 @@
             "label": "Customer",
             "options": "Customer",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "section_break_1",
@@ -136,21 +125,18 @@
         {
             "fieldname": "country_of_origin",
             "fieldtype": "Data",
-            "label": "Country of Origin",
-            "read_only": 1
+            "label": "Country of Origin"
         },
         {
             "fieldname": "import_date",
             "fieldtype": "Date",
-            "label": "Import Date",
-            "read_only": 1
+            "label": "Import Date"
         },
         {
             "fieldname": "mileage",
             "fieldtype": "Int",
             "label": "Mileage (km)",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "column_break_2",
@@ -163,15 +149,13 @@
             "options": "RHD\nLHD",
             "default": "RHD",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "market_code",
             "fieldtype": "Data",
             "label": "Market Code",
-            "description": "e.g. JDM, UKDM, AUM",
-            "read_only": 1
+            "description": "e.g. JDM, UKDM, AUM"
         },
         {
             "fieldname": "status",
@@ -180,8 +164,7 @@
             "options": "Active\nWorkshop\nScrapped\nSold",
             "default": "Active",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "section_break_2",
@@ -191,15 +174,13 @@
         {
             "fieldname": "last_vin_decode",
             "fieldtype": "Datetime",
-            "label": "Last VIN Decode",
-            "read_only": 1
+            "label": "Last VIN Decode"
         },
         {
             "fieldname": "decoded_json",
             "fieldtype": "Code",
             "label": "Decoded JSON",
-            "options": "JSON",
-            "read_only": 1
+            "options": "JSON"
         }
     ],
     "index_web_pages_for_search": 1,
@@ -253,6 +234,5 @@
     "autoname": "field:vin",
     "title_field": "vin",
     "allow_import": 1,
-    "search_fields": "vin,chassis_number,registration_no,customer",
-    "in_create": 1
+    "search_fields": "vin,chassis_number,registration_no,customer"
 }

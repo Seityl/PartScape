@@ -20,8 +20,7 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "in_preview": 1,
-            "bold": 1,
-            "read_only": 1
+            "bold": 1
         },
         {
             "fieldname": "parent_category",
@@ -29,15 +28,13 @@
             "label": "Parent Category",
             "options": "Part Category",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "description",
             "fieldtype": "Text",
             "label": "Description",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -67,6 +64,5 @@
     "autoname": "field:category_name",
     "title_field": "category_name",
     "allow_import": 1,
-    "search_fields": "category_name",
-    "in_create": 1
+    "search_fields": "category_name"
 }

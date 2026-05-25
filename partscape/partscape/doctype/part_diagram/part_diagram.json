@@ -26,8 +26,7 @@
             "reqd": 1,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "in_preview": 1,
-            "read_only": 1
+            "in_preview": 1
         },
         {
             "fieldname": "parts_group",
@@ -35,16 +34,14 @@
             "label": "Parts Group",
             "description": "E.g., Brakes, Engine, Suspension",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "diagram_page",
             "fieldtype": "Data",
             "label": "Diagram Page",
             "description": "e.g. B-15, Group 22",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "diagram_number",
@@ -52,8 +49,7 @@
             "label": "Diagram Number",
             "description": "Manufacturer-specific diagram identifier",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "column_break_1",
@@ -63,8 +59,7 @@
             "fieldname": "source_url",
             "fieldtype": "Data",
             "label": "Source URL",
-            "description": "Original web URL where this diagram was scraped",
-            "read_only": 1
+            "description": "Original web URL where this diagram was scraped"
         },
         {
             "fieldname": "source_brand",
@@ -72,8 +67,7 @@
             "label": "Source Brand",
             "description": "e.g. Toyota, 7zap, RealOEM",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "is_active",
@@ -81,8 +75,7 @@
             "label": "Is Active",
             "default": 1,
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "section_break_1",
@@ -94,8 +87,7 @@
             "fieldtype": "Attach Image",
             "label": "Diagram Image",
             "reqd": 1,
-            "description": "Exploded view diagram image",
-            "read_only": 1
+            "description": "Exploded view diagram image"
         }
     ],
     "index_web_pages_for_search": 1,
@@ -149,6 +141,5 @@
     "autoname": "hash",
     "title_field": "parts_group",
     "allow_import": 1,
-    "search_fields": "vehicle_model,parts_group,diagram_number",
-    "in_create": 1
+    "search_fields": "vehicle_model,parts_group,diagram_number"
 }

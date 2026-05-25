@@ -25,8 +25,7 @@
             "reqd": 1,
             "in_list_view": 1,
             "bold": 1,
-            "description": "Engine variant identifier (e.g., 1KD-FTV)",
-            "read_only": 1
+            "description": "Engine variant identifier (e.g., 1KD-FTV)"
         },
         {
             "fieldname": "model",
@@ -36,8 +35,7 @@
             "reqd": 1,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "in_preview": 1,
-            "read_only": 1
+            "in_preview": 1
         },
         {
             "fieldname": "engine_code",
@@ -46,16 +44,14 @@
             "reqd": 1,
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "description": "Standard engine code",
-            "read_only": 1
+            "description": "Standard engine code"
         },
         {
             "fieldname": "displacement",
             "fieldtype": "Data",
             "label": "Displacement",
             "description": "e.g. 2982 cc",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "fuel_type",
@@ -63,8 +59,7 @@
             "label": "Fuel Type",
             "options": "Petrol\nDiesel\nHybrid\nElectric\nLPG",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "column_break_1",
@@ -76,8 +71,7 @@
             "label": "Transmission",
             "options": "5MT\n6MT\n4AT\n5AT\n6AT\nCVT\nDCT\nOther",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "drivetrain",
@@ -85,20 +79,17 @@
             "label": "Drivetrain",
             "options": "2WD\n4WD\nAWD",
             "in_list_view": 1,
-            "in_standard_filter": 1,
-            "read_only": 1
+            "in_standard_filter": 1
         },
         {
             "fieldname": "power_kw",
             "fieldtype": "Float",
-            "label": "Power (kW)",
-            "read_only": 1
+            "label": "Power (kW)"
         },
         {
             "fieldname": "torque_nm",
             "fieldtype": "Float",
-            "label": "Torque (Nm)",
-            "read_only": 1
+            "label": "Torque (Nm)"
         }
     ],
     "index_web_pages_for_search": 1,
@@ -129,6 +120,5 @@
     "title_field": "variant_name",
     "show_title_field_in_link": 1,
     "allow_import": 1,
-    "search_fields": "variant_name,engine_code,model",
-    "in_create": 1
+    "search_fields": "variant_name,engine_code,model"
 }

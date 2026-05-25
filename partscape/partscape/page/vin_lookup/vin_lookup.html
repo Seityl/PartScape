@@ -1,0 +1,156 @@
+<div class="vin-lookup-container">
+	<!-- VIN Input Section -->
+	<div class="vin-input-section">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="form-group">
+					<label for="vin_input">{{ __("Enter VIN or Chassis Number") }}</label>
+					<div class="input-group">
+						<input type="text" id="vin_input" class="form-control" placeholder="e.g. JTDZN3EU0E3298500 or KDH201-0001234" maxlength="50">
+						<span class="input-group-btn">
+							<button class="btn btn-primary btn-decode-vin" type="button">{{ __("Decode VIN") }}</button>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Vehicle Info Card -->
+	<div class="vehicle-info-section hidden">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">{{ __("Decoded Vehicle Information") }}</h4>
+			</div>
+			<div class="panel-body">
+				<div class="row vehicle-details">
+					<div class="col-md-3 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Make") }}</span>
+							<span class="field-value vehicle-make">—</span>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Model") }}</span>
+							<span class="field-value vehicle-model">—</span>
+						</div>
+					</div>
+					<div class="col-md-2 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Year") }}</span>
+							<span class="field-value vehicle-year">—</span>
+						</div>
+					</div>
+					<div class="col-md-2 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Engine") }}</span>
+							<span class="field-value vehicle-engine">—</span>
+						</div>
+					</div>
+					<div class="col-md-2 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Fuel") }}</span>
+							<span class="field-value vehicle-fuel">—</span>
+						</div>
+					</div>
+				</div>
+				<div class="row vehicle-details second-row">
+					<div class="col-md-3 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Transmission") }}</span>
+							<span class="field-value vehicle-transmission">—</span>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Body Class") }}</span>
+							<span class="field-value vehicle-body">—</span>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Steering") }}</span>
+							<span class="field-value vehicle-steering">—</span>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6">
+						<div class="vehicle-field">
+							<span class="field-label">{{ __("Plant") }}</span>
+							<span class="field-value vehicle-plant">—</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Matching Vehicle Models -->
+	<div class="vehicle-models-section hidden">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">{{ __("Matching Vehicle Models") }}</h4>
+			</div>
+			<div class="panel-body">
+				<div class="vehicle-models-table-wrapper">
+					<table class="table table-bordered table-hover vehicle-models-table">
+						<thead>
+							<tr>
+								<th>{{ __("Model Name") }}</th>
+								<th>{{ __("Make") }}</th>
+								<th>{{ __("Model Code") }}</th>
+								<th>{{ __("Body Type") }}</th>
+								<th>{{ __("Years") }}</th>
+								<th>{{ __("Steering") }}</th>
+								<th>{{ __("Market") }}</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<div class="no-vehicle-models text-muted hidden">{{ __("No matching vehicle models found.") }}</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Parts Search Section -->
+	<div class="parts-search-section">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">{{ __("Parts Search") }}</h4>
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<div class="input-group">
+								<input type="text" id="parts_keyword" class="form-control" placeholder="{{ __("Search by part number, name, description, brand or category...") }}">
+								<span class="input-group-btn">
+									<button class="btn btn-default btn-search-parts" type="button">{{ __("Search") }}</button>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="parts-results-wrapper">
+					<table class="table table-bordered table-hover parts-results-table hidden">
+						<thead>
+							<tr>
+								<th>{{ __("Part Number") }}</th>
+								<th>{{ __("Part Name") }}</th>
+								<th>{{ __("Brand") }}</th>
+								<th>{{ __("Category") }}</th>
+								<th>{{ __("Est. Cost (USD)") }}</th>
+								<th>{{ __("OEM") }}</th>
+								<th>{{ __("Steering") }}</th>
+								<th>{{ __("Market") }}</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+					<div class="no-parts-results text-muted hidden">{{ __("No parts found. Try a different keyword.") }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

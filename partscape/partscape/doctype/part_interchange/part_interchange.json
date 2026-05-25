@@ -25,8 +25,7 @@
             "in_standard_filter": 1,
             "in_preview": 1,
             "bold": 1,
-            "description": "First part in the interchange pair",
-            "read_only": 1
+            "description": "First part in the interchange pair"
         },
         {
             "fieldname": "part_b",
@@ -37,8 +36,7 @@
             "in_list_view": 1,
             "in_standard_filter": 1,
             "bold": 1,
-            "description": "Second part in the interchange pair",
-            "read_only": 1
+            "description": "Second part in the interchange pair"
         },
         {
             "fieldname": "column_break_1",
@@ -52,8 +50,7 @@
             "default": "Equivalent",
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "description": "Equivalent, Superseded By, or Aftermarket Alternative",
-            "read_only": 1
+            "description": "Equivalent, Superseded By, or Aftermarket Alternative"
         },
         {
             "fieldname": "quality_tier",
@@ -63,24 +60,21 @@
             "default": "Aftermarket",
             "in_list_view": 1,
             "in_standard_filter": 1,
-            "description": "OEM, OEM Equivalent, Aftermarket, or Performance",
-            "read_only": 1
+            "description": "OEM, OEM Equivalent, Aftermarket, or Performance"
         },
         {
             "fieldname": "confidence_score",
             "fieldtype": "Float",
             "label": "Confidence Score",
             "description": "0.0\u20131.0 confidence in this interchange",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "source",
             "fieldtype": "Data",
             "label": "Source",
             "description": "Where this interchange claim came from",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         }
     ],
     "index_web_pages_for_search": 1,
@@ -121,6 +115,5 @@
     "track_changes": 1,
     "autoname": "hash",
     "allow_import": 1,
-    "search_fields": "part_a,part_b",
-    "in_create": 1
+    "search_fields": "part_a,part_b"
 }

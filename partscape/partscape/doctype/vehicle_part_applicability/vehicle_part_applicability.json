@@ -24,8 +24,7 @@
             "in_list_view": 1,
             "label": "Part Catalog",
             "options": "Part Catalog",
-            "reqd": 1,
-            "read_only": 1
+            "reqd": 1
         },
         {
             "fieldname": "vehicle_model",
@@ -33,8 +32,7 @@
             "in_list_view": 1,
             "label": "Vehicle Model",
             "options": "Vehicle Model",
-            "reqd": 1,
-            "read_only": 1
+            "reqd": 1
         },
         {
             "fieldname": "variant",
@@ -42,8 +40,7 @@
             "label": "Variant",
             "options": "Vehicle Engine Variant",
             "in_list_view": 1,
-            "description": "Specific engine variant (optional)",
-            "read_only": 1
+            "description": "Specific engine variant (optional)"
         },
         {
             "fieldname": "column_break_1",
@@ -53,15 +50,13 @@
             "fieldname": "year_start",
             "fieldtype": "Int",
             "label": "Year Start",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "year_end",
             "fieldtype": "Int",
             "label": "Year End",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "default": "Universal",
@@ -69,15 +64,13 @@
             "fieldtype": "Select",
             "label": "Steering Position",
             "options": "Universal\nRHD\nLHD",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "market_code",
             "fieldtype": "Data",
             "label": "Market Code",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "description": "Link to the exploded view diagram showing this part",
@@ -85,16 +78,14 @@
             "fieldtype": "Link",
             "label": "Part Diagram",
             "options": "Part Diagram",
-            "in_list_view": 1,
-            "read_only": 1
+            "in_list_view": 1
         },
         {
             "fieldname": "diagram_page",
             "fieldtype": "Data",
             "label": "Diagram Page",
             "in_list_view": 1,
-            "description": "Page number within the parts group",
-            "read_only": 1
+            "description": "Page number within the parts group"
         }
     ],
     "index_web_pages_for_search": 1,
