@@ -10,7 +10,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Seityl Group Ltd.',
-    author_email='info@seityl.com',
+    author_email='contact@seityl.com',
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
