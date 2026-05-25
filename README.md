@@ -17,7 +17,6 @@ bench --site your-site.local migrate
 - **Part Catalog** — OEM part numbers with diagram references
 - **Part Interchange** — Aftermarket cross-references (Bosch, Denso, KYB, etc.)
 - **Vehicle Master** — Full fleet tracking with RHD/LHD awareness
-- **Workshop Job Cards** — Parts consumption linked to Stock Entry and Purchase Order
 - **Landed Cost Estimator** — Configurable customs duty + VAT calculations
 
 ## Directory Guide

@@ -75,5 +75,8 @@
     "permissions": [],
     "sort_field": "modified",
     "sort_order": "DESC",
-    "track_changes": 1
+    "track_changes": 1,
+    "autoname": "hash",
+    "title_field": "vehicle",
+    "show_title_field_in_link": 1
 }

@@ -170,7 +170,8 @@ def _get_or_create_make(name, country=None, wmi=None):
 
 
 def _get_or_create_model(make, name, code, body, ys, ye, steer, market):
-    docname = frappe.db.get_value("Vehicle Model", {"model_name": name, "make": make, "model_code": code}, "name")
+    expected_name = f"{make}-{code}"
+    docname = frappe.db.get_value("Vehicle Model", {"name": expected_name}, "name")
     if docname:
         return docname
     doc = frappe.get_doc({
@@ -189,10 +190,8 @@ def _get_or_create_model(make, name, code, body, ys, ye, steer, market):
 
 
 def _get_or_create_variant(model, engine_code, disp, fuel, trans, drive):
-    docname = frappe.db.get_value("Vehicle Engine Variant", {
-        "variant_name": engine_code,
-        "model": model,
-    }, "name")
+    expected_name = f"{model}-{engine_code}"
+    docname = frappe.db.get_value("Vehicle Engine Variant", {"name": expected_name}, "name")
     if docname:
         return docname
     doc = frappe.get_doc({

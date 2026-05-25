@@ -204,5 +204,8 @@
     ],
     "sort_field": "modified",
     "sort_order": "DESC",
-    "track_changes": 1
+    "track_changes": 1,
+    "autoname": "prompt",
+    "title_field": "part_name",
+    "show_title_field_in_link": 1
 }

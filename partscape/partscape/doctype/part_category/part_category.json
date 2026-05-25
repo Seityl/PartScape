@@ -53,5 +53,7 @@
     ],
     "sort_field": "modified",
     "sort_order": "DESC",
-    "track_changes": 1
+    "track_changes": 1,
+    "autoname": "field:category_name",
+    "title_field": "category_name"
 }

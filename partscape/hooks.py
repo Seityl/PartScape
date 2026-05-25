@@ -1,7 +1,7 @@
 app_name = "partscape"
 app_title = "PartScape"
 app_publisher = "Seityl Group Ltd."
-app_description = "Auto-parts intelligence system for fleet and workshop management"
+app_description = "Auto-parts intelligence system for fleet and parts management"
 app_email = "contact@seityl.com"
 app_license = "MIT"
 app_icon = "octicon octicon-tools"

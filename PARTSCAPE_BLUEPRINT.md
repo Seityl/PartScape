@@ -175,10 +175,6 @@ partscape/
 │   │   ├── part_category/
 │   │   ├── part_interchange/
 │   │   ├── vin_decode_cache/
-│   │   ├── workshop_job_card/
-│   │   ├── workshop_job_card_part/
-│   │   ├── workshop_job_card_po/
-│   │   ├── workshop_job_card_stock_entry/
 │   │   ├── customer_vehicle/
 │   │   ├── vehicle_part_applicability/
 │   │   └── part_supplier_reference/
@@ -197,7 +193,6 @@ partscape/
 │   │       ├── purchase_order.js
 │   │       ├── item.js
 │   │       ├── stock_entry.js
-│   │       └── workshop_job_card.js
 │   ├── fixtures/
 │   │   ├── custom_field.json
 │   │   ├── property_setter.json
@@ -225,9 +220,6 @@ PartCatalog (1) ───< (N) PartCatalogDiagram (N) >─── (1) PartDiagram
 
 VehicleModel (1) ───< (N) PartDiagram
 
-WorkshopJobCard (1) ───< (N) WorkshopJobCardPart
-WorkshopJobCardPart (N) >─── (1) PartCatalog
-WorkshopJobCard (1) ───> (1) Vehicle
 
 VINDecodeCache (standalone lookup)
 ```
@@ -384,20 +376,17 @@ VINDecodeCache (standalone lookup)
 | last_decoded | Datetime | |
 | hit_count | Int | How many times used |
 
-#### Workshop Job Card
 | Field | Type | Notes |
 |-------|------|-------|
 | vehicle | Link | Vehicle |
 | complaint | Text | Customer complaint |
 | diagnosis | Text | |
 | status | Select | Open, Parts Required, In Progress, Completed, Invoiced |
-| parts_required | Table | Workshop Job Card Part |
 | linked_purchase_orders | Table | Link to POs |
 | linked_stock_entries | Table | Link to consumption |
 | labor_hours | Float | |
 | technician | Link | Employee |
 
-#### Workshop Job Card Part (Child Table)
 | Field | Type | Notes |
 |-------|------|-------|
 | part_catalog | Link | Part Catalog |
@@ -439,7 +428,6 @@ VINDecodeCache (standalone lookup)
 
 #### Stock Entry Detail
 - `vehicle_consumed_by` (Link → Vehicle)
-- `job_card_reference` (Link → Workshop Job Card)
 - `part_catalog_reference` (Link → Part Catalog)
 
 #### Supplier
@@ -453,7 +441,6 @@ VINDecodeCache (standalone lookup)
 
 ### 3.5 Permission Model
 
-| Role | Vehicle | Part Catalog | Part Interchange | Workshop Job Card | PO/Item/Stock |
 |------|---------|--------------|------------------|-------------------|---------------|
 | Fleet Manager | R/W | R/W (seed) | R/W (seed) | R/W | R/W |
 | Parts Clerk | R | R | R | R/W | R/W |
@@ -619,8 +606,6 @@ scheduler_events = {
 - [ ] Diagram image storage + viewer in Part Catalog form.
 - [ ] Build `Part Supplier Reference` table with MOQ/lead time.
 
-### Phase 4: Workshop Job Card + Consumption Tracking (Weeks 7–8)
-- [ ] Build `Workshop Job Card` DocType with parts table.
 - [ ] Link Job Card → Stock Entry (consumption) and Purchase Order (ordering).
 - [ ] Track vehicle-specific part consumption for warranty.
 - [ ] Reports: Vehicle service history, parts consumption by model.
