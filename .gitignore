@@ -16,3 +16,5 @@ __pycache__
 .helix/
 node_modules/
 .backportrc.json
+data_imports/
+data_imports/fpi_pdfs/
