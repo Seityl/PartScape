@@ -43,9 +43,16 @@ add_to_apps_screen = [
 # include js in doctype views
 doctype_js = {
     "Purchase Order": "public/js/purchase_order.js",
+    "Purchase Receipt": "public/js/purchase_receipt.js",
+    "Purchase Invoice": "public/js/purchase_invoice.js",
+    "Sales Order": "public/js/sales_order.js",
+    "Delivery Note": "public/js/delivery_note.js",
+    "Sales Invoice": "public/js/sales_invoice.js",
     "Item": "public/js/item.js",
     "Stock Entry": "public/js/stock_entry.js",
 }
+
+app_include_js = "partscape/public/js/part_catalog_picker.js"
 
 # DocType Class
 # ---------------

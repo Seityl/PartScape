@@ -4,6 +4,27 @@
 
 frappe.ui.form.on('Stock Entry', {
     refresh(frm) {
+        frm.set_query('item_code', 'items', function() {
+            return {
+                query: 'partscape.api.smart_item_search.smart_item_search_query'
+            };
+        });
+
+        frm.add_custom_button(__('Select from Part Catalog'), () => {
+            partscape.showPartCatalogPicker({
+                onSelect: function(result) {
+                    if (!result) return;
+                    const row = frm.add_child('items');
+                    frappe.model.set_value(row.doctype, row.name, 'item_code', result.item_code);
+                    frappe.model.set_value(row.doctype, row.name, 'item_name', result.item_name);
+                    frappe.model.set_value(row.doctype, row.name, 'description', result.description);
+                    frappe.model.set_value(row.doctype, row.name, 'part_catalog_reference', result.part_catalog_reference);
+                    frappe.model.set_value(row.doctype, row.name, 'diagram_reference', result.diagram_reference);
+                    frm.refresh_field('items');
+                },
+            });
+        }, __('PartScape'));
+
         if (frm.doc.purpose === 'Material Issue') {
             frm.add_custom_button(__('Create Job Card Consumption'), () => {
                 frappe.msgprint(__('Job Card linking logic goes here.'));

@@ -39,14 +39,19 @@ def create_item_from_part_catalog(part_catalog_name: str, create_if_missing: boo
         return None
 
     item_code = _generate_item_code(pc)
+    settings = _get_settings()
 
-    item = frappe.get_doc({
+    # Ensure brand exists in ERPNext
+    if pc.brand and not frappe.db.exists("Brand", pc.brand):
+        frappe.get_doc({"doctype": "Brand", "brand": pc.brand}).insert(ignore_permissions=True)
+
+    item_dict = {
         "doctype": "Item",
         "item_code": item_code,
         "item_name": pc.part_name,
         "description": f"{pc.part_name} — {pc.brand} {pc.part_number}",
-        "item_group": _map_category_to_item_group(pc.category),
-        "stock_uom": "Nos",
+        "item_group": _map_category_to_item_group(pc.category, settings),
+        "stock_uom": settings.get("default_uom") or "Nos",
         "is_stock_item": 1,
         "is_purchase_item": 1,
         "is_sales_item": 1,
@@ -56,9 +61,19 @@ def create_item_from_part_catalog(part_catalog_name: str, create_if_missing: boo
         "quality_tier": "OEM" if pc.is_oem else "Aftermarket",
         "default_material_request_type": "Purchase",
         "valuation_method": "FIFO",
-    })
+    }
 
+    # Item Defaults
+    defaults = _build_item_defaults(settings)
+    if defaults:
+        item_dict["item_defaults"] = defaults
+
+    item = frappe.get_doc(item_dict)
     item.insert(ignore_permissions=True)
+
+    # Link supplier references
+    _link_supplier_items(item, pc.name)
+
     frappe.msgprint(_("Created Item {0} from Part Catalog").format(item.item_code))
     return item.name
 
@@ -100,25 +115,96 @@ def auto_link_items_to_catalog():
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _get_settings() -> dict:
+    """Read PartScape Settings; return empty dict if not configured."""
+    if not frappe.db.exists("PartScape Settings"):
+        return {}
+    doc = frappe.get_doc("PartScape Settings")
+    return {
+        "default_warehouse": doc.get("default_warehouse"),
+        "default_income_account": doc.get("default_income_account"),
+        "default_expense_account": doc.get("default_expense_account"),
+        "default_buying_cost_center": doc.get("default_buying_cost_center"),
+        "default_selling_cost_center": doc.get("default_selling_cost_center"),
+        "default_item_group": doc.get("default_item_group"),
+        "default_uom": doc.get("default_uom"),
+    }
+
+
+def _build_item_defaults(settings: dict) -> list:
+    """Build Item Defaults child table rows from PartScape Settings."""
+    defaults = []
+    company = frappe.defaults.get_user_default("Company")
+    if not company:
+        # Try to find any company
+        companies = frappe.get_all("Company", limit=1)
+        if companies:
+            company = companies[0].name
+
+    if not company:
+        return defaults
+
+    default_row = {"company": company}
+    has_any = False
+
+    if settings.get("default_warehouse"):
+        default_row["default_warehouse"] = settings["default_warehouse"]
+        has_any = True
+    if settings.get("default_income_account"):
+        default_row["income_account"] = settings["default_income_account"]
+        has_any = True
+    if settings.get("default_expense_account"):
+        default_row["expense_account"] = settings["default_expense_account"]
+        has_any = True
+    if settings.get("default_buying_cost_center"):
+        default_row["buying_cost_center"] = settings["default_buying_cost_center"]
+        has_any = True
+    if settings.get("default_selling_cost_center"):
+        default_row["selling_cost_center"] = settings["default_selling_cost_center"]
+        has_any = True
+
+    if has_any:
+        defaults.append(default_row)
+
+    return defaults
+
+
+def _link_supplier_items(item, part_catalog_name: str):
+    """Populate Item Supplier child table from Part Supplier Reference."""
+    supplier_refs = frappe.get_all(
+        "Part Supplier Reference",
+        filters={"part_catalog": part_catalog_name},
+        fields=["supplier", "supplier_part_number"],
+        limit=10,
+    )
+    for ref in supplier_refs:
+        item.append("supplier_items", {
+            "supplier": ref.supplier,
+            "supplier_part_no": ref.supplier_part_number,
+        })
+    if supplier_refs:
+        item.save(ignore_permissions=True)
+
+
 def _generate_item_code(pc) -> str:
     """
     Generate a clean item code.
-    Pattern: ADP-{BRAND_ABBR}-{PART_NUMBER} (sanitized)
+    Pattern: AD-{BRAND_ABBR}-{PART_NUMBER} (sanitized)
     """
     brand_abbr = (pc.brand or "UNK")[:4].upper()
     part_clean = (pc.part_number or "").replace("-", "").replace(" ", "").upper()
     if len(part_clean) > 15:
         part_clean = part_clean[:15]
-    return f"ADP-{brand_abbr}-{part_clean}"
+    return f"AD-{brand_abbr}-{part_clean}"
 
 
-def _map_category_to_item_group(category: str) -> str:
+def _map_category_to_item_group(category: str, settings: dict = None) -> str:
     """
     Map Part Catalog category to ERPNext Item Group.
-    Falls back to 'Auto Parts' if not found.
+    Falls back to settings default_item_group or 'Auto Parts'.
     """
     if not category:
-        return "Auto Parts"
+        return settings.get("default_item_group") if settings else "Auto Parts"
 
     mapping = {
         "Brake": "Brake System",
@@ -139,4 +225,5 @@ def _map_category_to_item_group(category: str) -> str:
     if groups:
         return groups[0].name
 
-    return "Auto Parts"
+    fallback = settings.get("default_item_group") if settings else None
+    return fallback or "Auto Parts"
