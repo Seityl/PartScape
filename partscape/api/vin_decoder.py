@@ -12,7 +12,7 @@ import hashlib
 import json
 import requests
 import frappe
-from frappe.utils import now, add_days, cint
+from frappe.utils import now, add_days, cint, get_datetime
 from frappe import _
 
 # ── Data Sources ────────────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ def decode_vin(vin: str, force_refresh: bool = False) -> dict:
             ["name", "decoded_json", "last_decoded", "hit_count"],
             as_dict=True,
         )
-        if cache and cache.last_decoded and cache.last_decoded >= add_days(now(), -90):
+        if cache and cache.last_decoded and cache.last_decoded >= get_datetime(add_days(now(), -90)):
             new_hits = cint(cache.hit_count) + 1
             frappe.db.set_value("VIN Decode Cache", cache.name, "hit_count", new_hits)
             return json.loads(cache.decoded_json or "{}")
