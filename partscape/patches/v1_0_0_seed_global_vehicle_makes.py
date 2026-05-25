@@ -1,15 +1,15 @@
 """
-Patch: Seed comprehensive global vehicle makes + Dominica-focused models.
+Patch: Seed comprehensive global vehicle makes + common JDM models.
 
 Creates Vehicle Make records for all major manufacturers worldwide,
-plus Dominica's most common models pre-populated.
+plus commonly imported JDM models pre-populated.
 """
 
 import frappe
 
 
 GLOBAL_MAKES = [
-    # Japanese (Dominica primary)
+    # Japanese (primary JDM market)
     ("Toyota", "JPY", "JT,MR0,ML0,NMT,SJN"),
     ("Honda", "JPY", "JHM,MLH,SHH,LUC,NLA"),
     ("Nissan", "JPY", "JN1,JN6,MNT,SJN,ML0"),
@@ -58,8 +58,8 @@ GLOBAL_MAKES = [
     ("Holden", "AUS", "6G1,8AK"),
 ]
 
-# Dominica-focused models to pre-seed
-DOMINICA_MODELS = [
+# Common JDM models to pre-seed
+COMMON_JDM_MODELS = [
     # (make, model, model_code, body, year_start, year_end, steering, market, variants)
     ("Toyota", "Hiace Van", "KDH201", "Van", 2012, 2020, "RHD", "JDM", [("1KD-FTV", "2982 cc", "Diesel", "4AT", "2WD"), ("2KD-FTV", "2494 cc", "Diesel", "5MT", "2WD"), ("1GD-FTV", "2755 cc", "Diesel", "6AT", "2WD")]),
     ("Toyota", "Hiace Van", "TRH200", "Van", 2005, 2012, "RHD", "JDM", [("2TR-FE", "2694 cc", "Petrol", "4AT", "2WD")]),
@@ -144,8 +144,8 @@ def execute():
     for make_name, country, wmi in GLOBAL_MAKES:
         _get_or_create_make(make_name, country, wmi)
 
-    # 2. Seed Dominica-focused models
-    for make_name, model_name, model_code, body, ys, ye, steer, market, variants in DOMINICA_MODELS:
+    # 2. Seed common JDM models
+    for make_name, model_name, model_code, body, ys, ye, steer, market, variants in COMMON_JDM_MODELS:
         make = _get_or_create_make(make_name)
         model = _get_or_create_model(make, model_name, model_code, body, ys, ye, steer, market)
         for engine_code, disp, fuel, trans, drive in variants:

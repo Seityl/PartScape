@@ -1,7 +1,7 @@
 """
 PartScape — Landed Cost Calculator
 
-Dominica typical customs formula (configurable):
+Default customs formula (configurable):
     Landed XCD = (USD Cost * Exchange Rate) * (1 + Import Duty %) * (1 + VAT %)
 """
 

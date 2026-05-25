@@ -1,5 +1,5 @@
 # PartScape — Strategic Blueprint
-## Auto-Parts Intelligence System for Commonwealth of Dominica
+## Auto-Parts Intelligence System for Fleet & Workshop Management
 ### Native Frappe/ERPNext Custom App | Seityl Group Ltd.
 
 **Version:** 1.0.0  
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets the Commonwealth of Dominica's used-Japanese vehicle fleet (RHD, left-hand traffic, heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, exploded view diagrams, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data and diagram images), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
+This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets used-Japanese vehicle fleets worldwide (RHD, left-hand traffic markets with heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, exploded view diagrams, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data and diagram images), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
 
 ---
 
@@ -57,7 +57,7 @@ This document blueprints **PartScape**, a native Frappe custom app that embeds a
 
 #### C. Toyota EPC (toyota.epc-data.com) — FREE WEB EPC
 - **URL:** `https://toyota.epc-data.com/` — search by frame number (e.g., `GXE10-0088644`)
-- **Regions:** Japan, General, Europe, USA. For Dominica JDM imports, use **Japan** or **General** region.
+- **Regions:** Japan, General, Europe, USA. For JDM import markets, use **Japan** or **General** region.
 - **Data:** Full genuine Toyota parts catalog with exploded diagrams, part numbers, applicability, and prices.
 - **Access:** Completely free, no registration required. Web-based interface.
 - **Connector Strategy:** Build a respectful scraper/connector that submits frame numbers, parses the resulting vehicle config page, then navigates parts groups to extract OEM numbers. Cache every page locally.
@@ -79,9 +79,9 @@ This document blueprints **PartScape**, a native Frappe custom app that embeds a
 - **API:** None found.
 - **Verdict:** Reference only. Manual curation of high-volume interchange pairs.
 
-### 2.3 Dominica Top 50 Vehicle Models (Best-Effort Fleet Profile)
+### 2.3 Common JDM Vehicle Models (Best-Effort Fleet Profile)
 
-Based on Japanese Car Trade import statistics, TCV popular rankings for Dominica (c=212), BE FORWARD testimonials, and regional Caribbean JDM patterns.
+Based on Japanese Car Trade import statistics, TCV popular rankings for Caribbean markets (c=212), BE FORWARD testimonials, and regional RHD JDM patterns.
 
 | # | Model | Make | Era | Body | Notes |
 |---|-------|------|-----|------|-------|
@@ -136,7 +136,7 @@ Based on Japanese Car Trade import statistics, TCV popular rankings for Dominica
 | 49 | Transit / Tourneo | Ford | 2005–2020 | Van | Commercial Euro import |
 | 50 | Ranger | Ford | 2012–2020 | Pickup | PX/PX2 | 
 
-**RHD Implications:** Dominica drives on the LEFT. All imports are RHD. Critical parts differences from LHD:
+**RHD Implications:** Many target markets drive on the LEFT. JDM imports are predominantly RHD. Critical parts differences from LHD:
 - **Headlights:** Beam pattern angled left (RHD units differ from LHD)
 - **Wipers:** Arm orientation often reversed
 - **Steering rack / column:** RHD-specific
@@ -279,7 +279,7 @@ VINDecodeCache (standalone lookup)
 | engine_code | Data | Denormalized from variant |
 | transmission | Data | Denormalized |
 | color | Data | |
-| registration_no | Data | Dominica plate |
+| registration_no | Data | Local plate |
 | owner | Link | Customer |
 | country_of_origin | Data | Japan, UK, etc. |
 | import_date | Date | |
@@ -496,7 +496,7 @@ def decode_vin(vin: str) -> dict:
 **JDM Chassis Numbers:** Japanese vehicles often use Frame Numbers (e.g., `KDH201-0149586`). These are NOT 17-char VINs. NHTSA will fail. Solution:
 - Parse frame number prefix (`KDH201`) against `VehicleModel.model_code` lookup table.
 - Extract known engine codes from prefix (e.g., `K` = 2KD-FTV in Toyota codes).
-- Manual mapping table for Dominica's top 50 models is essential.
+- Manual mapping table for commonly imported JDM models is essential.
 
 ### 4.2 Parts Diagram & OEM Data Ingestion
 
@@ -542,7 +542,7 @@ Several free web portals provide OEM parts data across dozens of brands without 
 | 4 (Universal) | Bosch, Denso, KYB, NGK, Aisin, TRW, Akebono | Brand cross-reference Excel/PDF sheets | RockAuto, Plenty.Parts |
 
 **American Brand Nuances:**
-- **Ford:** `ford.7zap.com` provides genuine Ford parts with VIN search. Ford Transit and Ranger are the most common Ford imports in Dominica.
+- **Ford:** `ford.7zap.com` provides genuine Ford parts with VIN search. Ford Transit and Ranger are common Ford imports in RHD markets.
 - **GM (Chevrolet, GMC, Cadillac, Buick):** No free official web EPC found. `7zap.com` has limited GM coverage. Best approach: seed top 200 fast-moving parts from `partsouq.com` / `megazip.net` + manual curation from purchase history.
 - **Chrysler / Jeep / Dodge (MOPAR):** `7zap.com` has limited coverage. Aftermarket interchange sheets are the primary source for common parts (brake pads, filters, belts).
 
@@ -675,11 +675,11 @@ See file: `partscape/partscape/data_import/import_part_catalog.py`
 
 ### 7.3 GDPR / Privacy
 - VINs are considered **Personal Data** under GDPR if linked to an identifiable owner.
-- Dominica is not GDPR-regulated, but best practice applies.
+- GDPR compliance varies by jurisdiction; best practice applies universally.
 - **Mitigation:** Store VIN in `Vehicle` doc. Restrict read access via role permissions. Do not transmit VINs to third-party APIs unless necessary. Use `VIN Decode Cache` to minimize external sharing.
 
-### 7.4 Dominican Customs / Landed Cost
-- Dominica customs duties on auto parts vary by HS code.
+### 7.4 Customs / Landed Cost
+- Customs duties on auto parts vary by HS code and jurisdiction.
 - Typical calculation: CIF Value × Import Duty (varies) + VAT (15%) + Customs Service Charge + Environmental Levy (if applicable).
 - **Mitigation:** Build configurable landed cost formula in `Landed Cost Voucher` hook. Allow customs rate tables per HS code. Default to 25% duty + 15% VAT for automotive parts as conservative estimate.
 
@@ -709,13 +709,13 @@ See file: `partscape/partscape/data_import/import_part_catalog.py`
 1. **Approve architecture** — Review this blueprint with Seityl stakeholders.
 2. **Procure data seeds** — Use `toyota.epc-data.com` (free) for Toyota parts. Download Bosch/Denso/Aisin cross-reference Excel sheets. Download exploded view diagrams from all accessible EPC sources.
 3. **Setup dev bench** — `bench new-app partscape` on local Frappe v15 dev environment.
-4. **Import Dominica Top 50** — Create Vehicle Make/Model/Variant records for the top 50 models listed in §2.3.
-5. **Build VIN decoder** — Implement NHTSA wrapper + cache. Test with 20 real Dominica VINs.
+4. **Import Common JDM Models** — Create Vehicle Make/Model/Variant records for the top models listed in §2.3.
+5. **Build VIN decoder** — Implement NHTSA wrapper + cache. Test with 20 real VINs from your target market.
 6. **Custom fields + scripts** — Apply fixtures for Item, PO, Stock Entry, **Customer** customizations.
 7. **Customer-Vehicle linking** — Add `vehicles` child table to Customer. Test bidirectional sync with Vehicle.owner.
 8. **Pilot with Toyota** — Use `toyota.epc-data.com` to seed brake pads, oil filters, belts for Hiace KDH20x. Create 3 test POs.
 9. **Partner outreach** — Email Partsouq and Amayama about affiliate/data API access.
-10. **Legal review** — Confirm Dominica customs duty rates and database copyright position with local counsel.
+10. **Legal review** — Confirm local customs duty rates and database copyright position with local counsel.
 11. **Schedule Phase 1 sprint** — 2-week agile sprint with daily standups. Target: working PO auto-populate for Toyota parts.
 
 ---

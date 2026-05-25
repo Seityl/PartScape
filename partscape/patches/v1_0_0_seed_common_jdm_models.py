@@ -1,5 +1,5 @@
 """
-Patch: Seed Dominica Top 50 Vehicle Models
+Patch: Seed common JDM vehicle models
 Run once after install to populate Vehicle Make, Model, and Engine Variant.
 """
 

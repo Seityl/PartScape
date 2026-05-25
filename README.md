@@ -1,6 +1,6 @@
 # PartScape
 
-Auto-parts intelligence system for Commonwealth of Dominica, integrated natively into ERPNext.
+Auto-parts intelligence system for fleet and workshop management, integrated natively into ERPNext.
 
 ## Quick Start
 
@@ -18,7 +18,7 @@ bench --site erp.autodepot.local migrate
 - **Part Interchange** — Aftermarket cross-references (Bosch, Denso, KYB, etc.)
 - **Vehicle Master** — Full fleet tracking with RHD/LHD awareness
 - **Workshop Job Cards** — Parts consumption linked to Stock Entry and Purchase Order
-- **Landed Cost Estimator** — Dominica customs duty + VAT calculations
+- **Landed Cost Estimator** — Configurable customs duty + VAT calculations
 
 ## Directory Guide
 
