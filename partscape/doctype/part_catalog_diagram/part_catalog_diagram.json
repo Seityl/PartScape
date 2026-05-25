@@ -1,0 +1,49 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "part_diagram",
+        "callout_number",
+        "parts_group"
+    ],
+    "fields": [
+        {
+            "fieldname": "part_diagram",
+            "fieldtype": "Link",
+            "label": "Part Diagram",
+            "options": "Part Diagram",
+            "reqd": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "callout_number",
+            "fieldtype": "Data",
+            "label": "Callout Number",
+            "description": "The number on the diagram pointing to this part",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "parts_group",
+            "fieldtype": "Data",
+            "label": "Parts Group",
+            "description": "e.g. Brake System, Engine",
+            "in_list_view": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Part Catalog Diagram",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

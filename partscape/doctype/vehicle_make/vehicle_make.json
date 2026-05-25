@@ -1,0 +1,64 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "make_name",
+        "wmi_codes",
+        "country_of_origin",
+        "is_jdm_primary"
+    ],
+    "fields": [
+        {
+            "fieldname": "make_name",
+            "fieldtype": "Data",
+            "label": "Make Name",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "wmi_codes",
+            "fieldtype": "Data",
+            "label": "WMI Codes",
+            "description": "Comma-separated WMI prefixes"
+        },
+        {
+            "fieldname": "country_of_origin",
+            "fieldtype": "Data",
+            "label": "Country of Origin"
+        },
+        {
+            "fieldname": "is_jdm_primary",
+            "fieldtype": "Check",
+            "label": "Is JDM Primary",
+            "default": 0
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Vehicle Make",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

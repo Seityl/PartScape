@@ -1,0 +1,99 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "part_a",
+        "part_b",
+        "column_break_1",
+        "relationship_type",
+        "quality_tier",
+        "confidence_score",
+        "source"
+    ],
+    "fields": [
+        {
+            "fieldname": "part_a",
+            "fieldtype": "Link",
+            "label": "Part A",
+            "options": "Part Catalog",
+            "reqd": 1
+        },
+        {
+            "fieldname": "part_b",
+            "fieldtype": "Link",
+            "label": "Part B",
+            "options": "Part Catalog",
+            "reqd": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "relationship_type",
+            "fieldtype": "Select",
+            "label": "Relationship Type",
+            "options": "Equivalent\nSuperseded By\nAftermarket Alternative",
+            "default": "Equivalent"
+        },
+        {
+            "fieldname": "quality_tier",
+            "fieldtype": "Select",
+            "label": "Quality Tier",
+            "options": "OEM\nOEM Equivalent\nAftermarket\nPerformance",
+            "default": "Aftermarket"
+        },
+        {
+            "fieldname": "confidence_score",
+            "fieldtype": "Float",
+            "label": "Confidence Score",
+            "description": "0.0 to 1.0"
+        },
+        {
+            "fieldname": "source",
+            "fieldtype": "Data",
+            "label": "Source",
+            "description": "Where this cross-reference was confirmed"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Part Interchange",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Parts Clerk",
+            "share": 0,
+            "write": 0
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

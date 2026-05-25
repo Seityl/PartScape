@@ -1,0 +1,79 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "vehicle",
+        "vin",
+        "make_model",
+        "column_break_1",
+        "year",
+        "is_primary",
+        "date_added"
+    ],
+    "fields": [
+        {
+            "fieldname": "vehicle",
+            "fieldtype": "Link",
+            "label": "Vehicle",
+            "options": "Vehicle",
+            "reqd": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "vin",
+            "fieldtype": "Data",
+            "label": "VIN / Frame No",
+            "fetch_from": "vehicle.vin",
+            "read_only": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "make_model",
+            "fieldtype": "Data",
+            "label": "Make & Model",
+            "fetch_from": "vehicle.model",
+            "read_only": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "year",
+            "fieldtype": "Int",
+            "label": "Year",
+            "fetch_from": "vehicle.year",
+            "read_only": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "is_primary",
+            "fieldtype": "Check",
+            "label": "Is Primary Vehicle",
+            "default": 0,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "date_added",
+            "fieldtype": "Date",
+            "label": "Date Added",
+            "default": "Today"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Customer Vehicle",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

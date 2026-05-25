@@ -1,0 +1,140 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "format:WJC-{YY}-{####}",
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "vehicle",
+        "complaint",
+        "diagnosis",
+        "status",
+        "column_break_1",
+        "technician",
+        "labor_hours",
+        "section_break_1",
+        "parts_required",
+        "section_break_2",
+        "linked_purchase_orders",
+        "linked_stock_entries"
+    ],
+    "fields": [
+        {
+            "fieldname": "vehicle",
+            "fieldtype": "Link",
+            "label": "Vehicle",
+            "options": "Vehicle",
+            "reqd": 1
+        },
+        {
+            "fieldname": "complaint",
+            "fieldtype": "Text",
+            "label": "Customer Complaint"
+        },
+        {
+            "fieldname": "diagnosis",
+            "fieldtype": "Text",
+            "label": "Diagnosis"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "label": "Status",
+            "options": "Open\nParts Required\nIn Progress\nCompleted\nInvoiced",
+            "default": "Open"
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "technician",
+            "fieldtype": "Link",
+            "label": "Technician",
+            "options": "Employee"
+        },
+        {
+            "fieldname": "labor_hours",
+            "fieldtype": "Float",
+            "label": "Labor Hours"
+        },
+        {
+            "fieldname": "section_break_1",
+            "fieldtype": "Section Break",
+            "label": "Parts Required"
+        },
+        {
+            "fieldname": "parts_required",
+            "fieldtype": "Table",
+            "label": "Parts Required",
+            "options": "Workshop Job Card Part"
+        },
+        {
+            "fieldname": "section_break_2",
+            "fieldtype": "Section Break",
+            "label": "Linked Documents"
+        },
+        {
+            "fieldname": "linked_purchase_orders",
+            "fieldtype": "Table",
+            "label": "Linked Purchase Orders",
+            "options": "Workshop Job Card PO"
+        },
+        {
+            "fieldname": "linked_stock_entries",
+            "fieldtype": "Table",
+            "label": "Linked Stock Entries",
+            "options": "Workshop Job Card Stock Entry"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Workshop Job Card",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Workshop Technician",
+            "share": 0,
+            "write": 1
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Parts Clerk",
+            "share": 0,
+            "write": 0
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

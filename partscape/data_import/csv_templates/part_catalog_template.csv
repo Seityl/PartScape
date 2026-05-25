@@ -1,0 +1,2 @@
+brand,part_number,part_name,category,description,diagram_reference,weight_kg,dimensions,estimated_cost_usd,vehicle_model,year_start,year_end,engine_code,steering_position,market_code,interchange_brand,interchange_part_number,relationship_type,quality_tier
+Toyota,04465-26421,Brake Pad Set,Disc,Brake,Front brake pad set for Hiace,B-15,1.2,145x55x18,28.50,Hiace,2012,2020,1KD-FTV,RHD,JDM,Bosch,0 986 494 046,Equivalent,OEM Equivalent

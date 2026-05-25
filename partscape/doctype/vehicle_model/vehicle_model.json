@@ -1,0 +1,98 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "model_name",
+        "make",
+        "model_code",
+        "body_type",
+        "column_break_1",
+        "year_start",
+        "year_end",
+        "steering_position",
+        "primary_market"
+    ],
+    "fields": [
+        {
+            "fieldname": "model_name",
+            "fieldtype": "Data",
+            "label": "Model Name",
+            "reqd": 1
+        },
+        {
+            "fieldname": "make",
+            "fieldtype": "Link",
+            "label": "Make",
+            "options": "Vehicle Make",
+            "reqd": 1
+        },
+        {
+            "fieldname": "model_code",
+            "fieldtype": "Data",
+            "label": "Model Code",
+            "description": "e.g. KDH201, GD1"
+        },
+        {
+            "fieldname": "body_type",
+            "fieldtype": "Select",
+            "label": "Body Type",
+            "options": "Sedan\nHatch\nSUV\nVan\nPickup\nMPV\nWagon\nCoupe\nConvertible"
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "year_start",
+            "fieldtype": "Int",
+            "label": "Year Start"
+        },
+        {
+            "fieldname": "year_end",
+            "fieldtype": "Int",
+            "label": "Year End"
+        },
+        {
+            "fieldname": "steering_position",
+            "fieldtype": "Select",
+            "label": "Steering Position",
+            "options": "RHD\nLHD\nBoth",
+            "default": "RHD"
+        },
+        {
+            "fieldname": "primary_market",
+            "fieldtype": "Select",
+            "label": "Primary Market",
+            "options": "JDM\nUKDM\nAUM\nUSDM\nEUDM\nGlobal",
+            "default": "JDM"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Vehicle Model",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

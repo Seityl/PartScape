@@ -1,0 +1,129 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "vin",
+        "make",
+        "model",
+        "year",
+        "engine_code",
+        "column_break_1",
+        "steering_location",
+        "source_api",
+        "last_decoded",
+        "hit_count",
+        "section_break_1",
+        "decoded_json"
+    ],
+    "fields": [
+        {
+            "fieldname": "vin",
+            "fieldtype": "Data",
+            "label": "VIN / Frame Number",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "make",
+            "fieldtype": "Data",
+            "label": "Make",
+            "read_only": 1
+        },
+        {
+            "fieldname": "model",
+            "fieldtype": "Data",
+            "label": "Model",
+            "read_only": 1
+        },
+        {
+            "fieldname": "year",
+            "fieldtype": "Int",
+            "label": "Year",
+            "read_only": 1
+        },
+        {
+            "fieldname": "engine_code",
+            "fieldtype": "Data",
+            "label": "Engine Code",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "steering_location",
+            "fieldtype": "Data",
+            "label": "Steering Location",
+            "read_only": 1
+        },
+        {
+            "fieldname": "source_api",
+            "fieldtype": "Data",
+            "label": "Source API",
+            "read_only": 1
+        },
+        {
+            "fieldname": "last_decoded",
+            "fieldtype": "Datetime",
+            "label": "Last Decoded",
+            "read_only": 1
+        },
+        {
+            "fieldname": "hit_count",
+            "fieldtype": "Int",
+            "label": "Hit Count",
+            "default": 0
+        },
+        {
+            "fieldname": "section_break_1",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "decoded_json",
+            "fieldtype": "JSON",
+            "label": "Decoded JSON",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "VIN Decode Cache",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 0,
+            "write": 0
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

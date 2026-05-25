@@ -1,0 +1,103 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "part_catalog",
+        "vehicle_model",
+        "variant",
+        "column_break_1",
+        "year_start",
+        "year_end",
+        "steering_position",
+        "market_code",
+        "diagram_page"
+    ],
+    "fields": [
+        {
+            "fieldname": "part_catalog",
+            "fieldtype": "Link",
+            "label": "Part Catalog",
+            "options": "Part Catalog",
+            "reqd": 1
+        },
+        {
+            "fieldname": "vehicle_model",
+            "fieldtype": "Link",
+            "label": "Vehicle Model",
+            "options": "Vehicle Model",
+            "reqd": 1
+        },
+        {
+            "fieldname": "variant",
+            "fieldtype": "Link",
+            "label": "Variant",
+            "options": "Vehicle Engine Variant"
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "year_start",
+            "fieldtype": "Int",
+            "label": "Year Start"
+        },
+        {
+            "fieldname": "year_end",
+            "fieldtype": "Int",
+            "label": "Year End"
+        },
+        {
+            "fieldname": "steering_position",
+            "fieldtype": "Select",
+            "label": "Steering Position",
+            "options": "Universal\nRHD\nLHD",
+            "default": "Universal"
+        },
+        {
+            "fieldname": "market_code",
+            "fieldtype": "Data",
+            "label": "Market Code"
+        },
+        {
+            "fieldname": "part_diagram",
+            "fieldtype": "Link",
+            "label": "Part Diagram",
+            "options": "Part Diagram",
+            "description": "Link to the exploded view diagram showing this part"
+        },
+        {
+            "fieldname": "diagram_page",
+            "fieldtype": "Data",
+            "label": "Diagram Page"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Vehicle Part Applicability",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

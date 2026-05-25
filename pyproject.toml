@@ -1,0 +1,19 @@
+[project]
+name = "partscape"
+authors = [
+    { name = "Seityl Group Ltd.", email = "info@seityl.com" }
+]
+description = "Auto-parts intelligence system for Commonwealth of Dominica fleet management"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "requests>=2.28.0",
+    "rapidfuzz>=3.0.0",
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.bench.frappe-dependencies]

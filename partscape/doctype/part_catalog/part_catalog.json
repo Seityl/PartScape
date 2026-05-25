@@ -1,0 +1,208 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2026-05-24 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "brand",
+        "part_number",
+        "part_name",
+        "vehicle_make",
+        "is_oem",
+        "category",
+        "description",
+        "column_break_1",
+        "diagram_reference",
+        "weight_kg",
+        "dimensions",
+        "estimated_cost_usd",
+        "steering_position",
+        "market_restriction",
+        "is_active",
+        "section_break_1",
+        "images",
+        "superseded_by",
+        "section_break_2",
+        "applicable_vehicles"
+    ],
+    "fields": [
+        {
+            "fieldname": "brand",
+            "fieldtype": "Data",
+            "label": "Brand",
+            "reqd": 1,
+            "description": "e.g. Toyota, Bosch, Denso, KYB"
+        },
+        {
+            "fieldname": "part_number",
+            "fieldtype": "Data",
+            "label": "Part Number",
+            "reqd": 1
+        },
+        {
+            "fieldname": "part_name",
+            "fieldtype": "Data",
+            "label": "Part Name",
+            "reqd": 1
+        },
+        {
+            "fieldname": "vehicle_make",
+            "fieldtype": "Link",
+            "label": "Vehicle Make",
+            "options": "Vehicle Make",
+            "description": "The vehicle manufacturer this part is for"
+        },
+        {
+            "fieldname": "is_oem",
+            "fieldtype": "Check",
+            "label": "Is OEM",
+            "default": 0,
+            "description": "Checked if brand matches the vehicle manufacturer"
+        },
+        {
+            "fieldname": "category",
+            "fieldtype": "Link",
+            "label": "Category",
+            "options": "Part Category"
+        },
+        {
+            "fieldname": "description",
+            "fieldtype": "Text",
+            "label": "Description"
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "diagram_reference",
+            "fieldtype": "Data",
+            "label": "Diagram Reference",
+            "description": "e.g. B-15 in exploded view"
+        },
+        {
+            "fieldname": "weight_kg",
+            "fieldtype": "Float",
+            "label": "Weight (kg)"
+        },
+        {
+            "fieldname": "dimensions",
+            "fieldtype": "Data",
+            "label": "Dimensions",
+            "description": "LxWxH in mm"
+        },
+        {
+            "fieldname": "estimated_cost_usd",
+            "fieldtype": "Currency",
+            "label": "Estimated Cost (USD)"
+        },
+        {
+            "fieldname": "steering_position",
+            "fieldtype": "Select",
+            "label": "Steering Position",
+            "options": "Universal\nRHD\nLHD",
+            "default": "Universal"
+        },
+        {
+            "fieldname": "market_restriction",
+            "fieldtype": "Data",
+            "label": "Market Restriction",
+            "description": "e.g. JDM-only"
+        },
+        {
+            "fieldname": "is_active",
+            "fieldtype": "Check",
+            "label": "Is Active",
+            "default": 1
+        },
+        {
+            "fieldname": "section_break_1",
+            "fieldtype": "Section Break",
+            "label": "Media & Supersession"
+        },
+        {
+            "fieldname": "images",
+            "fieldtype": "Attach Image",
+            "label": "Images"
+        },
+        {
+            "fieldname": "superseded_by",
+            "fieldtype": "Link",
+            "label": "Superseded By",
+            "options": "Part Catalog"
+        },
+        {
+            "fieldname": "section_break_2",
+            "fieldtype": "Section Break",
+            "label": "Diagrams"
+        },
+        {
+            "fieldname": "diagrams",
+            "fieldtype": "Table",
+            "label": "Diagrams",
+            "options": "Part Catalog Diagram",
+            "description": "Exploded view diagrams showing this part"
+        },
+        {
+            "fieldname": "section_break_3",
+            "fieldtype": "Section Break",
+            "label": "Applicability"
+        },
+        {
+            "fieldname": "applicable_vehicles",
+            "fieldtype": "Table",
+            "label": "Applicable Vehicles",
+            "options": "Vehicle Part Applicability"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-24 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Partscape",
+    "name": "Part Catalog",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Fleet Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Parts Clerk",
+            "share": 0,
+            "write": 0
+        },
+        {
+            "create": 0,
+            "delete": 0,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Workshop Technician",
+            "share": 0,
+            "write": 0
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}
