@@ -7,8 +7,8 @@ Auto-parts intelligence system for fleet and workshop management, integrated nat
 ```bash
 # From bench directory
 bench get-app https://github.com/seityl/partscape.git
-bench --site erp.autodepot.local install-app partscape
-bench --site erp.autodepot.local migrate
+bench --site your-site.local install-app partscape
+bench --site your-site.local migrate
 ```
 
 ## Features

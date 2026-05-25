@@ -2,7 +2,7 @@
 PartScape — Part Catalog Bulk Import
 
 Usage:
-    bench --site erp.autodepot.local execute partscape.data_import.import_part_catalog.import_from_csv --args "['/path/to/parts.csv', 'Toyota']"
+    bench --site your-site.local execute partscape.data_import.import_part_catalog.import_from_csv --args "['/path/to/parts.csv', 'Toyota']"
 
 CSV Expected Columns:
     brand, part_number, part_name, category, description, diagram_reference,
