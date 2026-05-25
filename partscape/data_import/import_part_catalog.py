@@ -1,5 +1,5 @@
 """
-Partscape — Part Catalog Bulk Import
+PartScape — Part Catalog Bulk Import
 
 Usage:
     bench --site erp.autodepot.local execute partscape.data_import.import_part_catalog.import_from_csv --args "['/path/to/parts.csv', 'Toyota']"

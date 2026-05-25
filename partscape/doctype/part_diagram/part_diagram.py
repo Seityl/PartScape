@@ -1,5 +1,5 @@
 """
-Partscape — Part Diagram Controller
+PartScape — Part Diagram Controller
 
 Stores exploded view diagram images as private file attachments.
 Deduplicated by SHA-256 hash of image content.

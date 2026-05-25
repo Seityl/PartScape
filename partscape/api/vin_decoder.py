@@ -1,5 +1,5 @@
 """
-Partscape — VIN Decoder Service
+PartScape — VIN Decoder Service
 
 Strategy: Cache-first with fallback chain.
 - Primary: NHTSA vPIC (free, US-market 17-char VINs)

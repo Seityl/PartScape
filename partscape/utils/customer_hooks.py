@@ -1,5 +1,5 @@
 """
-Partscape — Customer Hooks
+PartScape — Customer Hooks
 
 Keeps Customer.vehicles child table in sync with Vehicle.owner field.
 """

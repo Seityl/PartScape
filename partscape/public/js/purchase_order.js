@@ -1,5 +1,5 @@
 /**
- * Partscape — Purchase Order Client Script
+ * PartScape — Purchase Order Client Script
  *
  * Auto-fill PO Item fields when Part Catalog reference is selected.
  * Also handles Vehicle lookup to populate VIN.
@@ -10,7 +10,7 @@ frappe.ui.form.on('Purchase Order', {
         if (!frm.is_new()) {
             frm.add_custom_button(__('Decode Vehicle VINs'), () => {
                 decode_all_line_vins(frm);
-            }, __('Partscape'));
+            }, __('PartScape'));
         }
     }
 });

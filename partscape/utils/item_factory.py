@@ -1,5 +1,5 @@
 """
-Partscape — Item Factory
+PartScape — Item Factory
 
 Creates or links ERPNext Item records from Part Catalog entries.
 """

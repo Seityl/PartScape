@@ -1,5 +1,5 @@
 """
-Partscape — Interchange API
+PartScape — Interchange API
 
 Operates on the bidirectional Part Interchange graph.
 """

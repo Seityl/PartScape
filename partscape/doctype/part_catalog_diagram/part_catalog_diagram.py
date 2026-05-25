@@ -1,5 +1,5 @@
 """
-Partscape — Part Catalog Diagram (Child Table)
+PartScape — Part Catalog Diagram (Child Table)
 
 Links a Part Catalog entry to a Part Diagram with callout number.
 """

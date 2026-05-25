@@ -1,5 +1,5 @@
 """
-Partscape — Toyota EPC Web Connector + Diagram Downloader
+PartScape — Toyota EPC Web Connector + Diagram Downloader
 
 Source: https://toyota.epc-data.com/ (free web-based EPC)
 
@@ -37,7 +37,7 @@ def decode_frame_number(frame_no: str, region: str = "general") -> dict:
     try:
         resp = session.get(
             f"{search_url}?frame={frame_no}",
-            headers={"User-Agent": "Mozilla/5.0 (compatible; Partscape-Bot/1.0)"},
+            headers={"User-Agent": "Mozilla/5.0 (compatible; PartScape-Bot/1.0)"},
             timeout=20,
         )
         resp.raise_for_status()
@@ -101,7 +101,7 @@ def get_parts_for_model(model_code: str, group: str = None, region: str = "gener
     try:
         resp = requests.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; Partscape-Bot/1.0)"},
+            headers={"User-Agent": "Mozilla/5.0 (compatible; PartScape-Bot/1.0)"},
             timeout=20,
         )
         resp.raise_for_status()
@@ -146,7 +146,7 @@ def get_diagrams_for_model(model_code: str, group: str = None, region: str = "ge
     try:
         resp = requests.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; Partscape-Bot/1.0)"},
+            headers={"User-Agent": "Mozilla/5.0 (compatible; PartScape-Bot/1.0)"},
             timeout=20,
         )
         resp.raise_for_status()
@@ -221,7 +221,7 @@ def download_diagram(image_url: str, session=None) -> bytes:
     try:
         resp = s.get(
             image_url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; Partscape-Bot/1.0)"},
+            headers={"User-Agent": "Mozilla/5.0 (compatible; PartScape-Bot/1.0)"},
             timeout=30,
         )
         resp.raise_for_status()

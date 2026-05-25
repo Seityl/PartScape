@@ -1,5 +1,5 @@
 """
-Partscape — Vehicle Part Applicability Controller
+PartScape — Vehicle Part Applicability Controller
 
 Links a Part Catalog entry (typically OEM) to a specific vehicle configuration.
 Aftermarket alternatives inherit applicability through the interchange graph.

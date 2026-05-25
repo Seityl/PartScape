@@ -1,5 +1,5 @@
 """
-Partscape — Landed Cost Calculator
+PartScape — Landed Cost Calculator
 
 Dominica typical customs formula (configurable):
     Landed XCD = (USD Cost * Exchange Rate) * (1 + Import Duty %) * (1 + VAT %)
@@ -14,8 +14,8 @@ DEFAULT_VAT_PCT = 0.15
 
 
 def get_rates():
-    """Fetch configurable rates from Partscape Settings (or defaults)."""
-    # Future: read from a "Partscape Settings" single doctype
+    """Fetch configurable rates from PartScape Settings (or defaults)."""
+    # Future: read from a "PartScape Settings" single doctype
     return {
         "exchange_rate": DEFAULT_EXCHANGE_RATE,
         "import_duty_pct": DEFAULT_IMPORT_DUTY_PCT,

@@ -1,5 +1,5 @@
 """
-Partscape — Generic Diagram Downloader
+PartScape — Generic Diagram Downloader
 
 Utility for downloading exploded view diagram images from any EPC source
 and persisting them as Part Diagram records linked to Part Catalog entries.
@@ -141,7 +141,7 @@ def _fetch_image(url: str, session=None) -> bytes:
     try:
         resp = s.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; Partscape-Bot/1.0)"},
+            headers={"User-Agent": "Mozilla/5.0 (compatible; PartScape-Bot/1.0)"},
             timeout=30,
         )
         resp.raise_for_status()

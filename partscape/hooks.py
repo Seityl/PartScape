@@ -1,5 +1,5 @@
 app_name = "partscape"
-app_title = "Partscape"
+app_title = "PartScape"
 app_publisher = "Seityl Group Ltd."
 app_description = "Auto-parts intelligence system for Commonwealth of Dominica fleet management"
 app_email = "info@seityl.com"
@@ -154,10 +154,10 @@ scheduler_events = {
 # --------
 fixtures = [
     {"dt": "Custom Field", "filters": [
-        ["module", "=", "Partscape"]
+        ["module", "=", "PartScape"]
     ]},
     {"dt": "Property Setter", "filters": [
-        ["module", "=", "Partscape"]
+        ["module", "=", "PartScape"]
     ]},
     {"dt": "Role", "filters": [
         ["name", "in", ["Fleet Manager", "Parts Clerk", "Workshop Technician"]]

@@ -1,5 +1,5 @@
 """
-Partscape — Part Catalog Controller
+PartScape — Part Catalog Controller
 
 Universal parts registry. Identity is composite: (brand, part_number).
 """

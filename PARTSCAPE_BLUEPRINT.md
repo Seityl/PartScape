@@ -1,4 +1,4 @@
-# Partscape — Strategic Blueprint
+# PartScape — Strategic Blueprint
 ## Auto-Parts Intelligence System for Commonwealth of Dominica
 ### Native Frappe/ERPNext Custom App | Seityl Group Ltd.
 
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-This document blueprints **Partscape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets the Commonwealth of Dominica's used-Japanese vehicle fleet (RHD, left-hand traffic, heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, exploded view diagrams, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data and diagram images), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
+This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets the Commonwealth of Dominica's used-Japanese vehicle fleet (RHD, left-hand traffic, heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, exploded view diagrams, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data and diagram images), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
 
 ---
 

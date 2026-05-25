@@ -1,5 +1,5 @@
 """
-Partscape — Daily Data Pipeline
+PartScape — Daily Data Pipeline
 
 Scheduled via hooks.py scheduler_events.daily
 """
@@ -16,7 +16,7 @@ def run_daily_sync():
     3. Refresh interchange cache (if any external APIs configured)
     4. Recompute landed cost on draft POs
     """
-    frappe.logger().info("Partscape: Starting daily sync pipeline")
+    frappe.logger().info("PartScape: Starting daily sync pipeline")
 
     # 1. Pending VINs
     _process_pending_vins()
@@ -28,7 +28,7 @@ def run_daily_sync():
     # 3. Recompute draft PO landed costs
     _recompute_draft_po_costs()
 
-    frappe.logger().info("Partscape: Daily sync pipeline complete")
+    frappe.logger().info("PartScape: Daily sync pipeline complete")
 
 
 def _process_pending_vins():
@@ -48,7 +48,7 @@ def _process_pending_vins():
             decode_vin(v.vin)
             frappe.db.set_value("Vehicle", v.name, "last_vin_decode", now())
         except Exception:
-            frappe.log_error(title="Partscape Daily VIN Decode Error", message=frappe.get_traceback())
+            frappe.log_error(title="PartScape Daily VIN Decode Error", message=frappe.get_traceback())
     frappe.db.commit()
 
 

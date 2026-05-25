@@ -1,5 +1,5 @@
 """
-Partscape — Stock Entry Hooks
+PartScape — Stock Entry Hooks
 """
 
 import frappe

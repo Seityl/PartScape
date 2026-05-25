@@ -1,5 +1,5 @@
 """
-Partscape — Part Interchange Controller
+PartScape — Part Interchange Controller
 
 Bidirectional graph edge linking two Part Catalog entries.
 """

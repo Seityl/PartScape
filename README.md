@@ -1,4 +1,4 @@
-# Partscape
+# PartScape
 
 Auto-parts intelligence system for Commonwealth of Dominica, integrated natively into ERPNext.
 

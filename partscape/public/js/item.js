@@ -1,5 +1,5 @@
 /**
- * Partscape — Item Client Script
+ * PartScape — Item Client Script
  *
  * Auto-suggest Part Catalog link when brand + part_number are entered.
  */

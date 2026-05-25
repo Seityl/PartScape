@@ -1,4 +1,4 @@
-// Partscape — Bundle entry point
+// PartScape — Bundle entry point
 // For Frappe v15+ esbuild bundler
 
-console.log("Partscape loaded");
+console.log("PartScape loaded");

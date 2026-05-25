@@ -1,5 +1,5 @@
 """
-Partscape — Purchase Order Hooks
+PartScape — Purchase Order Hooks
 """
 
 import frappe

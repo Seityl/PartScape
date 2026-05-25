@@ -1,5 +1,5 @@
 /**
- * Partscape — Stock Entry Client Script
+ * PartScape — Stock Entry Client Script
  */
 
 frappe.ui.form.on('Stock Entry', {
@@ -7,7 +7,7 @@ frappe.ui.form.on('Stock Entry', {
         if (frm.doc.purpose === 'Material Issue') {
             frm.add_custom_button(__('Create Job Card Consumption'), () => {
                 frappe.msgprint(__('Job Card linking logic goes here.'));
-            }, __('Partscape'));
+            }, __('PartScape'));
         }
     }
 });

@@ -1,5 +1,5 @@
 """
-Partscape — Partsouq Scraper Stub
+PartScape — Partsouq Scraper Stub
 
 ETHICAL USE ONLY:
 - Respect robots.txt
@@ -71,7 +71,7 @@ def respectful_get(url: str, session=None) -> str:
     time.sleep(REQUEST_DELAY)
     s = session or requests.Session()
     headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; Partscape-Bot/1.0; +https://seityl.com/bot)"
+        "User-Agent": "Mozilla/5.0 (compatible; PartScape-Bot/1.0; +https://seityl.com/bot)"
     }
     try:
         r = s.get(url, headers=headers, timeout=20)
