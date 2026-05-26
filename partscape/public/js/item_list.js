@@ -1,68 +1,74 @@
 /**
  * PartScape — Item List View Custom Search
  *
- * Adds a natural-language search field to the Item list view filter bar
- * that searches across Item fields (item_code, item_name, brand)
- * and linked Part Catalog fields (part_number, brand, part_name).
+ * Injects a native-looking filter field into the Item list view filter bar.
+ * Searches across Item fields (item_code, item_name, brand) and linked
+ * Part Catalog fields (part_number, brand, part_name).
  */
 
 frappe.listview_settings['Item'] = {
     onload: function(listview) {
-        // Wait for the page form / filter row to render
-        setTimeout(() => _injectPartScapeFilter(listview), 300);
+        // Wait for filter row to render
+        setTimeout(() => _injectPartScapeFilter(listview), 400);
     },
 };
 
 function _injectPartScapeFilter(listview) {
     const $pageForm = listview.page.page_form;
-    if (!$pageForm.length) return;
+    if (!$pageForm.length || $pageForm.find('.partscape-filter-wrap').length) return;
 
-    // Avoid double-injection
-    if ($pageForm.find('.partscape-filter-wrap').length) return;
-
-    // Build a visually matching filter input (no data-fieldname so Frappe ignores it)
     const $wrap = $(`
-        <div class="partscape-filter-wrap form-group input-max-width col-md-2"
-             title="${__('Search by part #, brand, name…')}">
+        <div class="partscape-filter-wrap form-group frappe-control input-max-width col-md-2"
+             title="${__('PartScape Search')}" data-original-title="${__('PartScape Search')}">
             <div class="input-group">
                 <input type="text"
                     autocomplete="off"
                     class="partscape-search-input input-with-feedback form-control input-xs"
                     maxlength="140"
                     placeholder="${__('PartScape Search…')}">
+                <div class="input-group-btn mr-0">
+                    <button type="button"
+                        class="btn btn-default match-type-dropdown-btn"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <svg class="icon icon-sm" aria-hidden="true">
+                            <use href="#icon-equal-approximately"></use>
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu match-type-dropdown-menu dropdown-menu-right">
+                        <li class="dropdown-item" data-match-type="search">Search</li>
+                    </ul>
+                </div>
             </div>
             <span class="tooltip-content">PartScape</span>
         </div>
     `);
 
-    // Insert as the first child of the filter row so it sits before ID, Item Name, etc.
-    const $filterRow = $pageForm.find('.filter-section').first();
-    if ($filterRow.length) {
-        $filterRow.prepend($wrap);
+    // Insert as first filter in the row
+    const $firstFilter = $pageForm.find('.filter-section .form-group.frappe-control').first();
+    if ($firstFilter.length) {
+        $firstFilter.before($wrap);
     } else {
-        // Fallback: insert at start of page form
-        $pageForm.prepend($wrap);
+        $pageForm.find('.filter-section').prepend($wrap);
     }
 
     const $input = $wrap.find('.partscape-search-input');
 
-    // Search button
-    listview.page.set_primary_action(__('Search Catalog'), function() {
-        _doCatalogSearch(listview, $input.val());
-    }, 'search');
-
-    // Enter key
+    // Search on Enter
     $input.on('keypress', function(e) {
         if (e.which === 13) {
             _doCatalogSearch(listview, $input.val());
         }
+    });
+
+    // Dropdown click
+    $wrap.find('.dropdown-item[data-match-type="search"]').on('click', function() {
+        _doCatalogSearch(listview, $input.val());
     });
 }
 
 function _doCatalogSearch(listview, keyword) {
     keyword = (keyword || '').trim();
 
-    // Remove any previous "no results" dummy filter
     const hasNoResults = listview.filter_area.filter_list.get_filters().some(
         f => f[1] === 'name' && f[3] === '__no_results__'
     );
