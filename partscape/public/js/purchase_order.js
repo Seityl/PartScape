@@ -5,6 +5,8 @@
  * Also handles Vehicle lookup to populate VIN.
  */
 
+frappe.require('/assets/partscape/js/part_catalog_picker.js');
+
 frappe.ui.form.on('Purchase Order', {
     refresh(frm) {
         frm.set_query('item_code', 'items', function() {

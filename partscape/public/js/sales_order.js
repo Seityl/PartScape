@@ -2,6 +2,8 @@
  * PartScape — Sales Order Client Script
  */
 
+frappe.require('/assets/partscape/js/part_catalog_picker.js');
+
 frappe.ui.form.on('Sales Order', {
     refresh(frm) {
         frm.set_query('item_code', 'items', function() {

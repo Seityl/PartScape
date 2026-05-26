@@ -52,8 +52,6 @@ doctype_js = {
     "Stock Entry": "public/js/stock_entry.js",
 }
 
-app_include_js = "/assets/partscape/js/part_catalog_picker.js"
-
 # DocType Class
 # ---------------
 # Override standard doctype classes
