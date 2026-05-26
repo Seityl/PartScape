@@ -1,11 +1,14 @@
 """
 PartScape — Catalog Search API for Transactional Documents
 
-Fast search over the 5.7M-record Part Catalog.
+Fast, natural search over the 5.7M-record Part Catalog.
+Search strategy (two-pass):
+  1. Prefix search on all fields (part_number, brand, part_name) with relevance ranking.
+     Exact matches outrank prefix matches; brand outranks part_number outranks part_name.
+  2. If prefix search finds nothing, fall back to FULLTEXT boolean mode.
+
 Optimizations:
-  • Tiered search: exact → prefix → FULLTEXT (uses indexes where possible)
-  • SQL_CALC_FOUND_ROWS for exact/prefix (fast, accurate count)
-  • LIMIT+1 for FULLTEXT (fast, approximate pagination)
+  • LIMIT+1 pagination (no expensive COUNT / SQL_CALC_FOUND_ROWS on large scans)
   • Cached total for empty-keyword searches
   • VIN decode result cached in Redis (5 min TTL)
   • Batched Item existence lookup
@@ -14,10 +17,9 @@ Optimizations:
 import frappe
 from frappe import _
 
-# Cache key templates
 CACHE_KEY_EMPTY_TOTAL = "partscape:search:empty_total"
-CACHE_TTL_EMPTY_TOTAL = 3600  # 1 hour
-CACHE_TTL_VIN = 300  # 5 minutes
+CACHE_TTL_EMPTY_TOTAL = 3600
+CACHE_TTL_VIN = 300
 
 
 @frappe.whitelist()
@@ -29,25 +31,18 @@ def search_part_catalog_for_transaction(
     limit: int = 20,
     offset: int = 0,
 ) -> dict:
-    """
-    Search Part Catalog with optional VIN-based fitment filtering.
-    Returns lightweight dicts for the dialog grid with accurate total count
-    where possible, and a has_more flag for approximate pagination.
-    """
     keyword = (keyword or "").strip()
     brand = (brand or "").strip()
     category = (category or "").strip()
     vehicle_vin = (vehicle_vin or "").strip().upper()
     limit = min(max(limit, 1), 100)
 
-    # VIN-based fitment filter (cached)
     applicable_part_names = None
     if vehicle_vin:
         applicable_part_names = _get_applicable_parts_from_vin(vehicle_vin)
         if applicable_part_names is not None and len(applicable_part_names) == 0:
             return {"data": [], "total": 0, "has_more": False, "limit": limit, "offset": offset}
 
-    # Build optimized query
     rows, total, has_more = _search_parts(
         keyword=keyword,
         brand=brand,
@@ -57,7 +52,6 @@ def search_part_catalog_for_transaction(
         offset=offset,
     )
 
-    # Batch-check Item existence
     _attach_item_codes(rows)
 
     return {
@@ -117,16 +111,7 @@ def _get_applicable_parts_from_vin(vehicle_vin: str):
 
 
 def _search_parts(keyword, brand, category, applicable_part_names, limit, offset):
-    """
-    Tiered search strategy:
-      1. Exact part_number match         (fastest — uses idx_part_number)
-      2. Prefix part_number match        (fast — uses idx_part_number)
-      3. Prefix part_name match          (fast — uses idx_part_name)
-      4. FULLTEXT match on all columns   (fast — uses ft_search, LIMIT+1 for speed)
-      5. Empty keyword — list all parts  (cached total)
-    Returns (rows, total_count, has_more).
-    """
-    # Build common filter SQL + values
+    """Two-pass search: prefix (all fields, ranked) → FULLTEXT fallback."""
     brand_sql = " AND pc.brand = %s" if brand else ""
     brand_val = [brand] if brand else []
     category_sql = " AND pc.category = %s" if category else ""
@@ -141,10 +126,9 @@ def _search_parts(keyword, brand, category, applicable_part_names, limit, offset
         fitment_sql = f" AND pc.name IN ({','.join(escaped_names)})"
 
     if keyword:
-        # Tier 1: exact part_number
-        rows, total, has_more = _execute_query(
-            where_extra="pc.part_number = %s",
-            values=[keyword],
+        # Pass 1: prefix search across all fields with relevance ranking
+        rows, has_more = _prefix_search(
+            keyword=keyword,
             brand_sql=brand_sql,
             brand_val=brand_val,
             category_sql=category_sql,
@@ -152,16 +136,13 @@ def _search_parts(keyword, brand, category, applicable_part_names, limit, offset
             fitment_sql=fitment_sql,
             limit=limit,
             offset=offset,
-            order_by="pc.part_number",
-            use_calc_found_rows=True,
         )
         if rows:
-            return rows, total, has_more
+            return rows, offset + len(rows) + (1 if has_more else 0), has_more
 
-        # Tier 2: prefix on part_number
-        rows, total, has_more = _execute_query(
-            where_extra="pc.part_number LIKE %s",
-            values=[f"{keyword}%"],
+        # Pass 2: FULLTEXT fallback (in-word matching, e.g. "BOSCH" inside "ARE0153(BOSCH)")
+        rows, has_more = _fulltext_search(
+            keyword=keyword,
             brand_sql=brand_sql,
             brand_val=brand_val,
             category_sql=category_sql,
@@ -169,53 +150,10 @@ def _search_parts(keyword, brand, category, applicable_part_names, limit, offset
             fitment_sql=fitment_sql,
             limit=limit,
             offset=offset,
-            order_by="pc.part_number",
-            use_calc_found_rows=True,
         )
-        if rows:
-            return rows, total, has_more
+        return rows, offset + len(rows) + (1 if has_more else 0), has_more
 
-        # Tier 3: prefix on part_name
-        rows, total, has_more = _execute_query(
-            where_extra="pc.part_name LIKE %s",
-            values=[f"{keyword}%"],
-            brand_sql=brand_sql,
-            brand_val=brand_val,
-            category_sql=category_sql,
-            category_val=category_val,
-            fitment_sql=fitment_sql,
-            limit=limit,
-            offset=offset,
-            order_by="pc.part_name",
-            use_calc_found_rows=True,
-        )
-        if rows:
-            return rows, total, has_more
-
-        # Tier 4: FULLTEXT fallback (covers general keyword search)
-        # Append * to each word so partial matches work (e.g. "suzuk" → "suzuk*" matches "Suzuki").
-        # Multi-word searches use AND (+) for relevance; single-word uses plain OR.
-        words = keyword.split()
-        if len(words) > 1:
-            ft_keyword = " ".join(f"+{w}*" for w in words)
-        else:
-            ft_keyword = f"{keyword}*"
-        rows, total, has_more = _execute_query(
-            where_extra="MATCH(pc.part_number, pc.part_name, pc.brand) AGAINST(%s IN BOOLEAN MODE)",
-            values=[ft_keyword],
-            brand_sql=brand_sql,
-            brand_val=brand_val,
-            category_sql=category_sql,
-            category_val=category_val,
-            fitment_sql=fitment_sql,
-            limit=limit,
-            offset=offset,
-            order_by="pc.name DESC",
-            use_calc_found_rows=False,  # LIMIT+1 for speed on large resultsets
-        )
-        return rows, total, has_more
-
-    # Tier 5: no keyword — list all parts, use cached total
+    # No keyword — list all parts with optional filters
     rows, total, has_more = _execute_empty_query(
         brand_sql=brand_sql,
         brand_val=brand_val,
@@ -228,61 +166,81 @@ def _search_parts(keyword, brand, category, applicable_part_names, limit, offset
     return rows, total, has_more
 
 
-def _execute_query(
-    where_extra,
-    values,
-    brand_sql,
-    brand_val,
-    category_sql,
-    category_val,
-    fitment_sql,
-    limit,
-    offset,
-    order_by,
-    use_calc_found_rows=False,
-):
-    """Execute SELECT and return (rows, total_count, has_more)."""
-    conditions = ["pc.is_active = 1"]
-    all_values = []
+def _prefix_search(keyword, brand_sql, brand_val, category_sql, category_val, fitment_sql, limit, offset):
+    """Search part_number, brand, part_name with prefix LIKE. Ranked by relevance."""
+    like = f"{keyword}%"
+    # Each subquery gets brand_val + category_val + its own value
+    base_params = brand_val + category_val
 
-    if where_extra:
-        conditions.append(where_extra)
-        all_values.extend(values)
+    query = f"""
+        SELECT name, part_number, part_name, brand, MAX(rel) as relevance
+        FROM (
+            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 100 as rel
+             FROM `tabPart Catalog` pc
+             WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.part_number = %s {fitment_sql}
+             LIMIT 20)
+            UNION ALL
+            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 95 as rel
+             FROM `tabPart Catalog` pc
+             WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.brand = %s {fitment_sql}
+             LIMIT 20)
+            UNION ALL
+            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 85 as rel
+             FROM `tabPart Catalog` pc
+             WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.brand LIKE %s {fitment_sql}
+             LIMIT 20)
+            UNION ALL
+            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 80 as rel
+             FROM `tabPart Catalog` pc
+             WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.part_number LIKE %s {fitment_sql}
+             LIMIT 20)
+            UNION ALL
+            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 60 as rel
+             FROM `tabPart Catalog` pc
+             WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.part_name LIKE %s {fitment_sql}
+             LIMIT 20)
+        ) combined
+        GROUP BY name, part_number, part_name, brand
+        ORDER BY relevance DESC, name DESC
+        LIMIT %s OFFSET %s
+    """
+    params = (
+        base_params + [keyword] +      # subquery 1
+        base_params + [keyword] +      # subquery 2
+        base_params + [like] +         # subquery 3
+        base_params + [like] +         # subquery 4
+        base_params + [like] +         # subquery 5
+        [limit + 1, offset]            # outer LIMIT / OFFSET
+    )
+
+    rows = frappe.db.sql(query, params, as_dict=True)
+    has_more = len(rows) > limit
+    if has_more:
+        rows = rows[:limit]
+
+    return rows, has_more
+
+
+def _fulltext_search(keyword, brand_sql, brand_val, category_sql, category_val, fitment_sql, limit, offset):
+    """FULLTEXT boolean fallback for in-word matching."""
+    words = keyword.split()
+    if len(words) > 1:
+        ft_keyword = " ".join(f"+{w}*" for w in words)
+    else:
+        ft_keyword = f"{keyword}*"
+
+    conditions = ["pc.is_active = 1"]
+    params = [ft_keyword]
 
     if brand_sql:
         conditions.append(brand_sql.lstrip(" AND"))
-        all_values.extend(brand_val)
-
+        params.extend(brand_val)
     if category_sql:
         conditions.append(category_sql.lstrip(" AND"))
-        all_values.extend(category_val)
+        params.extend(category_val)
 
     where_clause = " AND ".join(conditions)
 
-    if use_calc_found_rows:
-        query = f"""
-            SELECT SQL_CALC_FOUND_ROWS
-                pc.name AS part_catalog_name,
-                pc.brand,
-                pc.part_number,
-                pc.part_name,
-                pc.category,
-                pc.estimated_cost_usd,
-                pc.diagram_reference,
-                pc.images
-            FROM `tabPart Catalog` pc
-            WHERE {where_clause}
-            {fitment_sql}
-            ORDER BY {order_by}
-            LIMIT %s OFFSET %s
-        """
-        all_values.extend([limit, offset])
-        rows = frappe.db.sql(query, all_values, as_dict=True)
-        total = frappe.db.sql("SELECT FOUND_ROWS()", pluck=True)[0]
-        has_more = offset + len(rows) < total
-        return rows, total, has_more
-
-    # Fast path: fetch limit+1 rows to determine if there's a next page
     query = f"""
         SELECT
             pc.name AS part_catalog_name,
@@ -296,20 +254,22 @@ def _execute_query(
         FROM `tabPart Catalog` pc
         WHERE {where_clause}
         {fitment_sql}
-        ORDER BY {order_by}
+          AND MATCH(pc.part_number, pc.part_name, pc.brand) AGAINST(%s IN BOOLEAN MODE)
+        ORDER BY pc.name DESC
         LIMIT %s OFFSET %s
     """
-    all_values.extend([limit + 1, offset])
-    rows = frappe.db.sql(query, all_values, as_dict=True)
+    params.extend([limit + 1, offset])
+
+    rows = frappe.db.sql(query, params, as_dict=True)
     has_more = len(rows) > limit
     if has_more:
         rows = rows[:limit]
-    total = offset + len(rows) + (1 if has_more else 0)
-    return rows, total, has_more
+
+    return rows, has_more
 
 
 def _execute_empty_query(brand_sql, brand_val, category_sql, category_val, fitment_sql, limit, offset):
-    """Empty-keyword query: fast fetch + cached total (avoids SQL_CALC_FOUND_ROWS on 5.7M rows)."""
+    """Empty-keyword query: fast fetch + cached total."""
     conditions = ["pc.is_active = 1"]
     all_values = []
 
@@ -323,7 +283,6 @@ def _execute_empty_query(brand_sql, brand_val, category_sql, category_val, fitme
 
     where_clause = " AND ".join(conditions)
 
-    # Fetch rows without calc_found_rows — instant because ORDER BY name DESC uses PK index
     query = f"""
         SELECT
             pc.name AS part_catalog_name,
@@ -346,7 +305,6 @@ def _execute_empty_query(brand_sql, brand_val, category_sql, category_val, fitme
     if has_more:
         rows = rows[:limit]
 
-    # Get total from cache or compute once
     cache_key = CACHE_KEY_EMPTY_TOTAL
     if brand_val:
         cache_key += f":brand={brand_val[0]}"
