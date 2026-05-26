@@ -7,6 +7,15 @@
 
 frappe.provide('partscape');
 
+function _escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 partscape.showPartCatalogPicker = function(opts) {
     opts = opts || {};
     const onSelect = opts.onSelect || function() {};
@@ -185,10 +194,10 @@ partscape.showPartCatalogPicker = function(opts) {
 
             html += `<tr class="catalog-row ${selectedClass}" data-idx="${idx}">
                 <td><input type="radio" name="catalog_select" ${selectedClass ? 'checked' : ''}></td>
-                <td><span class="brand-badge">${frappe.escape_html(row.brand || '')}</span></td>
-                <td><code>${frappe.escape_html(row.part_number || '')}</code></td>
-                <td>${frappe.escape_html(row.part_name || '')}</td>
-                <td>${frappe.escape_html(row.category || '')}</td>
+                <td><span class="brand-badge">${_escapeHtml(row.brand || '')}</span></td>
+                <td><code>${_escapeHtml(row.part_number || '')}</code></td>
+                <td>${_escapeHtml(row.part_name || '')}</td>
+                <td>${_escapeHtml(row.category || '')}</td>
                 <td>${row.estimated_cost_usd ? format_currency(row.estimated_cost_usd, 'USD') : '-'}</td>
                 <td>${itemStatus}</td>
             </tr>`;

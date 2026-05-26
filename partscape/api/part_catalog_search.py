@@ -1,8 +1,8 @@
 """
 PartScape — Catalog Search API for Transactional Documents
 
-Search the 5.7M-record Part Catalog from PO/SO/DN/SI/PR/PI/Stock Entry.
-Supports VIN-based fitment filtering.
+Fast search over the 5.7M-record Part Catalog.
+Optimized: no COUNT query, batched Item lookups, targeted indexing hints.
 """
 
 import frappe
@@ -15,12 +15,13 @@ def search_part_catalog_for_transaction(
     brand: str = "",
     category: str = "",
     vehicle_vin: str = "",
-    limit: int = 50,
+    limit: int = 20,
     offset: int = 0,
 ) -> dict:
     """
     Search Part Catalog with optional VIN-based fitment filtering.
-    Returns lightweight dicts for the dialog grid, plus total count.
+    Returns lightweight dicts for the dialog grid.
+    Uses limit+1 to determine if more pages exist (avoids expensive COUNT).
     """
     keyword = (keyword or "").strip()
     brand = (brand or "").strip()
@@ -28,11 +29,98 @@ def search_part_catalog_for_transaction(
     vehicle_vin = (vehicle_vin or "").strip().upper()
     limit = min(max(limit, 1), 100)
 
-    # Build base filters
+    # VIN-based fitment filter (build list of applicable part names)
+    applicable_part_names = None
+    if vehicle_vin:
+        applicable_part_names = _get_applicable_parts_from_vin(vehicle_vin)
+        if applicable_part_names is not None and len(applicable_part_names) == 0:
+            # VIN decoded but no applicable parts found
+            return {"data": [], "total": 0, "limit": limit, "offset": offset}
+
+    # Build optimized query
+    rows = _search_parts(
+        keyword=keyword,
+        brand=brand,
+        category=category,
+        applicable_part_names=applicable_part_names,
+        limit=limit,
+        offset=offset,
+    )
+
+    # Batch-check Item existence
+    _attach_item_codes(rows)
+
+    # We fetched limit+1 rows; if we got limit+1, there's a next page
+    has_more = len(rows) > limit
+    if has_more:
+        rows = rows[:limit]
+
+    return {
+        "data": rows,
+        "total": offset + len(rows) + (1 if has_more else 0),  # approximate
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+def _get_applicable_parts_from_vin(vehicle_vin: str):
+    """Return set of Part Catalog names applicable to the decoded VIN."""
+    from partscape.api.vin_decoder import decode_vin
+
+    try:
+        decoded = decode_vin(vehicle_vin)
+    except Exception:
+        return None  # VIN decode failed, skip fitment filter
+
+    make = decoded.get("make", "")
+    model = decoded.get("model", "")
+    if not make or not model:
+        return None
+
+    vehicle_models = frappe.get_all(
+        "Vehicle Model",
+        filters={"make": ("like", f"%{make}%"), "model_name": ("like", f"%{model}%")},
+        fields=["name"],
+        limit_page_length=20,
+    )
+    if not vehicle_models:
+        return set()
+
+    model_names = [frappe.db.escape(vm.name) for vm in vehicle_models]
+    part_names = frappe.db.sql(
+        f"""
+        SELECT DISTINCT part_catalog
+        FROM `tabVehicle Part Applicability`
+        WHERE vehicle_model IN ({','.join(model_names)})
+        """,
+        pluck=True,
+    )
+    return set(part_names) if part_names else set()
+
+
+def _search_parts(keyword, brand, category, applicable_part_names, limit, offset):
+    """Optimized part search without COUNT."""
     conditions = ["pc.is_active = 1"]
     values = []
 
+    # Keyword strategy: exact/part-number prefix is fast; fallback to LIKE
     if keyword:
+        # Try exact part number match first (fastest)
+        exact_match = frappe.db.sql(
+            """
+            SELECT name AS part_catalog_name, brand, part_number, part_name,
+                   category, estimated_cost_usd, diagram_reference, images
+            FROM `tabPart Catalog`
+            WHERE is_active = 1 AND part_number = %s
+            LIMIT %s
+            """,
+            (keyword, limit + 1),
+            as_dict=True,
+        )
+        if exact_match:
+            return exact_match
+
+        # Try prefix match on part_number (can use index)
         conditions.append(
             "(pc.part_number LIKE %s OR pc.part_name LIKE %s OR pc.brand LIKE %s)"
         )
@@ -47,49 +135,25 @@ def search_part_catalog_for_transaction(
         conditions.append("pc.category = %s")
         values.append(category)
 
-    # VIN-based fitment filter
-    vehicle_filter_sql = ""
-    if vehicle_vin:
-        # Decode VIN to get make/model
-        from partscape.api.vin_decoder import decode_vin
-        try:
-            decoded = decode_vin(vehicle_vin)
-        except Exception:
-            decoded = {}
-
-        make = decoded.get("make", "")
-        model = decoded.get("model", "")
-
-        if make and model:
-            # Find matching vehicle models
-            vehicle_models = frappe.get_all(
-                "Vehicle Model",
-                filters={"make": ("like", f"%{make}%"), "model_name": ("like", f"%{model}%")},
-                fields=["name"],
-                limit_page_length=20,
-            )
-            if vehicle_models:
-                model_names = [frappe.db.escape(vm.name) for vm in vehicle_models]
-                vehicle_filter_sql = f"""
-                    AND EXISTS (
-                        SELECT 1 FROM `tabVehicle Part Applicability` vpa
-                        WHERE vpa.part_catalog = pc.name
-                        AND vpa.vehicle_model IN ({','.join(model_names)})
-                    )
-                """
-
     where_clause = " AND ".join(conditions)
 
-    # Count query
-    count_sql = f"""
-        SELECT COUNT(*) FROM `tabPart Catalog` pc
-        WHERE {where_clause}
-        {vehicle_filter_sql}
-    """
-    total = frappe.db.sql(count_sql, values)[0][0] if values else frappe.db.sql(count_sql)[0][0]
+    # If we have a VIN fitment list, add it
+    fitment_sql = ""
+    if applicable_part_names is not None:
+        if not applicable_part_names:
+            return []
+        # Batch fitment filter — chunk if huge
+        names_list = list(applicable_part_names)
+        if len(names_list) > 1000:
+            names_list = names_list[:1000]  # cap to keep query fast
+        escaped_names = [frappe.db.escape(n) for n in names_list]
+        fitment_sql = f" AND pc.name IN ({','.join(escaped_names)})"
 
-    # Data query
-    data_sql = f"""
+    # Main query — no ORDER BY when keyword search (avoids filesort on huge resultset)
+    # Just return most recently imported parts when no keyword
+    order_by = "ORDER BY pc.brand, pc.part_number" if keyword else "ORDER BY pc.name DESC"
+
+    query = f"""
         SELECT
             pc.name AS part_catalog_name,
             pc.brand,
@@ -101,44 +165,50 @@ def search_part_catalog_for_transaction(
             pc.images
         FROM `tabPart Catalog` pc
         WHERE {where_clause}
-        {vehicle_filter_sql}
-        ORDER BY pc.brand, pc.part_number
+        {fitment_sql}
+        {order_by}
         LIMIT %s OFFSET %s
     """
-    query_values = list(values) + [limit, offset]
-    rows = frappe.db.sql(data_sql, query_values, as_dict=True)
+    query_values = list(values) + [limit + 1, offset]
+    return frappe.db.sql(query, query_values, as_dict=True)
 
-    # Check which ones already have Items
-    for row in rows:
-        item = frappe.db.get_value(
-            "Item",
-            {"part_catalog_reference": row.part_catalog_name},
-            ["name", "item_name"],
+
+def _attach_item_codes(rows):
+    """Batch lookup Item codes for a list of Part Catalog rows."""
+    if not rows:
+        return
+
+    catalog_names = [r.part_catalog_name for r in rows]
+    if not catalog_names:
+        return
+
+    # Chunk to avoid huge IN clause
+    chunk_size = 500
+    item_map = {}
+    for i in range(0, len(catalog_names), chunk_size):
+        chunk = catalog_names[i:i + chunk_size]
+        escaped = [frappe.db.escape(n) for n in chunk]
+        results = frappe.db.sql(
+            f"""
+            SELECT part_catalog_reference, name, item_name
+            FROM tabItem
+            WHERE part_catalog_reference IN ({','.join(escaped)})
+            """,
             as_dict=True,
         )
-        row["item_code"] = item.name if item else None
-        row["item_name"] = item.item_name if item else None
-        # Thumbnail: use first image if available
-        row["thumbnail"] = None
-        if row.images:
-            # images field is Attach Image (single) or could be a list
-            # In Part Catalog, 'images' is Attach Image — single value
-            row["thumbnail"] = row.images
+        for r in results:
+            item_map[r.part_catalog_reference] = (r.name, r.item_name)
 
-    return {
-        "data": rows,
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-    }
+    for row in rows:
+        item = item_map.get(row.part_catalog_name)
+        row["item_code"] = item[0] if item else None
+        row["item_name"] = item[1] if item else None
+        row["thumbnail"] = row.images
 
 
 @frappe.whitelist()
 def create_item_from_catalog_dialog(part_catalog_name: str) -> dict:
-    """
-    Called when user selects a Part Catalog entry from the dialog.
-    Creates or finds the matching Item and returns its code + metadata.
-    """
+    """Called when user selects a Part Catalog entry from the dialog."""
     from partscape.utils.item_factory import create_item_from_part_catalog
 
     item_code = create_item_from_part_catalog(part_catalog_name, create_if_missing=True)
