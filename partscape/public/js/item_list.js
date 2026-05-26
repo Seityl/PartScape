@@ -20,7 +20,7 @@ function _injectPartScapeFilter(listview) {
     // Build a wrapper that matches native page-field markup exactly:
     // .frappe-control .col-md-2  (no .form-group, no .input-group)
     const $wrap = $(`
-        <div class="partscape-filter-wrap frappe-control col-md-2"
+        <div class="partscape-filter-wrap form-group frappe-control col-md-2"
              title="${__('PartScape Search')}" data-original-title="${__('PartScape Search')}">
             <input type="text"
                 autocomplete="off"
