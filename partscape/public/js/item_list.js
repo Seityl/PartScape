@@ -8,8 +8,9 @@
 
 frappe.listview_settings['Item'] = {
     onload: function(listview) {
-        // Wait for the standard filter fields to render
-        setTimeout(() => _injectPartScapeFilter(listview), 400);
+        // By the time onload fires, Frappe has already synchronously
+        // rendered the standard filter fields. Inject immediately.
+        _injectPartScapeFilter(listview);
     },
 };
 
