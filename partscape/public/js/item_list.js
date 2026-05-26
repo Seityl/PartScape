@@ -8,63 +8,51 @@
 
 frappe.listview_settings['Item'] = {
     onload: function(listview) {
-        // Track whether a PartScape catalog filter is active
-        listview.partscape_filter_active = false;
+        // Add custom search input manually (outside Frappe's filter system)
+        // so it doesn't get sent as a query filter to the server.
+        const $input = $(`
+            <div class="partscape-list-search" style="display:inline-block;margin-right:12px;">
+                <input type="text"
+                    class="form-control input-sm"
+                    placeholder="${__('PartScape Search…')}"
+                    style="width:260px;display:inline-block;"
+                    title="${__('Search by part #, brand, name…')}">
+            </div>
+        `);
 
-        // Add custom search field to the page toolbar (next to standard search)
-        const searchField = listview.page.add_field({
-            fieldtype: 'Data',
-            label: __('PartScape Search'),
-            fieldname: 'partscape_keyword',
-            placeholder: __('e.g. suzuki, brake pad, BOSCH…'),
-            width: '280px',
-        });
+        // Insert before the standard list-view filters
+        listview.page.page_form.find('.filter-section').before($input);
 
-        // Add search button
+        const $field = $input.find('input');
+
+        // Search button
         listview.page.set_primary_action(__('Search Catalog'), function() {
-            _doCatalogSearch(listview, searchField.get_value());
+            _doCatalogSearch(listview, $field.val());
         }, 'search');
 
-        // Trigger on Enter key
-        searchField.$input.on('keypress', function(e) {
+        // Enter key
+        $field.on('keypress', function(e) {
             if (e.which === 13) {
-                _doCatalogSearch(listview, searchField.get_value());
+                _doCatalogSearch(listview, $field.val());
             }
         });
-
-        // Hook into list refresh so we can detect when standard filters change
-        const originalRefresh = listview.refresh;
-        listview.refresh = function() {
-            // If user clears standard filters and we had a catalog filter active,
-            // make sure we also clear our internal state
-            if (listview.partscape_filter_active && !listview.partscape_preserve_filter) {
-                // Check if part_catalog_reference filter was removed manually
-                const hasCatalogFilter = listview.filter_area.filter_list.get_filters().some(
-                    f => f[1] === 'part_catalog_reference' || f[1] === 'name'
-                );
-                if (!hasCatalogFilter) {
-                    listview.partscape_filter_active = false;
-                }
-            }
-            return originalRefresh.apply(this, arguments);
-        };
     },
 };
 
 function _doCatalogSearch(listview, keyword) {
     keyword = (keyword || '').trim();
 
-    // Clear any previous catalog filter first
-    listview.partscape_preserve_filter = true;
-    const clearPromise = listview.partscape_filter_active
-        ? listview.filter_area.remove('part_catalog_reference').catch(() => {})
+    // Clear any previous impossible filter
+    const removeImpossible = listview.filter_area.filter_list.get_filters().some(
+        f => f[1] === 'name' && f[3] === '__no_results__'
+    );
+
+    const clearPromise = removeImpossible
+        ? listview.filter_area.remove('name').catch(() => {})
         : Promise.resolve();
 
     clearPromise.then(() => {
-        listview.partscape_preserve_filter = false;
-
         if (!keyword) {
-            listview.partscape_filter_active = false;
             listview.refresh();
             return;
         }
@@ -85,19 +73,14 @@ function _doCatalogSearch(listview, keyword) {
                     });
                     // Set impossible filter to show empty list
                     listview.filter_area.add('Item', 'name', '=', '__no_results__')
-                        .then(() => {
-                            listview.partscape_filter_active = true;
-                            listview.refresh();
-                        });
+                        .then(() => listview.refresh());
                     return;
                 }
 
                 // Apply filter: name IN [item_names]
-                // Cap at 100 to keep URL length reasonable
                 const filterNames = items.length > 100 ? items.slice(0, 100) : items;
                 listview.filter_area.add('Item', 'name', 'in', filterNames)
                     .then(() => {
-                        listview.partscape_filter_active = true;
                         listview.refresh();
                         frappe.show_alert({
                             message: __('Showing {0} items', [items.length]),
