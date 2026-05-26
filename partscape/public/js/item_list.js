@@ -1,53 +1,73 @@
 /**
  * PartScape — Item List View Custom Search
  *
- * Adds a natural-language search field to the Item list view
+ * Adds a natural-language search field to the Item list view filter bar
  * that searches across Item fields (item_code, item_name, brand)
  * and linked Part Catalog fields (part_number, brand, part_name).
  */
 
 frappe.listview_settings['Item'] = {
     onload: function(listview) {
-        // Add custom search input manually (outside Frappe's filter system)
-        // so it doesn't get sent as a query filter to the server.
-        const $input = $(`
-            <div class="partscape-list-search" style="display:inline-block;margin-right:12px;">
-                <input type="text"
-                    class="form-control input-sm"
-                    placeholder="${__('PartScape Search…')}"
-                    style="width:260px;display:inline-block;"
-                    title="${__('Search by part #, brand, name…')}">
-            </div>
-        `);
-
-        // Insert before the standard list-view filters
-        listview.page.page_form.find('.filter-section').before($input);
-
-        const $field = $input.find('input');
-
-        // Search button
-        listview.page.set_primary_action(__('Search Catalog'), function() {
-            _doCatalogSearch(listview, $field.val());
-        }, 'search');
-
-        // Enter key
-        $field.on('keypress', function(e) {
-            if (e.which === 13) {
-                _doCatalogSearch(listview, $field.val());
-            }
-        });
+        // Wait for the page form / filter row to render
+        setTimeout(() => _injectPartScapeFilter(listview), 300);
     },
 };
+
+function _injectPartScapeFilter(listview) {
+    const $pageForm = listview.page.page_form;
+    if (!$pageForm.length) return;
+
+    // Avoid double-injection
+    if ($pageForm.find('.partscape-filter-wrap').length) return;
+
+    // Build a visually matching filter input (no data-fieldname so Frappe ignores it)
+    const $wrap = $(`
+        <div class="partscape-filter-wrap form-group input-max-width col-md-2"
+             title="${__('Search by part #, brand, name…')}">
+            <div class="input-group">
+                <input type="text"
+                    autocomplete="off"
+                    class="partscape-search-input input-with-feedback form-control input-xs"
+                    maxlength="140"
+                    placeholder="${__('PartScape Search…')}">
+            </div>
+            <span class="tooltip-content">PartScape</span>
+        </div>
+    `);
+
+    // Insert as the first child of the filter row so it sits before ID, Item Name, etc.
+    const $filterRow = $pageForm.find('.filter-section').first();
+    if ($filterRow.length) {
+        $filterRow.prepend($wrap);
+    } else {
+        // Fallback: insert at start of page form
+        $pageForm.prepend($wrap);
+    }
+
+    const $input = $wrap.find('.partscape-search-input');
+
+    // Search button
+    listview.page.set_primary_action(__('Search Catalog'), function() {
+        _doCatalogSearch(listview, $input.val());
+    }, 'search');
+
+    // Enter key
+    $input.on('keypress', function(e) {
+        if (e.which === 13) {
+            _doCatalogSearch(listview, $input.val());
+        }
+    });
+}
 
 function _doCatalogSearch(listview, keyword) {
     keyword = (keyword || '').trim();
 
-    // Clear any previous impossible filter
-    const removeImpossible = listview.filter_area.filter_list.get_filters().some(
+    // Remove any previous "no results" dummy filter
+    const hasNoResults = listview.filter_area.filter_list.get_filters().some(
         f => f[1] === 'name' && f[3] === '__no_results__'
     );
 
-    const clearPromise = removeImpossible
+    const clearPromise = hasNoResults
         ? listview.filter_area.remove('name').catch(() => {})
         : Promise.resolve();
 
@@ -71,13 +91,11 @@ function _doCatalogSearch(listview, keyword) {
                         message: __('No items found for "{0}"', [keyword]),
                         indicator: 'orange',
                     });
-                    // Set impossible filter to show empty list
                     listview.filter_area.add('Item', 'name', '=', '__no_results__')
                         .then(() => listview.refresh());
                     return;
                 }
 
-                // Apply filter: name IN [item_names]
                 const filterNames = items.length > 100 ? items.slice(0, 100) : items;
                 listview.filter_area.add('Item', 'name', 'in', filterNames)
                     .then(() => {
