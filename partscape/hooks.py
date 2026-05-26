@@ -52,6 +52,10 @@ doctype_js = {
     "Stock Entry": "public/js/stock_entry.js",
 }
 
+doctype_list_js = {
+    "Item": "public/js/item_list.js",
+}
+
 # DocType Class
 # ---------------
 # Override standard doctype classes
