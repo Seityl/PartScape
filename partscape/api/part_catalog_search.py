@@ -2,11 +2,21 @@
 PartScape — Catalog Search API for Transactional Documents
 
 Fast search over the 5.7M-record Part Catalog.
-Optimized: no COUNT query, batched Item lookups, targeted indexing hints.
+Optimizations:
+  • Tiered search: exact → prefix → FULLTEXT (uses indexes where possible)
+  • SQL_CALC_FOUND_ROWS for exact/prefix/FULLTEXT (fast, accurate count)
+  • Cached total for empty-keyword searches
+  • VIN decode result cached in Redis (5 min TTL)
+  • Batched Item existence lookup
 """
 
 import frappe
 from frappe import _
+
+# Cache key templates
+CACHE_KEY_EMPTY_TOTAL = "partscape:search:empty_total"
+CACHE_TTL_EMPTY_TOTAL = 3600  # 1 hour
+CACHE_TTL_VIN = 300  # 5 minutes
 
 
 @frappe.whitelist()
@@ -20,8 +30,7 @@ def search_part_catalog_for_transaction(
 ) -> dict:
     """
     Search Part Catalog with optional VIN-based fitment filtering.
-    Returns lightweight dicts for the dialog grid.
-    Uses limit+1 to determine if more pages exist (avoids expensive COUNT).
+    Returns lightweight dicts for the dialog grid with an accurate total count.
     """
     keyword = (keyword or "").strip()
     brand = (brand or "").strip()
@@ -29,16 +38,15 @@ def search_part_catalog_for_transaction(
     vehicle_vin = (vehicle_vin or "").strip().upper()
     limit = min(max(limit, 1), 100)
 
-    # VIN-based fitment filter (build list of applicable part names)
+    # VIN-based fitment filter (cached)
     applicable_part_names = None
     if vehicle_vin:
         applicable_part_names = _get_applicable_parts_from_vin(vehicle_vin)
         if applicable_part_names is not None and len(applicable_part_names) == 0:
-            # VIN decoded but no applicable parts found
             return {"data": [], "total": 0, "limit": limit, "offset": offset}
 
     # Build optimized query
-    rows = _search_parts(
+    rows, total = _search_parts(
         keyword=keyword,
         brand=brand,
         category=category,
@@ -50,27 +58,27 @@ def search_part_catalog_for_transaction(
     # Batch-check Item existence
     _attach_item_codes(rows)
 
-    # We fetched limit+1 rows; if we got limit+1, there's a next page
-    has_more = len(rows) > limit
-    if has_more:
-        rows = rows[:limit]
-
     return {
         "data": rows,
-        "total": offset + len(rows) + (1 if has_more else 0),  # approximate
+        "total": total,
         "limit": limit,
         "offset": offset,
     }
 
 
 def _get_applicable_parts_from_vin(vehicle_vin: str):
-    """Return set of Part Catalog names applicable to the decoded VIN."""
+    """Return set of Part Catalog names applicable to the decoded VIN (cached)."""
+    cache_key = f"partscape:vin_parts:{vehicle_vin}"
+    cached = frappe.cache().get_value(cache_key)
+    if cached is not None:
+        return set(cached) if cached != "__empty__" else set()
+
     from partscape.api.vin_decoder import decode_vin
 
     try:
         decoded = decode_vin(vehicle_vin)
     except Exception:
-        return None  # VIN decode failed, skip fitment filter
+        return None
 
     make = decoded.get("make", "")
     model = decoded.get("model", "")
@@ -84,6 +92,7 @@ def _get_applicable_parts_from_vin(vehicle_vin: str):
         limit_page_length=20,
     )
     if not vehicle_models:
+        frappe.cache().set_value(cache_key, "__empty__", expires_in_sec=CACHE_TTL_VIN)
         return set()
 
     model_names = [frappe.db.escape(vm.name) for vm in vehicle_models]
@@ -95,64 +104,192 @@ def _get_applicable_parts_from_vin(vehicle_vin: str):
         """,
         pluck=True,
     )
-    return set(part_names) if part_names else set()
+    result = set(part_names) if part_names else set()
+    frappe.cache().set_value(
+        cache_key,
+        list(result) if result else "__empty__",
+        expires_in_sec=CACHE_TTL_VIN,
+    )
+    return result
 
 
 def _search_parts(keyword, brand, category, applicable_part_names, limit, offset):
-    """Optimized part search without COUNT."""
-    conditions = ["pc.is_active = 1"]
-    values = []
+    """
+    Tiered search strategy:
+      1. Exact part_number match         (fastest — uses idx_part_number)
+      2. Prefix part_number match        (fast — uses idx_part_number)
+      3. Prefix part_name match          (fast — uses idx_part_name)
+      4. FULLTEXT match on all columns   (fast — uses ft_search)
+      5. Empty keyword — list all parts  (cached total, no calc_found_rows)
+    Returns (rows, total_count).
+    """
+    # Build common filter SQL + values
+    brand_sql = " AND pc.brand = %s" if brand else ""
+    brand_val = [brand] if brand else []
+    category_sql = " AND pc.category = %s" if category else ""
+    category_val = [category] if category else []
 
-    # Keyword strategy: exact/part-number prefix is fast; fallback to LIKE
-    if keyword:
-        # Try exact part number match first (fastest)
-        exact_match = frappe.db.sql(
-            """
-            SELECT name AS part_catalog_name, brand, part_number, part_name,
-                   category, estimated_cost_usd, diagram_reference, images
-            FROM `tabPart Catalog`
-            WHERE is_active = 1 AND part_number = %s
-            LIMIT %s
-            """,
-            (keyword, limit + 1),
-            as_dict=True,
-        )
-        if exact_match:
-            return exact_match
-
-        # Try prefix match on part_number (can use index)
-        conditions.append(
-            "(pc.part_number LIKE %s OR pc.part_name LIKE %s OR pc.brand LIKE %s)"
-        )
-        like = f"%{keyword}%"
-        values.extend([like, like, like])
-
-    if brand:
-        conditions.append("pc.brand = %s")
-        values.append(brand)
-
-    if category:
-        conditions.append("pc.category = %s")
-        values.append(category)
-
-    where_clause = " AND ".join(conditions)
-
-    # If we have a VIN fitment list, add it
     fitment_sql = ""
     if applicable_part_names is not None:
         if not applicable_part_names:
-            return []
-        # Batch fitment filter — chunk if huge
-        names_list = list(applicable_part_names)
-        if len(names_list) > 1000:
-            names_list = names_list[:1000]  # cap to keep query fast
+            return [], 0
+        names_list = list(applicable_part_names)[:1000]
         escaped_names = [frappe.db.escape(n) for n in names_list]
         fitment_sql = f" AND pc.name IN ({','.join(escaped_names)})"
 
-    # Main query — no ORDER BY when keyword search (avoids filesort on huge resultset)
-    # Just return most recently imported parts when no keyword
-    order_by = "ORDER BY pc.brand, pc.part_number" if keyword else "ORDER BY pc.name DESC"
+    if keyword:
+        # Tier 1: exact part_number
+        rows, total = _execute_query(
+            where_extra="pc.part_number = %s",
+            values=[keyword],
+            brand_sql=brand_sql,
+            brand_val=brand_val,
+            category_sql=category_sql,
+            category_val=category_val,
+            fitment_sql=fitment_sql,
+            limit=limit,
+            offset=offset,
+            order_by="pc.part_number",
+            use_calc_found_rows=True,
+        )
+        if rows:
+            return rows, total
 
+        # Tier 2: prefix on part_number
+        rows, total = _execute_query(
+            where_extra="pc.part_number LIKE %s",
+            values=[f"{keyword}%"],
+            brand_sql=brand_sql,
+            brand_val=brand_val,
+            category_sql=category_sql,
+            category_val=category_val,
+            fitment_sql=fitment_sql,
+            limit=limit,
+            offset=offset,
+            order_by="pc.part_number",
+            use_calc_found_rows=True,
+        )
+        if rows:
+            return rows, total
+
+        # Tier 3: prefix on part_name
+        rows, total = _execute_query(
+            where_extra="pc.part_name LIKE %s",
+            values=[f"{keyword}%"],
+            brand_sql=brand_sql,
+            brand_val=brand_val,
+            category_sql=category_sql,
+            category_val=category_val,
+            fitment_sql=fitment_sql,
+            limit=limit,
+            offset=offset,
+            order_by="pc.part_name",
+            use_calc_found_rows=True,
+        )
+        if rows:
+            return rows, total
+
+        # Tier 4: FULLTEXT fallback (covers general keyword search)
+        # FULLTEXT handles tokenized words; LIKE would do a full scan.
+        rows, total = _execute_query(
+            where_extra="MATCH(pc.part_number, pc.part_name, pc.brand) AGAINST(%s IN BOOLEAN MODE)",
+            values=[keyword],
+            brand_sql=brand_sql,
+            brand_val=brand_val,
+            category_sql=category_sql,
+            category_val=category_val,
+            fitment_sql=fitment_sql,
+            limit=limit,
+            offset=offset,
+            order_by="pc.name DESC",
+            use_calc_found_rows=True,
+        )
+        return rows, total
+
+    # Tier 5: no keyword — list all parts, use cached total
+    rows, total = _execute_empty_query(
+        brand_sql=brand_sql,
+        brand_val=brand_val,
+        category_sql=category_sql,
+        category_val=category_val,
+        fitment_sql=fitment_sql,
+        limit=limit,
+        offset=offset,
+    )
+    return rows, total
+
+
+def _execute_query(
+    where_extra,
+    values,
+    brand_sql,
+    brand_val,
+    category_sql,
+    category_val,
+    fitment_sql,
+    limit,
+    offset,
+    order_by,
+    use_calc_found_rows=False,
+):
+    """Execute SELECT and return (rows, total_count)."""
+    conditions = ["pc.is_active = 1"]
+    all_values = []
+
+    if where_extra:
+        conditions.append(where_extra)
+        all_values.extend(values)
+
+    if brand_sql:
+        conditions.append(brand_sql.lstrip(" AND"))
+        all_values.extend(brand_val)
+
+    if category_sql:
+        conditions.append(category_sql.lstrip(" AND"))
+        all_values.extend(category_val)
+
+    where_clause = " AND ".join(conditions)
+    calc = "SQL_CALC_FOUND_ROWS" if use_calc_found_rows else ""
+
+    query = f"""
+        SELECT {calc}
+            pc.name AS part_catalog_name,
+            pc.brand,
+            pc.part_number,
+            pc.part_name,
+            pc.category,
+            pc.estimated_cost_usd,
+            pc.diagram_reference,
+            pc.images
+        FROM `tabPart Catalog` pc
+        WHERE {where_clause}
+        {fitment_sql}
+        ORDER BY {order_by}
+        LIMIT %s OFFSET %s
+    """
+    all_values.extend([limit, offset])
+
+    rows = frappe.db.sql(query, all_values, as_dict=True)
+    total = frappe.db.sql("SELECT FOUND_ROWS()", pluck=True)[0] if use_calc_found_rows else None
+    return rows, total
+
+
+def _execute_empty_query(brand_sql, brand_val, category_sql, category_val, fitment_sql, limit, offset):
+    """Empty-keyword query: fast fetch + cached total (avoids SQL_CALC_FOUND_ROWS on 5.7M rows)."""
+    conditions = ["pc.is_active = 1"]
+    all_values = []
+
+    if brand_sql:
+        conditions.append(brand_sql.lstrip(" AND"))
+        all_values.extend(brand_val)
+
+    if category_sql:
+        conditions.append(category_sql.lstrip(" AND"))
+        all_values.extend(category_val)
+
+    where_clause = " AND ".join(conditions)
+
+    # Fetch rows without calc_found_rows — instant because ORDER BY name DESC uses PK index
     query = f"""
         SELECT
             pc.name AS part_catalog_name,
@@ -166,11 +303,29 @@ def _search_parts(keyword, brand, category, applicable_part_names, limit, offset
         FROM `tabPart Catalog` pc
         WHERE {where_clause}
         {fitment_sql}
-        {order_by}
+        ORDER BY pc.name DESC
         LIMIT %s OFFSET %s
     """
-    query_values = list(values) + [limit + 1, offset]
-    return frappe.db.sql(query, query_values, as_dict=True)
+    all_values.extend([limit, offset])
+    rows = frappe.db.sql(query, all_values, as_dict=True)
+
+    # Get total from cache or compute once
+    cache_key = CACHE_KEY_EMPTY_TOTAL
+    if brand_val:
+        cache_key += f":brand={brand_val[0]}"
+    if category_val:
+        cache_key += f":cat={category_val[0]}"
+    if fitment_sql:
+        cache_key += ":fitment"
+
+    total = frappe.cache().get_value(cache_key)
+    if total is None:
+        # Compute count once — this is ~1s on 5.7M rows but only runs after cache expiry
+        count_sql = f"SELECT COUNT(*) FROM `tabPart Catalog` pc WHERE {where_clause} {fitment_sql}"
+        total = frappe.db.sql(count_sql, all_values[:-2], pluck=True)[0]
+        frappe.cache().set_value(cache_key, total, expires_in_sec=CACHE_TTL_EMPTY_TOTAL)
+
+    return rows, total
 
 
 def _attach_item_codes(rows):
@@ -182,7 +337,6 @@ def _attach_item_codes(rows):
     if not catalog_names:
         return
 
-    # Chunk to avoid huge IN clause
     chunk_size = 500
     item_map = {}
     for i in range(0, len(catalog_names), chunk_size):

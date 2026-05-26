@@ -3,3 +3,4 @@ partscape.patches.v1_0_0_add_transaction_custom_fields # 2026-05-25
 partscape.patches.v1_0_0_create_partscape_settings # 2026-05-25
 partscape.patches.v1_0_0_create_item_groups # 2026-05-25
 partscape.patches.v1_0_0_map_categories_to_groups # 2026-05-25
+partscape.patches.create_fulltext_index # 2026-05-25
