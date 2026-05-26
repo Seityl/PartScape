@@ -53,11 +53,12 @@ function _injectPartScapeFilter(listview) {
 function _doCatalogSearch(listview, keyword) {
     keyword = (keyword || '').trim();
 
-    const hasNoResults = listview.filter_area.filter_list.get_filters().some(
-        f => f[1] === 'name' && f[3] === '__no_results__'
+    // Always clear any previous PartScape name filter (whether IN or =)
+    const hasNameFilter = listview.filter_area.filter_list.get_filters().some(
+        f => f[1] === 'name'
     );
 
-    const clearPromise = hasNoResults
+    const clearPromise = hasNameFilter
         ? listview.filter_area.remove('name').catch(() => {})
         : Promise.resolve();
 
