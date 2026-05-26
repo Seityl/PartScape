@@ -8,7 +8,7 @@
 
 frappe.listview_settings['Item'] = {
     onload: function(listview) {
-        // Wait for filter row to render
+        // Wait for the standard filter fields to render
         setTimeout(() => _injectPartScapeFilter(listview), 400);
     },
 };
@@ -17,38 +17,26 @@ function _injectPartScapeFilter(listview) {
     const $pageForm = listview.page.page_form;
     if (!$pageForm.length || $pageForm.find('.partscape-filter-wrap').length) return;
 
+    // Build a wrapper that matches native page-field markup exactly:
+    // .frappe-control .col-md-2  (no .form-group, no .input-group)
     const $wrap = $(`
-        <div class="partscape-filter-wrap form-group frappe-control input-max-width col-md-2"
+        <div class="partscape-filter-wrap frappe-control col-md-2"
              title="${__('PartScape Search')}" data-original-title="${__('PartScape Search')}">
-            <div class="input-group">
-                <input type="text"
-                    autocomplete="off"
-                    class="partscape-search-input input-with-feedback form-control input-xs"
-                    maxlength="140"
-                    placeholder="${__('PartScape Search…')}">
-                <div class="input-group-btn mr-0">
-                    <button type="button"
-                        class="btn btn-default match-type-dropdown-btn"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <svg class="icon icon-sm" aria-hidden="true">
-                            <use href="#icon-equal-approximately"></use>
-                        </svg>
-                    </button>
-                    <ul class="dropdown-menu match-type-dropdown-menu dropdown-menu-right">
-                        <li class="dropdown-item" data-match-type="search">Search</li>
-                    </ul>
-                </div>
-            </div>
+            <input type="text"
+                autocomplete="off"
+                class="partscape-search-input input-with-feedback form-control input-xs"
+                maxlength="140"
+                placeholder="${__('PartScape Search…')}">
             <span class="tooltip-content">PartScape</span>
         </div>
     `);
 
-    // Insert as first filter in the row
-    const $firstFilter = $pageForm.find('.filter-section .form-group.frappe-control').first();
+    // Place it at the front of the default list filters
+    const $firstFilter = $pageForm.children('.frappe-control.col-md-2').first();
     if ($firstFilter.length) {
         $firstFilter.before($wrap);
     } else {
-        $pageForm.find('.filter-section').prepend($wrap);
+        $pageForm.prepend($wrap);
     }
 
     const $input = $wrap.find('.partscape-search-input');
@@ -58,11 +46,6 @@ function _injectPartScapeFilter(listview) {
         if (e.which === 13) {
             _doCatalogSearch(listview, $input.val());
         }
-    });
-
-    // Dropdown click
-    $wrap.find('.dropdown-item[data-match-type="search"]').on('click', function() {
-        _doCatalogSearch(listview, $input.val());
     });
 }
 
