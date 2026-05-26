@@ -128,6 +128,7 @@ partscape.showPartCatalogPicker = function(opts) {
         const total = response.total || 0;
         const limit = response.limit || pageSize;
         const offset = response.offset || 0;
+        const hasMore = response.has_more || false;
 
         if (!currentResults.length) {
             dialog.fields_dict.results_html.$wrapper.html(
@@ -207,12 +208,14 @@ partscape.showPartCatalogPicker = function(opts) {
 
         // Pagination
         const hasPrev = offset > 0;
-        const hasNext = offset + limit < total;
+        const totalDisplay = hasMore
+            ? `${total}+`
+            : String(total);
         html += `<div class="partscape-pagination">
-            <span>${__('Showing')} ${offset + 1}–${Math.min(offset + limit, total)} ${__('of')} ${total}</span>
+            <span>${__('Showing')} ${offset + 1}–${Math.min(offset + limit, total)} ${__('of')} ${totalDisplay}</span>
             <div>
                 <button class="btn btn-default btn-sm" ${hasPrev ? '' : 'disabled'} data-action="prev">${__('Previous')}</button>
-                <button class="btn btn-default btn-sm" ${hasNext ? '' : 'disabled'} data-action="next">${__('Next')}</button>
+                <button class="btn btn-default btn-sm" ${hasMore ? '' : 'disabled'} data-action="next">${__('Next')}</button>
             </div>
         </div>`;
 
