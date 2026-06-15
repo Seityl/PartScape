@@ -49,6 +49,7 @@ doctype_js = {
     "Delivery Note": "public/js/delivery_note.js",
     "Sales Invoice": "public/js/sales_invoice.js",
     "Item": "public/js/item.js",
+    "Warehouse": "public/js/warehouse.js",
     "Stock Entry": "public/js/stock_entry.js",
 }
 
@@ -159,6 +160,14 @@ scheduler_events = {
 # 	"partscape.auth.validate"
 # ]
 
+# Jinja
+# -----
+jinja = {
+    "methods": [
+        "partscape.print_label.get_barcode_image",
+    ]
+}
+
 # Fixtures
 # --------
 fixtures = [
@@ -169,6 +178,10 @@ fixtures = [
         ["module", "=", "PartScape"]
     ]},
     {"dt": "Role", "filters": [
-        ["name", "in", ["Fleet Manager", "Parts Clerk", "Workshop Technician"]]
+        ["name", "in", ["Parts Clerk"]]
     ]},
+    {"dt": "Print Format", "filters": [
+        ["module", "=", "PartScape"]
+    ]},
+    {"dt": "Label Printer Settings"},
 ]

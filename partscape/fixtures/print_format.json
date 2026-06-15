@@ -1,0 +1,58 @@
+[
+  {
+    "doctype": "Print Format",
+    "doc_type": "Item",
+    "module": "PartScape",
+    "name": "PartScape Item Label 62mm",
+    "standard": "No",
+    "custom_format": 1,
+    "print_format_type": "Jinja",
+    "align_labels_right": 0,
+    "show_section_headings": 0,
+    "line_breaks": 0,
+    "page_number": "Hide",
+    "html": "<style>\nhtml, body { margin: 0; padding: 0; width: 62mm; overflow: hidden; }\n.label-62 {\n  width: 62mm;\n  height: 100mm;\n  padding: 0.5mm;\n  box-sizing: border-box;\n  font-family: Arial, Helvetica, sans-serif;\n  color: #000;\n  background: #fff;\n  overflow: hidden;\n}\n.header { position: relative; margin-bottom: 0.5mm; width: 100%; min-height: 14pt; }\n.company { font-size: 12pt; font-weight: bold; display: inline-block; padding-right: 20mm; }\n.price { font-size: 14pt; font-weight: bold; position: absolute; right: 0; top: 0; }\n.tel { font-size: 7.5pt; margin-bottom: 0.5mm; width: 100%; }\n.item-name { font-weight: bold; line-height: 1.05; margin-bottom: 0.5mm; text-transform: uppercase; width: 100%; word-break: break-word; }\n.brand { font-weight: bold; margin-bottom: 0.5mm; text-transform: uppercase; width: 100%; word-break: break-word; }\n.category { font-size: 12pt; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.part-number { font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.barcode { text-align: center; margin-top: auto; width: 100%; }\n.barcode img { width: 100%; max-width: 100%; height: auto; max-height: 24mm; display: block; }\n</style>\n{% set company = frappe.db.get_value('Company', doc.company or frappe.db.get_value('Company', {}, 'name'), ['company_name', 'phone_no'], as_dict=True) %}\n{% set item_name = doc.item_name or '' %}\n{% set item_name_size = '28pt' if (item_name|length) <= 8 else '23pt' if (item_name|length) <= 14 else '19pt' if (item_name|length) <= 22 else '16pt' %}\n{% set brand = doc.brand or '' %}\n{% set brand_size = '25pt' if (brand|length) <= 6 else '20pt' if (brand|length) <= 11 else '15pt' %}\n{% set pn = doc.part_number or doc.item_code or '' %}\n{% set pn_size = '26pt' if (pn|length) <= 8 else '21pt' if (pn|length) <= 13 else '17pt' %}\n<div class='label-62'>\n  <div class='header'>\n    <span class='company'>{{ company.company_name or '' }}</span>\n    <span class='price'>{{ frappe.format_value(doc.standard_rate or doc.valuation_rate or 0, {'fieldtype':'Currency'}) }}</span>\n  </div>\n  <div class='tel'>Tel: {{ company.phone_no or '' }}</div>\n  <div class='item-name' style='font-size: {{ item_name_size }}'>{{ item_name }}</div>\n  <div class='brand' style='font-size: {{ brand_size }}'>{{ brand }}</div>\n  <div class='category'>{{ doc.item_group or '' }}</div>\n  <div class='part-number' style='font-size: {{ pn_size }}'>{{ pn }}</div>\n  <div class='barcode'>\n    <img src='{{ get_barcode_image(doc.partscape_barcode or doc.part_number or doc.item_code, width=696, height=240) }}' alt='' />\n  </div>\n</div>"
+  },
+  {
+    "doctype": "Print Format",
+    "doc_type": "Item",
+    "module": "PartScape",
+    "name": "PartScape Item Label 29mm",
+    "standard": "No",
+    "custom_format": 1,
+    "print_format_type": "Jinja",
+    "align_labels_right": 0,
+    "show_section_headings": 0,
+    "line_breaks": 0,
+    "page_number": "Hide",
+    "html": "<style>\nhtml, body { margin: 0; padding: 0; width: 29mm; overflow: hidden; }\n.label-29 {\n  width: 29mm;\n  height: 90mm;\n  padding: 0.5mm;\n  box-sizing: border-box;\n  font-family: Arial, Helvetica, sans-serif;\n  color: #000;\n  background: #fff;\n  overflow: hidden;\n}\n.company { font-size: 7.5pt; font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.price { font-size: 8.5pt; font-weight: bold; text-align: right; margin-bottom: 0.5mm; width: 100%; }\n.item-name { font-weight: bold; line-height: 1.05; margin-bottom: 0.5mm; text-transform: uppercase; width: 100%; word-break: break-word; }\n.brand { font-weight: bold; margin-bottom: 0.5mm; text-transform: uppercase; width: 100%; word-break: break-word; }\n.part-number { font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.barcode { text-align: center; width: 100%; }\n.barcode img { width: 100%; max-width: 100%; height: auto; max-height: 18mm; display: block; }\n</style>\n{% set company = frappe.db.get_value('Company', doc.company or frappe.db.get_value('Company', {}, 'name'), ['company_name', 'phone_no'], as_dict=True) %}\n{% set item_name = doc.item_name or '' %}\n{% set item_name_size = '15pt' if (item_name|length) <= 8 else '12pt' if (item_name|length) <= 14 else '10pt' %}\n{% set brand = doc.brand or '' %}\n{% set brand_size = '14pt' if (brand|length) <= 6 else '11pt' if (brand|length) <= 11 else '9pt' %}\n{% set pn = doc.part_number or doc.item_code or '' %}\n{% set pn_size = '14pt' if (pn|length) <= 8 else '11pt' if (pn|length) <= 13 else '9pt' %}\n<div class='label-29'>\n  <div class='company'>{{ company.company_name or '' }}</div>\n  <div class='price'>{{ frappe.format_value(doc.standard_rate or doc.valuation_rate or 0, {'fieldtype':'Currency'}) }}</div>\n  <div class='item-name' style='font-size: {{ item_name_size }}'>{{ item_name }}</div>\n  <div class='brand' style='font-size: {{ brand_size }}'>{{ brand }}</div>\n  <div class='part-number' style='font-size: {{ pn_size }}'>{{ pn }}</div>\n  <div class='barcode'>\n    <img src='{{ get_barcode_image(doc.partscape_barcode or doc.part_number or doc.item_code, width=306, height=180) }}' alt='' />\n  </div>\n</div>"
+  },
+  {
+    "doctype": "Print Format",
+    "doc_type": "Warehouse",
+    "module": "PartScape",
+    "name": "PartScape Warehouse Label 62mm",
+    "standard": "No",
+    "custom_format": 1,
+    "print_format_type": "Jinja",
+    "align_labels_right": 0,
+    "show_section_headings": 0,
+    "line_breaks": 0,
+    "page_number": "Hide",
+    "html": "<style>\nhtml, body { margin: 0; padding: 0; width: 62mm; overflow: hidden; }\n.label-wh-62 {\n  width: 62mm;\n  height: 100mm;\n  padding: 0.5mm;\n  box-sizing: border-box;\n  font-family: Arial, Helvetica, sans-serif;\n  color: #000;\n  background: #fff;\n  overflow: hidden;\n}\n.company { font-size: 12pt; font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.warehouse-name { font-weight: bold; line-height: 1.05; margin-bottom: 0.5mm; text-transform: uppercase; width: 100%; word-break: break-word; }\n.warehouse-code { font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.zone { font-size: 13pt; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.barcode { text-align: center; margin-top: auto; width: 100%; }\n.barcode img { width: 100%; max-width: 100%; height: auto; max-height: 24mm; display: block; }\n</style>\n{% set company = frappe.db.get_value('Company', frappe.db.get_value('Company', {}, 'name'), ['company_name', 'phone_no'], as_dict=True) %}\n{% set wh_name = doc.warehouse_name or '' %}\n{% set wh_name_size = '28pt' if (wh_name|length) <= 8 else '23pt' if (wh_name|length) <= 14 else '19pt' if (wh_name|length) <= 22 else '16pt' %}\n{% set wh_code = doc.warehouse_code or doc.name %}\n{% set wh_code_size = '26pt' if (wh_code|length) <= 8 else '21pt' if (wh_code|length) <= 13 else '17pt' %}\n<div class='label-wh-62'>\n  <div class='company'>{{ company.company_name or '' }}</div>\n  <div class='warehouse-name' style='font-size: {{ wh_name_size }}'>{{ wh_name }}</div>\n  <div class='warehouse-code' style='font-size: {{ wh_code_size }}'>{{ wh_code }}</div>\n  <div class='zone'>{{ doc.warehouse_zone or '' }}</div>\n  <div class='barcode'>\n    <img src='{{ get_barcode_image(doc.warehouse_code or doc.name, width=696, height=240) }}' alt='' />\n  </div>\n</div>"
+  },
+  {
+    "doctype": "Print Format",
+    "doc_type": "Warehouse",
+    "module": "PartScape",
+    "name": "PartScape Warehouse Label 29mm",
+    "standard": "No",
+    "custom_format": 1,
+    "print_format_type": "Jinja",
+    "align_labels_right": 0,
+    "show_section_headings": 0,
+    "line_breaks": 0,
+    "page_number": "Hide",
+    "html": "<style>\nhtml, body { margin: 0; padding: 0; width: 29mm; overflow: hidden; }\n.label-wh-29 {\n  width: 29mm;\n  height: 90mm;\n  padding: 0.5mm;\n  box-sizing: border-box;\n  font-family: Arial, Helvetica, sans-serif;\n  color: #000;\n  background: #fff;\n  overflow: hidden;\n}\n.company { font-size: 7.5pt; font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.warehouse-name { font-weight: bold; line-height: 1.05; margin-bottom: 0.5mm; text-transform: uppercase; width: 100%; word-break: break-word; }\n.warehouse-code { font-weight: bold; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.zone { font-size: 10pt; margin-bottom: 0.5mm; width: 100%; word-break: break-word; }\n.barcode { text-align: center; width: 100%; }\n.barcode img { width: 100%; max-width: 100%; height: auto; max-height: 18mm; display: block; }\n</style>\n{% set company = frappe.db.get_value('Company', frappe.db.get_value('Company', {}, 'name'), ['company_name', 'phone_no'], as_dict=True) %}\n{% set wh_name = doc.warehouse_name or '' %}\n{% set wh_name_size = '15pt' if (wh_name|length) <= 8 else '12pt' if (wh_name|length) <= 14 else '10pt' %}\n{% set wh_code = doc.warehouse_code or doc.name %}\n{% set wh_code_size = '14pt' if (wh_code|length) <= 8 else '11pt' if (wh_code|length) <= 13 else '9pt' %}\n<div class='label-wh-29'>\n  <div class='company'>{{ company.company_name or '' }}</div>\n  <div class='warehouse-name' style='font-size: {{ wh_name_size }}'>{{ wh_name }}</div>\n  <div class='warehouse-code' style='font-size: {{ wh_code_size }}'>{{ wh_code }}</div>\n  <div class='zone'>{{ doc.warehouse_zone or '' }}</div>\n  <div class='barcode'>\n    <img src='{{ get_barcode_image(doc.warehouse_code or doc.name, width=306, height=180) }}' alt='' />\n  </div>\n</div>"
+  }
+]

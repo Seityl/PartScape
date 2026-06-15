@@ -17,5 +17,8 @@ setup(
     install_requires=[
         'requests>=2.28.0',
         'rapidfuzz>=3.0.0',
+        'brother-ql>=0.9',
+        'python-barcode>=0.13.1',
+        'Pillow>=9.0.0',
     ],
 )

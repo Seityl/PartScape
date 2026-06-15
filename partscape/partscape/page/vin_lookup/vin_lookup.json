@@ -12,16 +12,10 @@
  "page_name": "vin-lookup",
  "roles": [
   {
-   "role": "Fleet Manager"
+   "role": "Purchase Manager"
   },
   {
    "role": "Parts Clerk"
-  },
-  {
-   "role": "Workshop Technician"
-  },
-  {
-   "role": "System Manager"
   }
  ],
  "script": null,

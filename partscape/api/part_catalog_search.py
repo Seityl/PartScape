@@ -173,35 +173,35 @@ def _prefix_search(keyword, brand_sql, brand_val, category_sql, category_val, fi
     base_params = brand_val + category_val
 
     query = f"""
-        SELECT name, part_number, part_name, brand, MAX(rel) as relevance
+        SELECT part_catalog_name, part_number, part_name, brand, MAX(rel) as relevance
         FROM (
-            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 100 as rel
+            (SELECT pc.name AS part_catalog_name, pc.part_number, pc.part_name, pc.brand, 100 as rel
              FROM `tabPart Catalog` pc
              WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.part_number = %s {fitment_sql}
              LIMIT 20)
             UNION ALL
-            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 95 as rel
+            (SELECT pc.name AS part_catalog_name, pc.part_number, pc.part_name, pc.brand, 95 as rel
              FROM `tabPart Catalog` pc
              WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.brand = %s {fitment_sql}
              LIMIT 20)
             UNION ALL
-            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 85 as rel
+            (SELECT pc.name AS part_catalog_name, pc.part_number, pc.part_name, pc.brand, 85 as rel
              FROM `tabPart Catalog` pc
              WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.brand LIKE %s {fitment_sql}
              LIMIT 20)
             UNION ALL
-            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 80 as rel
+            (SELECT pc.name AS part_catalog_name, pc.part_number, pc.part_name, pc.brand, 80 as rel
              FROM `tabPart Catalog` pc
              WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.part_number LIKE %s {fitment_sql}
              LIMIT 20)
             UNION ALL
-            (SELECT pc.name, pc.part_number, pc.part_name, pc.brand, 60 as rel
+            (SELECT pc.name AS part_catalog_name, pc.part_number, pc.part_name, pc.brand, 60 as rel
              FROM `tabPart Catalog` pc
              WHERE pc.is_active = 1 {brand_sql} {category_sql} AND pc.part_name LIKE %s {fitment_sql}
              LIMIT 20)
         ) combined
-        GROUP BY name, part_number, part_name, brand
-        ORDER BY relevance DESC, name DESC
+        GROUP BY part_catalog_name, part_number, part_name, brand
+        ORDER BY relevance DESC, part_catalog_name DESC
         LIMIT %s OFFSET %s
     """
     params = (

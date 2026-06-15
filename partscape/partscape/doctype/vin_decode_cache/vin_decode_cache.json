@@ -1,143 +1,155 @@
 {
-    "actions": [],
-    "allow_rename": 0,
-    "creation": "2026-05-24 00:00:00.000000",
-    "doctype": "DocType",
-    "editable_grid": 1,
-    "engine": "InnoDB",
-    "field_order": [
-        "vin",
-        "make",
-        "model",
-        "year",
-        "engine_code",
-        "column_break_1",
-        "steering_location",
-        "source_api",
-        "last_decoded",
-        "hit_count",
-        "section_break_1",
-        "decoded_json"
-    ],
-    "fields": [
-        {
-            "fieldname": "vin",
-            "fieldtype": "Data",
-            "label": "VIN / Frame Number",
-            "reqd": 1,
-            "unique": 1,
-            "in_list_view": 1,
-            "in_standard_filter": 1,
-            "in_preview": 1,
-            "bold": 1
-        },
-        {
-            "fieldname": "make",
-            "fieldtype": "Data",
-            "label": "Make",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "model",
-            "fieldtype": "Data",
-            "label": "Model",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "year",
-            "fieldtype": "Int",
-            "label": "Year",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "engine_code",
-            "fieldtype": "Data",
-            "label": "Engine Code",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "column_break_1",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "steering_location",
-            "fieldtype": "Data",
-            "label": "Steering Location",
-            "in_list_view": 1,
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "source_api",
-            "fieldtype": "Data",
-            "label": "Source API",
-            "in_list_view": 1,
-            "in_standard_filter": 1,
-            "description": "NHTSA_vPIC, VINDecoderEU, or JDM_MANUAL"
-        },
-        {
-            "fieldname": "last_decoded",
-            "fieldtype": "Datetime",
-            "label": "Last Decoded",
-            "in_list_view": 1
-        },
-        {
-            "fieldname": "hit_count",
-            "fieldtype": "Int",
-            "label": "Hit Count",
-            "default": 0,
-            "in_list_view": 1,
-            "description": "How many times this VIN has been looked up"
-        },
-        {
-            "fieldname": "section_break_1",
-            "fieldtype": "Section Break"
-        },
-        {
-            "fieldname": "decoded_json",
-            "fieldtype": "JSON",
-            "label": "Decoded JSON"
-        }
-    ],
-    "index_web_pages_for_search": 1,
-    "links": [],
-    "modified": "2026-05-24 00:00:00.000000",
-    "modified_by": "Administrator",
-    "module": "PartScape",
-    "name": "VIN Decode Cache",
-    "owner": "Administrator",
-    "permissions": [
-        {
-            "create": 1,
-            "delete": 1,
-            "email": 1,
-            "export": 1,
-            "print": 1,
-            "read": 1,
-            "report": 1,
-            "role": "System Manager",
-            "share": 1,
-            "write": 1
-        },
-        {
-            "create": 0,
-            "delete": 0,
-            "email": 1,
-            "export": 1,
-            "print": 1,
-            "read": 1,
-            "report": 1,
-            "role": "Fleet Manager",
-            "share": 0,
-            "write": 0
-        }
-    ],
-    "sort_field": "last_decoded",
-    "sort_order": "DESC",
-    "track_changes": 1,
-    "autoname": "field:vin",
-    "title_field": "vin",
-    "allow_import": 0,
-    "search_fields": "vin,make,model"
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-05-24 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "vin",
+  "make",
+  "model",
+  "year",
+  "engine_code",
+  "column_break_1",
+  "steering_location",
+  "source_api",
+  "last_decoded",
+  "hit_count",
+  "section_break_1",
+  "decoded_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "vin",
+   "fieldtype": "Data",
+   "label": "VIN / Frame Number",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "in_preview": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "year",
+   "fieldtype": "Int",
+   "label": "Year",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "engine_code",
+   "fieldtype": "Data",
+   "label": "Engine Code",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "steering_location",
+   "fieldtype": "Data",
+   "label": "Steering Location",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "source_api",
+   "fieldtype": "Data",
+   "label": "Source API",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "NHTSA_vPIC, VINDecoderEU, or JDM_MANUAL"
+  },
+  {
+   "fieldname": "last_decoded",
+   "fieldtype": "Datetime",
+   "label": "Last Decoded",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "hit_count",
+   "fieldtype": "Int",
+   "label": "Hit Count",
+   "default": 0,
+   "in_list_view": 1,
+   "description": "How many times this VIN has been looked up"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "decoded_json",
+   "fieldtype": "JSON",
+   "label": "Decoded JSON"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-24 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "PartScape",
+ "name": "VIN Decode Cache",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 0,
+   "cancel": 0,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "if_owner": 0,
+   "import": 0,
+   "permlevel": 0,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Manager",
+   "share": 1,
+   "submit": 0,
+   "write": 1
+  },
+  {
+   "amend": 0,
+   "cancel": 0,
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "if_owner": 0,
+   "import": 0,
+   "permlevel": 0,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Parts Clerk",
+   "share": 0,
+   "submit": 0,
+   "write": 0
+  }
+ ],
+ "sort_field": "last_decoded",
+ "sort_order": "DESC",
+ "track_changes": 1,
+ "autoname": "field:vin",
+ "title_field": "vin",
+ "allow_import": 0,
+ "search_fields": "vin,make,model"
 }
