@@ -202,14 +202,14 @@ def _insert_article_batch(batch: list):
     for pn, name, desc, brand, cat in batch:
         name_hash = frappe.generate_hash()[:10]
         values_list.append(
-            f"('{name_hash}', '{now_str}', '{now_str}', '{user}', '{user}', 0, 0, '{brand}', '{pn}', '{name}', NULL, 0, '{cat}', '{desc}', NULL, NULL, NULL, NULL, 'Universal', NULL, 1, NULL, NULL)"
+            f"('{name_hash}', '{now_str}', '{now_str}', '{user}', '{user}', 0, 0, '{brand}', '{pn}', '{name}', NULL, 0, '{cat}', '{desc}', NULL, NULL, NULL, NULL, 'Universal', NULL, 1, NULL)"
         )
 
     values = ", ".join(values_list)
 
     sql = f"""
         INSERT IGNORE INTO `tabPart Catalog`
-        (name, creation, modified, modified_by, owner, docstatus, idx, brand, part_number, part_name, vehicle_make, is_oem, category, description, diagram_reference, weight_kg, dimensions, estimated_cost_usd, steering_position, market_restriction, is_active, images, superseded_by)
+        (name, creation, modified, modified_by, owner, docstatus, idx, brand, part_number, part_name, vehicle_make, is_oem, category, description, diagram_reference, weight_kg, dimensions, estimated_cost_usd, steering_position, market_restriction, is_active, images)
         VALUES {values}
     """
     frappe.db.sql(sql)

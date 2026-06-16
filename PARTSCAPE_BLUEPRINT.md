@@ -272,15 +272,12 @@ VINDecodeCache (standalone lookup)
 | transmission | Data | Denormalized |
 | color | Data | |
 | registration_no | Data | Local plate |
-| owner | Link | Customer |
-| country_of_origin | Data | Japan, UK, etc. |
-| import_date | Date | |
+| customer | Link | Customer |
 | mileage | Int | KM |
 | steering_position | Select | RHD, LHD |
 | market_code | Data | JDM, UKDM, etc. |
 | status | Select | Active, Workshop, Scrapped, Sold |
 | last_vin_decode | Datetime | |
-| decoded_json | Code | Full NHTSA/vPIC response |
 
 #### Part Catalog (Universal Parts Registry)
 | Field | Type | Notes |
@@ -297,7 +294,6 @@ VINDecodeCache (standalone lookup)
 | dimensions | Data | LxWxH mm |
 | images | Attach Image | Multiple via File doctype |
 | diagrams | Table | Part Catalog Diagram (child table) — links to exploded view diagrams |
-| superseded_by | Link | Part Catalog (self) |
 | is_active | Check | |
 | estimated_cost_usd | Currency | Base cost before landed calc |
 | steering_position | Select | RHD, LHD, Universal |
@@ -348,7 +344,6 @@ VINDecodeCache (standalone lookup)
 | year_end | Int | |
 | steering_position | Select | RHD, LHD, Universal |
 | market_code | Data | |
-| part_diagram | Link | Part Diagram (optional) — links to exploded view |
 | diagram_page | Data | Text reference to diagram page |
 
 #### Part Supplier Reference (Child Table / Separate DocType)

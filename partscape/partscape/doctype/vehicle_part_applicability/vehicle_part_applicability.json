@@ -14,8 +14,7 @@
     "year_end",
     "steering_position",
     "market_code",
-    "diagram_page",
-    "part_diagram"
+    "diagram_page"
   ],
   "fields": [
     {
@@ -72,14 +71,6 @@
       "fieldname": "market_code",
       "fieldtype": "Data",
       "label": "Market Code",
-      "in_list_view": 1
-    },
-    {
-      "description": "Link to the exploded view diagram showing this part",
-      "fieldname": "part_diagram",
-      "fieldtype": "Link",
-      "label": "Part Diagram",
-      "options": "Part Diagram",
       "in_list_view": 1
     },
     {

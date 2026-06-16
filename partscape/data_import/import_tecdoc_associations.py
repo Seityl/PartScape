@@ -337,7 +337,7 @@ def _insert_applicability_batch(batch: list):
         f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', 0, 0, "
         f"'{esc(pc)}', '{esc(vm)}', "
         f"{('NULL' if not variant else chr(39)+esc(variant)+chr(39))}, "
-        f"{ys}, {ye}, 'Universal', NULL, NULL, NULL, "
+        f"{ys}, {ye}, 'Universal', NULL, NULL, "
         f"'{esc(pc)}', 'Part Catalog', 'applicable_vehicles')"
         for pc, vm, variant, ys, ye in batch
     )
@@ -345,7 +345,7 @@ def _insert_applicability_batch(batch: list):
         INSERT IGNORE INTO `tabVehicle Part Applicability`
         (name, creation, modified, modified_by, owner, docstatus, idx,
          part_catalog, vehicle_model, variant, year_start, year_end,
-         steering_position, market_code, diagram_page, part_diagram,
+         steering_position, market_code, diagram_page,
          parent, parenttype, parentfield)
         VALUES {values}
     """
