@@ -153,6 +153,10 @@ def seed_from_epc_playwright(frame_no: str, region: str = "general"):
     if not make_doc:
         make_doc = frappe.get_doc({"doctype": "Vehicle Make", "make_name": "Toyota"}).insert().name
 
+    brand_doc = frappe.db.get_value("Brand", {"brand": "Toyota"}, "name")
+    if not brand_doc:
+        brand_doc = frappe.get_doc({"doctype": "Brand", "brand": "Toyota"}).insert().name
+
     # Create/update vehicle model
     model_doc = frappe.db.get_value("Vehicle Model", {"model_code": data["model_code"]}, "name")
     if not model_doc:
@@ -168,15 +172,15 @@ def seed_from_epc_playwright(frame_no: str, region: str = "general"):
     # Create parts
     parts_created = 0
     for p in data.get("parts", []):
-        if frappe.db.exists("Part Catalog", {"brand": "Toyota", "part_number": p["part_number"]}):
+        if frappe.db.exists("Part Catalog", {"brand": brand_doc, "part_number": p["part_number"]}):
             continue
         doc = frappe.get_doc({
             "doctype": "Part Catalog",
-            "brand": "Toyota",
+            "brand": brand_doc,
             "part_number": p["part_number"],
             "part_name": p["description"][:140],
             "description": p["description"],
-            "vehicle_make": make_doc,
+            "oem_make": make_doc,
             "is_oem": 1,
             "is_active": 1,
         })

@@ -9,12 +9,11 @@
   "brand",
   "part_number",
   "part_name",
-  "vehicle_make",
+  "oem_make",
   "is_oem",
   "category",
   "description",
   "column_break_1",
-  "diagram_reference",
   "weight_kg",
   "dimensions",
   "estimated_cost_usd",
@@ -31,8 +30,9 @@
  "fields": [
   {
    "fieldname": "brand",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Brand",
+   "options": "Brand",
    "reqd": 1,
    "description": "Manufacturer or aftermarket brand",
    "in_list_view": 1,
@@ -64,11 +64,11 @@
    "search_index": 1
   },
   {
-   "fieldname": "vehicle_make",
+   "fieldname": "oem_make",
    "fieldtype": "Link",
-   "label": "Vehicle Make",
+   "label": "OEM Make",
    "options": "Vehicle Make",
-   "description": "OEM vehicle manufacturer (auto-sets is_oem)",
+   "description": "Original manufacturer this part is branded for (auto-sets Is OEM)",
    "in_list_view": 1,
    "in_standard_filter": 1
   },
@@ -77,7 +77,7 @@
    "fieldtype": "Check",
    "label": "Is OEM",
    "default": 0,
-   "description": "Auto-set when brand matches vehicle make",
+   "description": "Auto-set when Brand matches OEM Make",
    "in_list_view": 1,
    "in_standard_filter": 1
   },
@@ -85,7 +85,8 @@
    "fieldname": "category",
    "fieldtype": "Link",
    "label": "Category",
-   "options": "Part Category",
+   "options": "Item Group",
+   "description": "Item Group for this part",
    "in_list_view": 1,
    "in_standard_filter": 1
   },
@@ -97,12 +98,6 @@
   {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "diagram_reference",
-   "fieldtype": "Data",
-   "label": "Diagram Reference",
-   "description": "e.g. B-15 in exploded view"
   },
   {
    "fieldname": "weight_kg",
@@ -133,9 +128,10 @@
   },
   {
    "fieldname": "market_restriction",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Market Restriction",
-   "description": "e.g. JDM-only",
+   "options": "Market",
+   "description": "Market this part is restricted to, if any",
    "in_list_view": 1,
    "in_standard_filter": 1
   },
@@ -232,6 +228,7 @@
  "autoname": "prompt",
  "title_field": "part_name",
  "show_title_field_in_link": 1,
+ "image_field": "images",
  "allow_import": 1,
  "search_fields": "brand,part_number,part_name,description"
 }

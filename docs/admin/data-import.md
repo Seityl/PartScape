@@ -59,8 +59,12 @@ For your own data, use the generic CSV importer.
 ### CSV columns
 
 ```csv
-brand,part_number,part_name,category,description,diagram_reference,weight_kg,dimensions,estimated_cost_usd,vehicle_model,year_start,year_end,engine_code,steering_position,market_code,interchange_brand,interchange_part_number,relationship_type,quality_tier
+brand,part_number,part_name,category,description,weight_kg,dimensions,estimated_cost_usd,vehicle_model,year_start,year_end,engine_code,steering_position,market_code,interchange_brand,interchange_part_number,relationship_type,quality_tier
 ```
+
+- `brand` — must match an existing **Brand** doc (or one will be created).
+- `category` — must match an existing **Item Group** (or one will be created under `Auto Parts`).
+- `market_code` — must match an existing **Market** doc (or one will be created).
 
 ### Run
 

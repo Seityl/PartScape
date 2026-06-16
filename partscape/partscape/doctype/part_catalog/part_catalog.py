@@ -29,7 +29,7 @@ class PartCatalog(Document):
         existing = frappe.db.get_value(
             "Part Catalog",
             {
-                "brand": self.brand.strip(),
+                "brand": self.brand,
                 "part_number": self.part_number.strip(),
                 "name": ("!=", self.name),
             },
@@ -43,17 +43,17 @@ class PartCatalog(Document):
             )
 
     def _auto_set_oem_flag(self):
-        """Set is_oem if the brand matches the vehicle manufacturer name."""
-        if self.vehicle_make and self.brand:
-            make_name = frappe.db.get_value("Vehicle Make", self.vehicle_make, "make_name")
-            if make_name and make_name.strip().lower() == self.brand.strip().lower():
+        """Set is_oem if the Brand matches the OEM Make name."""
+        if self.oem_make and self.brand:
+            make_name = frappe.db.get_value("Vehicle Make", self.oem_make, "make_name")
+            brand_name = frappe.db.get_value("Brand", self.brand, "brand") or self.brand
+            if make_name and make_name.strip().lower() == brand_name.strip().lower():
                 self.is_oem = 1
             else:
                 # Only auto-clear if explicitly mismatched; preserve manual override otherwise
                 pass
 
     def _normalize_fields(self):
-        self.brand = (self.brand or "").strip()
         self.part_number = (self.part_number or "").strip().upper()
         if self.part_name:
             self.part_name = self.part_name.strip()

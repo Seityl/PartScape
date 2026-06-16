@@ -86,23 +86,27 @@ def _ensure_suppliers(supplier_map: dict) -> dict:
     return id_to_docname
 
 
-def _ensure_categories(product_map: dict) -> dict:
-    """Create Part Category docs. Returns name→docname."""
-    print("\n[2/4] Creating categories...")
+def _ensure_item_groups(product_map: dict) -> dict:
+    """Create Item Group docs for TecDoc product categories. Returns name→docname."""
+    print("\n[2/4] Creating item groups...")
     name_to_docname = {}
     unique_categories = set(product_map.values())
+
+    parent_group = "Auto Parts" if frappe.db.exists("Item Group", "Auto Parts") else "All Item Groups"
 
     for cat_name in unique_categories:
         if not cat_name:
             continue
-        existing = frappe.db.get_value("Part Category", {"category_name": cat_name}, "name")
+        existing = frappe.db.get_value("Item Group", {"item_group_name": cat_name}, "name")
         if existing:
             name_to_docname[cat_name] = existing
         else:
             try:
                 doc = frappe.get_doc({
-                    "doctype": "Part Category",
-                    "category_name": cat_name,
+                    "doctype": "Item Group",
+                    "item_group_name": cat_name,
+                    "parent_item_group": parent_group,
+                    "is_group": 0,
                 })
                 doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
                 name_to_docname[cat_name] = doc.name
@@ -110,7 +114,33 @@ def _ensure_categories(product_map: dict) -> dict:
                 name_to_docname[cat_name] = cat_name
 
     frappe.db.commit()
-    print(f"  → {len(name_to_docname)} categories ready")
+    print(f"  → {len(name_to_docname)} item groups ready")
+    return name_to_docname
+
+
+def _ensure_brands(brand_names: set) -> dict:
+    """Create Brand docs for every unique supplier/brand name. Returns name→docname."""
+    print("\n[2/4] Creating brands...")
+    name_to_docname = {}
+    for brand_name in brand_names:
+        if not brand_name:
+            continue
+        existing = frappe.db.get_value("Brand", {"brand": brand_name}, "name")
+        if existing:
+            name_to_docname[brand_name] = existing
+        else:
+            try:
+                doc = frappe.get_doc({
+                    "doctype": "Brand",
+                    "brand": brand_name,
+                })
+                doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
+                name_to_docname[brand_name] = doc.name
+            except Exception:
+                name_to_docname[brand_name] = brand_name
+
+    frappe.db.commit()
+    print(f"  → {len(name_to_docname)} brands ready")
     return name_to_docname
 
 
@@ -121,7 +151,8 @@ def import_articles() -> int:
     supplier_map = _load_supplier_map()
     product_map = _load_product_map()
     supplier_id_to_docname = _ensure_suppliers(supplier_map)
-    category_name_to_docname = _ensure_categories(product_map)
+    category_name_to_docname = _ensure_item_groups(product_map)
+    brand_name_to_docname = _ensure_brands(set(supplier_map.values()))
 
     articles_file = os.path.join(TECDOC_DIR, "articles.csv")
     total_imported = 0
@@ -152,8 +183,9 @@ def import_articles() -> int:
                 total_skipped += 1
                 continue
 
-            # Get supplier and category
+            # Get brand (supplier) and category (item group)
             supplier_name = supplier_map.get(supplier_id, "TecDoc")
+            brand_docname = brand_name_to_docname.get(supplier_name, supplier_name)
             category_name = product_map.get(product_id, "General")
             category_docname = category_name_to_docname.get(category_name, "General")
 
@@ -166,7 +198,7 @@ def import_articles() -> int:
                 clean_pn,
                 clean_name,
                 clean_desc,
-                supplier_name.replace("'", "''"),
+                brand_docname.replace("'", "''"),
                 category_docname.replace("'", "''"),
             ))
 
@@ -202,14 +234,14 @@ def _insert_article_batch(batch: list):
     for pn, name, desc, brand, cat in batch:
         name_hash = frappe.generate_hash()[:10]
         values_list.append(
-            f"('{name_hash}', '{now_str}', '{now_str}', '{user}', '{user}', 0, 0, '{brand}', '{pn}', '{name}', NULL, 0, '{cat}', '{desc}', NULL, NULL, NULL, NULL, 'Universal', NULL, 1, NULL)"
+            f"('{name_hash}', '{now_str}', '{now_str}', '{user}', '{user}', 0, 0, '{brand}', '{pn}', '{name}', NULL, 0, '{cat}', '{desc}', NULL, NULL, NULL, 'Universal', NULL, 1, NULL)"
         )
 
     values = ", ".join(values_list)
 
     sql = f"""
         INSERT IGNORE INTO `tabPart Catalog`
-        (name, creation, modified, modified_by, owner, docstatus, idx, brand, part_number, part_name, vehicle_make, is_oem, category, description, diagram_reference, weight_kg, dimensions, estimated_cost_usd, steering_position, market_restriction, is_active, images)
+        (name, creation, modified, modified_by, owner, docstatus, idx, brand, part_number, part_name, oem_make, is_oem, category, description, weight_kg, dimensions, estimated_cost_usd, steering_position, market_restriction, is_active, images)
         VALUES {values}
     """
     frappe.db.sql(sql)

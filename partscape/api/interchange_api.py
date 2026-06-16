@@ -101,16 +101,16 @@ def find_oem_by_aftermarket(brand: str, part_number: str) -> list:
         pc = frappe.db.get_value(
             "Part Catalog",
             other_name,
-            ["brand", "part_number", "part_name", "is_oem", "vehicle_make"],
+            ["brand", "part_number", "part_name", "is_oem", "oem_make"],
             as_dict=True,
         )
         if pc and pc.is_oem:
-            vehicle_make_name = frappe.db.get_value("Vehicle Make", pc.vehicle_make, "make_name")
+            oem_make_name = frappe.db.get_value("Vehicle Make", pc.oem_make, "make_name")
             results.append({
                 "brand": pc.brand,
                 "part_number": pc.part_number,
                 "part_name": pc.part_name,
-                "vehicle_make": vehicle_make_name or pc.vehicle_make,
+                "oem_make": oem_make_name or pc.oem_make,
                 "quality_tier": edge.quality_tier,
                 "confidence_score": edge.confidence_score,
             })

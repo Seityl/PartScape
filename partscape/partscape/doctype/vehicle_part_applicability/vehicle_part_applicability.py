@@ -21,7 +21,7 @@ class VehiclePartApplicability(Document):
         pc = frappe.db.get_value(
             "Part Catalog",
             self.part_catalog,
-            ["is_oem", "brand", "vehicle_make"],
+            ["is_oem", "brand", "oem_make"],
             as_dict=True,
         )
         if pc and not pc.is_oem:

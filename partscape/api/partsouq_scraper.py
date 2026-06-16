@@ -35,7 +35,7 @@ def get_partsouq_vin_url(vin: str, make: str = "Toyota") -> str:
 def parse_partsouq_diagram_page(html: str) -> list:
     """
     Parse a Partsouq exploded diagram page HTML for part numbers and diagram image.
-    Returns list of dicts: [{brand, part_number, description, diagram_ref, diagram_url, price_usd}]
+    Returns list of dicts: [{brand, part_number, description, diagram_url, price_usd}]
     """
     parts = []
     if not html:

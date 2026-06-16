@@ -32,7 +32,7 @@ When an Item is created from the catalogue, PartScape sets:
 
 - **Item Code** — generated as above.
 - **Item Name** — from the catalogue part name.
-- **Item Group** — from Part Category or PartScape Settings fallback.
+- **Item Group** — from the catalogue category (Item Group) or PartScape Settings fallback.
 - **Stock UOM** — from PartScape Settings.
 - **Is Stock Item** — Yes.
 - **Is Purchase Item** — Yes.

@@ -282,24 +282,23 @@ VINDecodeCache (standalone lookup)
 #### Part Catalog (Universal Parts Registry)
 | Field | Type | Notes |
 |-------|------|-------|
-| brand | Data | Required. e.g., "Toyota", "Bosch", "Denso" |
+| brand | Link → Brand | Required. e.g., "Toyota", "Bosch", "Denso" |
 | part_number | Data | Required. e.g., "04465-26421" |
 | part_name | Data | e.g., "Brake Pad Set, Disc" |
-| vehicle_make | Link | Vehicle Make this part is FOR |
-| is_oem | Check | Auto-set when brand == vehicle_make |
-| category | Link | Part Category |
+| oem_make | Link → Vehicle Make | Vehicle make this part is branded for |
+| is_oem | Check | Auto-set when brand matches oem_make |
+| category | Link → Item Group | ERPNext Item Group for this part |
 | description | Text | |
-| diagram_reference | Data | e.g., "B-15" in exploded view |
 | weight_kg | Float | |
 | dimensions | Data | LxWxH mm |
-| images | Attach Image | Multiple via File doctype |
+| images | Attach Image | Primary image for this part |
 | diagrams | Table | Part Catalog Diagram (child table) — links to exploded view diagrams |
 | is_active | Check | |
 | estimated_cost_usd | Currency | Base cost before landed calc |
 | steering_position | Select | RHD, LHD, Universal |
-| market_restriction | Data | JDM-only, etc. |
+| market_restriction | Link → Market | JDM-only, etc. |
 
-**Identity:** The composite `(brand, part_number)` is the unique key. "Toyota 04465-26421" and "Bosch 0 986 494 046" are two distinct rows. OEM parts are simply rows where `brand == vehicle_make`.
+**Identity:** The composite `(brand, part_number)` is the unique key. "Toyota 04465-26421" and "Bosch 0 986 494 046" are two distinct rows. OEM parts are simply rows where `brand` matches `oem_make`.
 
 #### Part Interchange (Bidirectional Graph Edge)
 | Field | Type | Notes |
@@ -406,7 +405,7 @@ VINDecodeCache (standalone lookup)
 ### 3.4 Custom Fields on Existing ERPNext DocTypes
 
 #### Item
-- `brand` (Data) — indexed
+- `brand` (Link → Brand) — indexed
 - `part_number` (Data) — indexed
 - `part_catalog_reference` (Link → Part Catalog)
 - `quality_tier` (Select)
@@ -417,7 +416,6 @@ VINDecodeCache (standalone lookup)
 - `vin` (Data) — copied from Vehicle
 - `part_catalog_reference` (Link → Part Catalog)
 - `alternative_part_numbers` (Text) — comma-separated interchange list
-- `diagram_reference` (Data)
 - `estimated_landed_cost_xcd` (Currency) — computed
 - `applicable_models` (Text) — auto-populated
 

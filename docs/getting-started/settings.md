@@ -13,7 +13,7 @@ PartScape Settings is the single place where administrators configure defaults u
 |---|---|
 | **Default Warehouse** | The warehouse assigned to new Items when they are created from the Part Catalogue. |
 | **Default UOM** | Unit of measure for new Items (usually `Nos`). |
-| **Default Item Group** | Item Group used when a Part Category does not have its own Item Group mapping. |
+| **Default Item Group** | Item Group used when a catalogue entry does not have its own category (Item Group). |
 | **Default Root Item Group** | Fallback Item Group if the default item group is also missing. |
 | **Default Income Account** | Income account for Item Defaults. |
 | **Default Expense Account** | Expense account for Item Defaults. |
@@ -27,11 +27,10 @@ When a user selects a part from the catalogue in a transaction, PartScape create
 ## Recommended setup
 
 1. Create the Item Groups you want for your parts (for example, `Auto Parts`, `Brakes`, `Filters`).
-2. Map each **Part Category** to an Item Group on the Part Category form.
-3. Fill in the accounts and cost centers in PartScape Settings.
-4. Choose your default warehouse.
+2. Fill in the accounts and cost centers in PartScape Settings.
+3. Choose your default warehouse.
 
-If a Part Category has its own Item Group, PartScape uses that. Otherwise it falls back to the settings here.
+When a catalogue entry has its own category (Item Group), PartScape uses that. Otherwise it falls back to the settings here.
 
 ## Label Printer Settings
 

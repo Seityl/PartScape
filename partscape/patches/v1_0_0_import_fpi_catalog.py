@@ -86,16 +86,34 @@ CATEGORY_MAP = {
 }
 
 
-def _ensure_category(category_name: str) -> str:
-    """Get or create a Part Category."""
-    if not category_name:
-        category_name = "General"
-    existing = frappe.db.get_value("Part Category", {"category_name": category_name}, "name")
+def _ensure_item_group(group_name: str) -> str:
+    """Get or create an Item Group."""
+    if not group_name:
+        group_name = "General"
+    existing = frappe.db.get_value("Item Group", {"item_group_name": group_name}, "name")
+    if existing:
+        return existing
+    parent_group = "Auto Parts" if frappe.db.exists("Item Group", "Auto Parts") else "All Item Groups"
+    doc = frappe.get_doc({
+        "doctype": "Item Group",
+        "item_group_name": group_name,
+        "parent_item_group": parent_group,
+        "is_group": 0,
+    })
+    doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
+    return doc.name
+
+
+def _ensure_brand(brand_name: str) -> str:
+    """Get or create a Brand doc."""
+    if not brand_name:
+        return None
+    existing = frappe.db.get_value("Brand", {"brand": brand_name}, "name")
     if existing:
         return existing
     doc = frappe.get_doc({
-        "doctype": "Part Category",
-        "category_name": category_name,
+        "doctype": "Brand",
+        "brand": brand_name,
     })
     doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
     return doc.name
@@ -154,12 +172,13 @@ def _create_part_catalog(description: str, oem_number: str, fpi_code: str,
         return None
 
     category = _map_category(description)
-    category_docname = _ensure_category(category)
+    category_docname = _ensure_item_group(category)
 
     # Clean part number
     part_number = part_number.strip().replace(" ", "-").replace("/", "-")[:50]
     part_name = description.strip()[:100] if description else part_number
-    brand = make_name if make_name else "FPI"
+    brand_name = make_name if make_name else "FPI"
+    brand_docname = _ensure_brand(brand_name)
 
     existing = frappe.db.get_value("Part Catalog", {"part_number": part_number}, "name")
     if existing:
@@ -167,12 +186,12 @@ def _create_part_catalog(description: str, oem_number: str, fpi_code: str,
 
     doc = frappe.get_doc({
         "doctype": "Part Catalog",
-        "brand": brand,
+        "brand": brand_docname,
         "part_number": part_number,
         "part_name": part_name,
         "description": description.strip()[:200],
         "category": category_docname,
-        "vehicle_make": _get_or_create_make(make_name),
+        "oem_make": _get_or_create_make(make_name),
         "is_oem": 1 if oem_number and oem_number == part_number else 0,
         "is_active": 1,
     })

@@ -41,10 +41,6 @@ def create_item_from_part_catalog(part_catalog_name: str, create_if_missing: boo
     item_code = _generate_item_code(pc)
     settings = _get_settings()
 
-    # Ensure brand exists in ERPNext
-    if pc.brand and not frappe.db.exists("Brand", pc.brand):
-        frappe.get_doc({"doctype": "Brand", "brand": pc.brand}).insert(ignore_permissions=True)
-
     item_dict = {
         "doctype": "Item",
         "item_code": item_code,
@@ -62,6 +58,10 @@ def create_item_from_part_catalog(part_catalog_name: str, create_if_missing: boo
         "default_material_request_type": "Purchase",
         "valuation_method": "FIFO",
     }
+
+    # Ensure Brand exists in ERPNext
+    if pc.brand and not frappe.db.exists("Brand", pc.brand):
+        frappe.get_doc({"doctype": "Brand", "brand": pc.brand}).insert(ignore_permissions=True)
 
     # Item Defaults
     defaults = _build_item_defaults(settings)
@@ -200,30 +200,12 @@ def _generate_item_code(pc) -> str:
 
 def _map_category_to_item_group(category: str, settings: dict = None) -> str:
     """
-    Map Part Catalog category to ERPNext Item Group.
-    Priority:
-      1. Cached item_group on the Part Category doc
-      2. Keyword mapper (runtime fallback)
-      3. PartScape Settings default_item_group
-      4. PartScape Settings default_root_item_group
-      5. Hard fallback 'Auto Parts'
+    Part Catalog category now links directly to Item Group.
+    Validate the selected group, then fall back through settings.
     """
-    from partscape.utils.category_mapper import map_category_to_item_group
+    if category and frappe.db.exists("Item Group", category):
+        return category
 
-    if not category:
-        return _fallback_item_group(settings)
-
-    # 1. Check cached mapping on Part Category
-    cached = frappe.db.get_value("Part Category", {"category_name": category}, "item_group")
-    if cached and frappe.db.exists("Item Group", cached):
-        return cached
-
-    # 2. Runtime keyword mapper
-    mapped = map_category_to_item_group(category)
-    if mapped:
-        return mapped
-
-    # 3-5. Fallback chain
     return _fallback_item_group(settings)
 
 

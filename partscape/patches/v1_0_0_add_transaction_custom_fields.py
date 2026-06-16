@@ -51,12 +51,6 @@ def execute():
             "fieldtype": "Data",
             "insert_after": "alternative_part_numbers",
         },
-        {
-            "fieldname": "diagram_reference",
-            "label": "Diagram Reference",
-            "fieldtype": "Data",
-            "insert_after": "applicable_models",
-        },
     ]
 
     created = 0

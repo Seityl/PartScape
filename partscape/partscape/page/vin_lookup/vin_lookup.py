@@ -126,7 +126,7 @@ def search_part_catalog(keyword: str = "", filters: dict | None = None) -> list:
 			"description",
 			"estimated_cost_usd",
 			"is_oem",
-			"vehicle_make",
+			"oem_make",
 			"steering_position",
 			"market_restriction",
 		],

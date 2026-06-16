@@ -19,9 +19,9 @@ PartScape solves this by:
 | **Brand** | The brand or manufacturer of the part (for example, `BOSCH`, `TOYOTA`). |
 | **Part Number** | The manufacturer's or supplier's part number. |
 | **Part Name** | A short description of the part. |
-| **Category** | The Part Category the part belongs to (for example, `Brake Pads`). |
-| **Vehicle Make** | If the part is OEM, the vehicle manufacturer. |
-| **Is OEM** | Checked when the brand matches the vehicle manufacturer. |
+| **Category** | The Item Group the part belongs to (for example, `Brake Pads`). |
+| **OEM Make** | If the part is OEM, the vehicle manufacturer. |
+| **Is OEM** | Checked when the brand matches the OEM make. |
 | **Description** | Longer description or notes. |
 | **Estimated Cost (USD)** | Reference cost for purchase planning. |
 | **Superseded By** | If this part is replaced by another catalogue entry. |

@@ -249,7 +249,6 @@ def _fulltext_search(keyword, brand_sql, brand_val, category_sql, category_val, 
             pc.part_name,
             pc.category,
             pc.estimated_cost_usd,
-            pc.diagram_reference,
             pc.images
         FROM `tabPart Catalog` pc
         WHERE {where_clause}
@@ -291,7 +290,6 @@ def _execute_empty_query(brand_sql, brand_val, category_sql, category_val, fitme
             pc.part_name,
             pc.category,
             pc.estimated_cost_usd,
-            pc.diagram_reference,
             pc.images
         FROM `tabPart Catalog` pc
         WHERE {where_clause}
@@ -373,5 +371,4 @@ def create_item_from_catalog_dialog(part_catalog_name: str) -> dict:
         "brand": pc.brand,
         "part_number": pc.part_number,
         "description": f"{pc.part_name} — {pc.brand} {pc.part_number}",
-        "diagram_reference": pc.diagram_reference,
     }

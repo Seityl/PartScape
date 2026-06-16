@@ -21,7 +21,6 @@ frappe.ui.form.on('Stock Entry', {
                     frappe.model.set_value(row.doctype, row.name, 'item_name', result.item_name);
                     frappe.model.set_value(row.doctype, row.name, 'description', result.description);
                     frappe.model.set_value(row.doctype, row.name, 'part_catalog_reference', result.part_catalog_reference);
-                    frappe.model.set_value(row.doctype, row.name, 'diagram_reference', result.diagram_reference);
                     frm.refresh_field('items');
                 },
             });

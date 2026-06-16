@@ -223,13 +223,43 @@ DIAGRAM_GROUPS = [
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
 
-def _get_or_create_category(name):
-    existing = frappe.db.get_value("Part Category", {"category_name": name}, "name")
+def _get_or_create_item_group(name):
+    """Category now links to Item Group instead of Part Category."""
+    existing = frappe.db.get_value("Item Group", {"item_group_name": name}, "name")
+    if existing:
+        return existing
+    parent_group = "Auto Parts" if frappe.db.exists("Item Group", "Auto Parts") else "All Item Groups"
+    doc = frappe.get_doc({
+        "doctype": "Item Group",
+        "item_group_name": name,
+        "parent_item_group": parent_group,
+        "is_group": 0,
+    })
+    doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
+    return doc.name
+
+
+def _ensure_brand(brand_name: str) -> str:
+    if not brand_name:
+        return None
+    existing = frappe.db.get_value("Brand", {"brand": brand_name}, "name")
+    if existing:
+        return existing
+    doc = frappe.get_doc({"doctype": "Brand", "brand": brand_name})
+    doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
+    return doc.name
+
+
+def _ensure_market(market_code: str) -> str:
+    if not market_code:
+        return None
+    existing = frappe.db.get_value("Market", {"market_code": market_code}, "name")
     if existing:
         return existing
     doc = frappe.get_doc({
-        "doctype": "Part Category",
-        "category_name": name,
+        "doctype": "Market",
+        "market_code": market_code,
+        "market_name": market_code,
     })
     doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
     return doc.name
@@ -291,13 +321,13 @@ def execute():
     print("PartScape — Comprehensive Database Seeder")
     print("=" * 60)
 
-    # ── 1. Seed Part Categories ─────────────────────────────────────────────
-    print("\n[1/8] Seeding Part Categories...")
+    # ── 1. Seed Item Groups for Part Categories ─────────────────────────────
+    print("\n[1/8] Seeding Item Groups...")
     category_map = {}
     for cat in PART_CATEGORIES:
-        name = _get_or_create_category(cat["category_name"])
+        name = _get_or_create_item_group(cat["category_name"])
         category_map[cat["category_name"]] = name
-    print(f"   → {len(category_map)} categories ready")
+    print(f"   → {len(category_map)} item groups ready")
 
     # ── 2. Seed Suppliers ───────────────────────────────────────────────────
     print("\n[2/8] Seeding Suppliers...")
@@ -355,19 +385,22 @@ def execute():
                     part_catalog_map[(make_name, category_key, part_key)] = {"docname": existing, "part_number": part_number}
                     continue
 
+                brand_docname = _ensure_brand(make_name)
+                market_docname = _ensure_market("JDM" if default_steering == "RHD" else "")
+
                 doc = frappe.get_doc({
                     "doctype": "Part Catalog",
-                    "brand": make_name,
+                    "brand": brand_docname,
                     "part_number": part_number,
                     "part_name": part_name,
-                    "vehicle_make": make_docname,
+                    "oem_make": make_docname,
                     "is_oem": 1,
                     "category": cat_docname,
                     "description": f"Genuine OEM {make_name} {part_name.lower()}.",
                     "estimated_cost_usd": price,
                     "is_active": 1,
                     "steering_position": default_steering,
-                    "market_restriction": "JDM" if default_steering == "RHD" else "",
+                    "market_restriction": market_docname,
                 })
                 try:
                     doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
@@ -621,7 +654,7 @@ def execute():
     print("\n" + "=" * 60)
     print("SEED COMPLETE")
     print("=" * 60)
-    print(f"Part Categories:        {len(category_map)}")
+    print(f"Item Groups:            {len(category_map)}")
     print(f"Part Catalog:           {len(part_catalog_map)}")
     print(f"Applicability Records:  {applicability_count}")
     print(f"Part Diagrams:          {len(diagram_map)}")

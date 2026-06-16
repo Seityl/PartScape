@@ -21,7 +21,6 @@ frappe.ui.form.on('Sales Invoice', {
                     frappe.model.set_value(row.doctype, row.name, 'item_name', result.item_name);
                     frappe.model.set_value(row.doctype, row.name, 'description', result.description);
                     frappe.model.set_value(row.doctype, row.name, 'part_catalog_reference', result.part_catalog_reference);
-                    frappe.model.set_value(row.doctype, row.name, 'diagram_reference', result.diagram_reference);
                     frm.refresh_field('items');
                 },
             });
@@ -35,13 +34,12 @@ frappe.ui.form.on('Sales Invoice Item', {
         if (!row.part_catalog_reference) return;
 
         frappe.db.get_value('Part Catalog', row.part_catalog_reference,
-            ['brand', 'part_number', 'part_name', 'diagram_reference', 'estimated_cost_usd', 'vehicle_make'])
+            ['brand', 'part_number', 'part_name', 'estimated_cost_usd', 'oem_make'])
             .then(r => {
                 if (!r.message) return;
                 const pc = r.message;
                 frappe.model.set_value(cdt, cdn, 'item_name', pc.part_name);
                 frappe.model.set_value(cdt, cdn, 'description', `${pc.part_name} — ${pc.brand} ${pc.part_number}`);
-                frappe.model.set_value(cdt, cdn, 'diagram_reference', pc.diagram_reference);
 
                 if (!row.item_code) {
                     frappe.db.get_value('Item', {part_catalog_reference: row.part_catalog_reference}, 'name')

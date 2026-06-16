@@ -43,13 +43,13 @@ partscape.showPartCatalogPicker = function(opts) {
                 fieldname: 'brand',
                 label: __('Brand'),
                 fieldtype: 'Link',
-                options: 'Vehicle Make',
+                options: 'Brand',
             },
             {
                 fieldname: 'category',
                 label: __('Category'),
                 fieldtype: 'Link',
-                options: 'Part Category',
+                options: 'Item Group',
             },
             {
                 fieldname: 'vehicle_vin',

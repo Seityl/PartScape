@@ -313,19 +313,23 @@ def seed_catalog_from_epc(model_code: str, region: str = "general", download_dia
     if not make_doc:
         make_doc = frappe.get_doc({"doctype": "Vehicle Make", "make_name": "Toyota"}).insert().name
 
+    brand_doc = frappe.db.get_value("Brand", {"brand": "Toyota"}, "name")
+    if not brand_doc:
+        brand_doc = frappe.get_doc({"doctype": "Brand", "brand": "Toyota"}).insert().name
+
     # Resolve vehicle model from model_code
     model_doc = frappe.db.get_value("Vehicle Model", {"model_code": model_code}, "name")
 
     for p in parts:
-        if frappe.db.exists("Part Catalog", {"brand": "Toyota", "part_number": p["part_number"]}):
+        if frappe.db.exists("Part Catalog", {"brand": brand_doc, "part_number": p["part_number"]}):
             continue
         doc = frappe.get_doc({
             "doctype": "Part Catalog",
-            "brand": "Toyota",
+            "brand": brand_doc,
             "part_number": p["part_number"],
             "part_name": p["description"][:140],
             "description": p["description"],
-            "vehicle_make": make_doc,
+            "oem_make": make_doc,
             "is_oem": 1,
             "is_active": 1,
         })

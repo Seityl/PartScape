@@ -5,7 +5,7 @@ Usage:
     bench --site your-site.local execute partscape.data_import.import_part_catalog.import_from_csv --args "['/path/to/parts.csv', 'Toyota']"
 
 CSV Expected Columns:
-    brand, part_number, part_name, category, description, diagram_reference,
+    brand, part_number, part_name, category, description,
     weight_kg, dimensions, estimated_cost_usd, vehicle_model, year_start, year_end,
     engine_code, steering_position, market_code
 
@@ -41,27 +41,30 @@ def import_from_csv(file_path: str, default_vehicle_make: str = "Toyota"):
                 if not brand or not part_number or not part_name:
                     continue
 
+                brand_doc = _ensure_brand(brand)
+                category_doc = _ensure_item_group(row.get("category", "General"))
+                market_doc = _ensure_market(row.get("market_code", ""))
+
                 # Upsert Part Catalog (composite identity: brand + part_number)
-                existing = frappe.db.get_value("Part Catalog", {"brand": brand, "part_number": part_number}, "name")
+                existing = frappe.db.get_value("Part Catalog", {"brand": brand_doc, "part_number": part_number}, "name")
                 if existing:
                     pc = frappe.get_doc("Part Catalog", existing)
                 else:
                     is_oem = _is_oem_brand(brand, default_vehicle_make)
                     pc = frappe.get_doc({
                         "doctype": "Part Catalog",
-                        "brand": brand,
+                        "brand": brand_doc,
                         "part_number": part_number,
                         "part_name": part_name,
-                        "vehicle_make": make_doc if is_oem else None,
+                        "oem_make": make_doc if is_oem else None,
                         "is_oem": 1 if is_oem else 0,
-                        "category": _ensure_category(row.get("category", "General")),
+                        "category": category_doc,
                         "description": row.get("description", ""),
-                        "diagram_reference": row.get("diagram_reference", ""),
                         "weight_kg": _to_float(row.get("weight_kg")),
                         "dimensions": row.get("dimensions", ""),
                         "estimated_cost_usd": _to_float(row.get("estimated_cost_usd")),
                         "steering_position": row.get("steering_position", "Universal"),
-                        "market_restriction": row.get("market_code", ""),
+                        "market_restriction": market_doc,
                     })
                     pc.insert(ignore_permissions=True)
                     created_parts += 1
@@ -89,7 +92,6 @@ def import_from_csv(file_path: str, default_vehicle_make: str = "Toyota"):
                             "year_end": _to_int(row.get("year_end")),
                             "steering_position": row.get("steering_position", "Universal"),
                             "market_code": row.get("market_code", ""),
-                            "diagram_page": row.get("diagram_reference", ""),
                         })
                         va.insert(ignore_permissions=True)
                         created_applicability += 1
@@ -98,14 +100,16 @@ def import_from_csv(file_path: str, default_vehicle_make: str = "Toyota"):
                 ix_brand = row.get("interchange_brand", "").strip()
                 ix_part = row.get("interchange_part_number", "").strip()
                 if ix_brand and ix_part:
+                    ix_brand_doc = _ensure_brand(ix_brand)
                     # Ensure the interchange part exists in catalog too
-                    ix_pc_name = frappe.db.get_value("Part Catalog", {"brand": ix_brand, "part_number": ix_part}, "name")
+                    ix_pc_name = frappe.db.get_value("Part Catalog", {"brand": ix_brand_doc, "part_number": ix_part}, "name")
                     if not ix_pc_name:
                         ix_pc = frappe.get_doc({
                             "doctype": "Part Catalog",
-                            "brand": ix_brand,
+                            "brand": ix_brand_doc,
                             "part_number": ix_part,
                             "part_name": f"{ix_brand} {ix_part}",
+                            "category": category_doc,
                             "is_oem": 0,
                         })
                         ix_pc.insert(ignore_permissions=True)
@@ -151,11 +155,33 @@ def _ensure_make(make_name: str) -> str:
     return doc.name
 
 
-def _ensure_category(cat_name: str) -> str:
-    name = frappe.db.get_value("Part Category", {"category_name": cat_name}, "name")
-    if name:
-        return name
-    doc = frappe.get_doc({"doctype": "Part Category", "category_name": cat_name})
+def _ensure_brand(brand_name: str) -> str:
+    if not brand_name:
+        return None
+    if frappe.db.exists("Brand", brand_name):
+        return brand_name
+    doc = frappe.get_doc({"doctype": "Brand", "brand": brand_name})
+    doc.insert(ignore_permissions=True)
+    return doc.name
+
+
+def _ensure_item_group(group_name: str) -> str:
+    if not group_name:
+        group_name = "General"
+    if frappe.db.exists("Item Group", group_name):
+        return group_name
+    doc = frappe.get_doc({"doctype": "Item Group", "item_group_name": group_name, "is_group": 0})
+    doc.insert(ignore_permissions=True)
+    return doc.name
+
+
+def _ensure_market(market_code: str) -> str:
+    if not market_code:
+        return None
+    existing = frappe.db.get_value("Market", {"market_code": market_code}, "name")
+    if existing:
+        return existing
+    doc = frappe.get_doc({"doctype": "Market", "market_code": market_code, "market_name": market_code})
     doc.insert(ignore_permissions=True)
     return doc.name
 
@@ -213,14 +239,14 @@ def download_csv_template():
     """Return a CSV template string for Part Catalog import."""
     header = [
         "brand", "part_number", "part_name", "category", "description",
-        "diagram_reference", "weight_kg", "dimensions", "estimated_cost_usd",
+        "weight_kg", "dimensions", "estimated_cost_usd",
         "vehicle_model", "year_start", "year_end", "engine_code",
         "steering_position", "market_code", "interchange_brand", "interchange_part_number",
         "relationship_type", "quality_tier"
     ]
     sample = [
         "Toyota", "04465-26421", "Brake Pad Set, Disc", "Brake", "Front brake pad set for Hiace",
-        "B-15", "1.2", "145x55x18", "28.50",
+        "1.2", "145x55x18", "28.50",
         "Hiace", "2012", "2020", "1KD-FTV",
         "RHD", "JDM", "Bosch", "0 986 494 046",
         "Equivalent", "OEM Equivalent"
