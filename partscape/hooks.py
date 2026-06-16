@@ -51,6 +51,7 @@ doctype_js = {
     "Item": "public/js/item.js",
     "Warehouse": "public/js/warehouse.js",
     "Stock Entry": "public/js/stock_entry.js",
+    "Item Price": "public/js/item_price.js",
 }
 
 doctype_list_js = {
@@ -84,6 +85,10 @@ doc_events = {
         "validate": "partscape.utils.customer_hooks.validate_customer",
         "after_insert": "partscape.utils.customer_hooks.after_insert_customer",
         "on_update": "partscape.utils.customer_hooks.on_update_customer",
+    },
+    "Item Price": {
+        "before_insert": "partscape.utils.item_price_hooks.before_insert_item_price",
+        "validate": "partscape.utils.item_price_hooks.validate_item_price",
     },
 }
 

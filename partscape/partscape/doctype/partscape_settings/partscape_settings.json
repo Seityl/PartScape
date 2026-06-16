@@ -14,7 +14,9 @@
   "default_income_account",
   "default_expense_account",
   "default_buying_cost_center",
-  "default_selling_cost_center"
+  "default_selling_cost_center",
+  "pricing_section",
+  "default_vat_rate"
  ],
  "fields": [
   {
@@ -74,6 +76,18 @@
    "fieldtype": "Link",
    "label": "Default Selling Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "pricing_section",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "default": "15",
+   "fieldname": "default_vat_rate",
+   "fieldtype": "Percent",
+   "label": "Default VAT Rate",
+   "description": "Used when entering VAT-inclusive prices on Item Price"
   }
  ],
  "index_web_pages_for_search": 1,

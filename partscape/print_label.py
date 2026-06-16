@@ -13,7 +13,7 @@ from typing import Optional
 
 import frappe
 from frappe import _
-from frappe.utils import cstr
+from frappe.utils import cint, cstr
 
 # -----------------------------------------------------------------------------
 # Label geometry (Brother QL-800 @ 300 dpi)
@@ -252,9 +252,30 @@ def render_label_html(doctype: str, name: str, label_size: str) -> str:
     return html
 
 
+def render_multi_label_html(doctype: str, name: str, label_size: str, qty: int) -> str:
+    """Render the label HTML repeated qty times with page breaks between copies."""
+    single = render_label_html(doctype, name, label_size)
+    if qty <= 1:
+        return single
+
+    # Wrap each copy in a page-sized div and force a page break after each one.
+    copies = []
+    for _ in range(qty):
+        copies.append(f'<div class="label-page">{single}</div>')
+
+    return (
+        "<style>"
+        "@media print { .label-page { page-break-after: always; } .label-page:last-child { page-break-after: auto; } }"
+        ".label-page { break-after: page; }"
+        "</style>"
+        + "\n".join(copies)
+    )
+
+
 # -----------------------------------------------------------------------------
 # HTML -> image conversion
 # -----------------------------------------------------------------------------
+
 
 def _html_to_image_with_wkhtmltoimage(html: str, label_size: str) -> bytes:
     """Convert label HTML to a PNG using wkhtmltoimage and reduce to grayscale."""
@@ -416,13 +437,15 @@ def get_label_image(doctype: str, name: str, label_size: str) -> str:
 
 
 @frappe.whitelist()
-def get_label_pdf(doctype: str, name: str, label_size: str) -> str:
+def get_label_pdf(doctype: str, name: str, label_size: str, label_qty: int = 1) -> str:
     """
     Generate a label PDF and return it as a base64 data URI.
 
     The PDF has the exact label page size embedded (62x100 mm or 29x90 mm),
     so the browser/OS print dialog defaults to the correct paper size and the
     label is not scaled down to A4/Letter.
+
+    If label_qty > 1, the label is repeated across multiple pages.
     """
     if doctype not in ("Item", "Warehouse"):
         frappe.throw(_("Unsupported DocType for label printing."))
@@ -433,10 +456,14 @@ def get_label_pdf(doctype: str, name: str, label_size: str) -> str:
     if label_size not in LABEL_SIZES:
         frappe.throw(_("Unsupported label size: {0}").format(label_size))
 
+    qty = cint(label_qty)
+    if qty < 1:
+        frappe.throw(_("Label quantity must be at least 1."))
+
     if not shutil.which("wkhtmltopdf"):
         frappe.throw(_("wkhtmltopdf is required for PDF label generation."))
 
-    html = render_label_html(doctype, name, label_size)
+    html = render_multi_label_html(doctype, name, label_size, qty)
     width_mm, height_mm = LABEL_SIZES[label_size]["mm"]
 
     cmd = [

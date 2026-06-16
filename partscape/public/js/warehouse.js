@@ -27,11 +27,19 @@ function _show_print_label_dialog(frm, doctype) {
                         options: '62mm continuous\n29mmx90mm',
                         default: default_size || '62mm continuous',
                         reqd: 1
+                    },
+                    {
+                        fieldtype: 'Int',
+                        label: __('Quantity'),
+                        fieldname: 'label_qty',
+                        default: 1,
+                        reqd: 1,
+                        non_negative: 1
                     }
                 ],
                 primary_action_label: __('Print'),
                 primary_action(values) {
-                    _print_label_via_browser(frm, doctype, values.label_size);
+                    _print_label_via_browser(frm, doctype, values.label_size, values.label_qty);
                     dialog.hide();
                 }
             });
@@ -39,13 +47,14 @@ function _show_print_label_dialog(frm, doctype) {
         });
 }
 
-function _print_label_via_browser(frm, doctype, label_size) {
+function _print_label_via_browser(frm, doctype, label_size, label_qty) {
     frappe.call({
         method: 'partscape.print_label.get_label_pdf',
         args: {
             doctype: doctype,
             name: frm.doc.name,
-            label_size: label_size
+            label_size: label_size,
+            label_qty: label_qty || 1
         },
         freeze: true,
         freeze_message: __('Preparing label PDF...'),
