@@ -6,3 +6,4 @@ partscape.patches.v1_0_0_map_categories_to_groups # 2026-05-25
 partscape.patches.create_fulltext_index # 2026-05-25
 partscape.patches.v1_0_0_migrate_part_catalog_links # 2026-06-16
 partscape.patches.v1_0_0_cleanup_part_catalog_columns # 2026-06-16
+partscape.patches.v1_0_0_drop_diagram_reference_columns # 2026-06-16
