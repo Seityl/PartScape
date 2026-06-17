@@ -37,7 +37,7 @@
     {
       "fieldname": "variant",
       "fieldtype": "Link",
-      "label": "Variant",
+      "label": "Engine Variant",
       "options": "Vehicle Engine Variant",
       "in_list_view": 1,
       "description": "Specific engine variant (optional)"
