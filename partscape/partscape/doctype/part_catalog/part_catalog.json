@@ -78,6 +78,7 @@
    "label": "Is OEM",
    "default": 0,
    "description": "Auto-set when Brand matches OEM Make",
+   "read_only": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
   },
