@@ -74,7 +74,9 @@ frappe.ui.form.on("Part Catalog", {
 								message: __("Stock Item {0} created/linked", [r.message]),
 								indicator: "green",
 							});
-							frm.reload_doc();
+							frm.reload_doc().then(() => {
+								frm.refresh_field("linked_item");
+							});
 							frappe.set_route("Form", "Item", r.message);
 						}
 					},

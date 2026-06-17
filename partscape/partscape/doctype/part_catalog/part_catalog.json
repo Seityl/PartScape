@@ -20,6 +20,7 @@
   "steering_position",
   "market_restriction",
   "is_active",
+  "linked_item",
   "section_break_1",
   "images",
   "section_break_3",
@@ -141,6 +142,15 @@
    "default": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
+  },
+  {
+   "fieldname": "linked_item",
+   "fieldtype": "Link",
+   "label": "Linked Stock Item",
+   "options": "Item",
+   "read_only": 1,
+   "description": "Associated ERPNext Stock Item",
+   "in_list_view": 1
   },
   {
    "fieldname": "section_break_1",

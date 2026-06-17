@@ -59,6 +59,12 @@ class PartCatalog(Document):
         if self.part_name:
             self.part_name = self.part_name.strip()
 
+    def onload(self):
+        """Show the linked ERPNext Stock Item, if any."""
+        self.linked_item = frappe.db.get_value(
+            "Item", {"part_catalog_reference": self.name}, "name"
+        )
+
     def on_update(self):
         """If this part is OEM, ensure Vehicle Part Applicability records are consistent."""
         pass  # Placeholder for future sync logic
