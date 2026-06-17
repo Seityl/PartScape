@@ -19,11 +19,11 @@
     {
       "fieldname": "part_catalog",
       "fieldtype": "Link",
-      "in_list_view": 1,
       "label": "Part Catalog",
       "options": "Part Catalog",
       "reqd": 1,
-      "search_index": 1
+      "search_index": 1,
+      "hidden": 1
     },
     {
       "fieldname": "vehicle_model",
@@ -50,33 +50,40 @@
       "fieldname": "year_start",
       "fieldtype": "Int",
       "label": "Year Start",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "read_only": 1,
+      "description": "Auto-populated from Vehicle Model"
     },
     {
       "fieldname": "year_end",
       "fieldtype": "Int",
       "label": "Year End",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "read_only": 1,
+      "description": "Auto-populated from Vehicle Model"
     },
     {
-      "default": "Universal",
       "fieldname": "steering_position",
       "fieldtype": "Select",
       "label": "Steering Position",
       "options": "Universal\nRHD\nLHD",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "read_only": 1,
+      "description": "Auto-populated from Vehicle Model"
     },
     {
       "fieldname": "market_code",
       "fieldtype": "Data",
       "label": "Market Code",
-      "in_list_view": 1
+      "in_list_view": 1,
+      "read_only": 1,
+      "description": "Auto-populated from Vehicle Model"
     }
   ],
   "index_web_pages_for_search": 1,
   "istable": 1,
   "links": [],
-  "modified": "2026-05-25 01:24:12.947657",
+  "modified": "2026-06-16 00:00:00.000000",
   "modified_by": "Administrator",
   "module": "PartScape",
   "name": "Vehicle Part Applicability",
