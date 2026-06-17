@@ -1,5 +1,6 @@
 frappe.ui.form.on("Part Catalog", {
 	refresh(frm) {
+		// Set per-row variant filter based on the row's Vehicle Model.
 		frm.events.set_variant_query(frm);
 
 		// Ensure all existing applicable-vehicle rows are populated.
@@ -8,6 +9,15 @@ frappe.ui.form.on("Part Catalog", {
 				frm.events.populate_vehicle_fields(frm, "applicable_vehicles", row.name);
 			}
 		});
+
+		// Add action button to create ERPNext Stock Item from this Part Catalog.
+		if (!frm.is_new() && frappe.model.can_create("Item")) {
+			frm.add_custom_button(
+				__("Create Stock Item"),
+				() => frm.events.create_stock_item(frm),
+				__("Actions")
+			);
+		}
 	},
 
 	set_variant_query(frm) {
@@ -46,6 +56,25 @@ frappe.ui.form.on("Part Catalog", {
 			frappe.model.set_value(cdt, cdn, "year_end", model.year_end || "");
 			frappe.model.set_value(cdt, cdn, "steering_position", steering);
 			frappe.model.set_value(cdt, cdn, "market_code", model.primary_market || "");
+		});
+	},
+
+	create_stock_item(frm) {
+		frappe.call({
+			method: "partscape.utils.item_factory.create_item_from_part_catalog",
+			args: { part_catalog_name: frm.doc.name },
+			freeze: true,
+			freeze_message: __("Creating Stock Item..."),
+			callback(r) {
+				if (r.message) {
+					frappe.show_alert({
+						message: __("Stock Item {0} created/linked", [r.message]),
+						indicator: "green",
+					});
+					frm.reload_doc();
+					frappe.set_route("Form", "Item", r.message);
+				}
+			},
 		});
 	},
 });
