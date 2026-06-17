@@ -178,12 +178,6 @@ def _add_unique_indexes():
     print("Ensuring unique indexes...")
     frappe.db.sql(
         """
-        ALTER TABLE `tabPart Interchange`
-        ADD UNIQUE INDEX IF NOT EXISTS ux_part_interchange_pair (part_a, part_b)
-        """
-    )
-    frappe.db.sql(
-        """
         ALTER TABLE `tabVehicle Part Applicability`
         ADD UNIQUE INDEX IF NOT EXISTS ux_vehicle_applicability (
             parent, vehicle_model, variant, year_start, year_end
@@ -465,15 +459,27 @@ def _insert_interchange_batch(batch: list):
     def esc(val: str) -> str:
         return (val or "").replace(chr(39), chr(39) + chr(39))
 
-    values = ", ".join(
-        f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', 0, 0, "
-        f"'{esc(pa)}', '{esc(pb)}', '{esc(rel)}', 'Aftermarket', 1.0, '{esc(src)}')"
-        for pa, pb, rel, src in batch
-    )
+    value_tuples = []
+    for pa, pb, rel, src in batch:
+        # Forward row: parent = pa, part = pb
+        value_tuples.append(
+            f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', "
+            f"0, 0, '{esc(pa)}', 'interchanges', 'Part Catalog', '{esc(pb)}', "
+            f"'{esc(rel)}', 'Aftermarket', 1.0, '{esc(src)}')"
+        )
+        # Reverse row: parent = pb, part = pa
+        value_tuples.append(
+            f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', "
+            f"0, 0, '{esc(pb)}', 'interchanges', 'Part Catalog', '{esc(pa)}', "
+            f"'{esc(rel)}', 'Aftermarket', 1.0, '{esc(src)}')"
+        )
+
+    values = ", ".join(value_tuples)
     sql = f"""
-        INSERT IGNORE INTO `tabPart Interchange`
+        INSERT IGNORE INTO `tabPart Catalog Interchange`
         (name, creation, modified, modified_by, owner, docstatus, idx,
-         part_a, part_b, relationship_type, quality_tier, confidence_score, source)
+         parent, parentfield, parenttype, part,
+         relationship_type, quality_tier, confidence_score, source)
         VALUES {values}
     """
     frappe.db.sql(sql)

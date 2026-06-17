@@ -24,7 +24,9 @@
   "section_break_1",
   "images",
   "section_break_3",
-  "applicable_vehicles"
+  "applicable_vehicles",
+  "section_break_4",
+  "interchanges"
  ],
  "fields": [
   {
@@ -172,6 +174,17 @@
    "fieldtype": "Table",
    "label": "Applicable Vehicles",
    "options": "Vehicle Part Applicability"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "label": "Interchanges"
+  },
+  {
+   "fieldname": "interchanges",
+   "fieldtype": "Table",
+   "label": "Alternate Parts",
+   "options": "Part Catalog Interchange"
   }
  ],
  "index_web_pages_for_search": 1,

@@ -432,34 +432,32 @@ def execute():
     random.shuffle(part_list)
 
     for i in range(0, min(len(part_list) - 1, 200)):
-        part_a = part_list[i]["docname"]
-        part_b = part_list[i + 1]["docname"]
+        part_a_name = part_list[i]["docname"]
+        part_b_name = part_list[i + 1]["docname"]
 
-        if part_a == part_b:
+        if part_a_name == part_b_name:
+            continue
+
+        part_a = frappe.get_doc("Part Catalog", part_a_name)
+        if any(r.part == part_b_name for r in (part_a.interchanges or [])):
             continue
 
         rel_type = random.choice(["Equivalent", "Aftermarket Alternative", "OEM Equivalent"])
         quality = random.choice(["OEM Equivalent", "Aftermarket", "Performance"])
         confidence = round(random.uniform(0.7, 0.99), 2)
 
-        existing = frappe.db.get_value("Part Interchange", {
-            "part_a": part_a,
-            "part_b": part_b,
-        }, "name")
-        if existing:
-            continue
-
-        doc = frappe.get_doc({
-            "doctype": "Part Interchange",
-            "part_a": part_a,
-            "part_b": part_b,
-            "relationship_type": rel_type,
-            "quality_tier": quality,
-            "confidence_score": confidence,
-            "source": "PartScape Auto-Seed",
-        })
+        part_a.append(
+            "interchanges",
+            {
+                "part": part_b_name,
+                "relationship_type": rel_type,
+                "quality_tier": quality,
+                "confidence_score": confidence,
+                "source": "PartScape Auto-Seed",
+            },
+        )
         try:
-            doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
+            part_a.save(ignore_permissions=True)
             interchange_count += 1
         except Exception:
             pass

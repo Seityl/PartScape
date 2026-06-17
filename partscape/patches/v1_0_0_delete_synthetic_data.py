@@ -45,16 +45,32 @@ def execute():
         print(f"  → Deleted batch {i//batch_size + 1}/{(len(synthetic_parts)//batch_size)+1}")
 
     # ------------------------------------------------------------------
-    # [3] Delete all Part Interchanges (all are synthetic)
+    # [3] Delete all interchanges (all are synthetic)
     # ------------------------------------------------------------------
-    print("\n[3/5] Deleting synthetic Part Interchanges...")
-    interchange_names = frappe.db.sql_list("SELECT name FROM `tabPart Interchange`")
-    print(f"  → {len(interchange_names)} interchanges to delete")
-    for i in range(0, len(interchange_names), batch_size):
-        batch = interchange_names[i:i + batch_size]
-        for name in batch:
+    print("\n[3/5] Deleting synthetic interchanges...")
+    interchange_names = []
+    if frappe.db.table_exists("Part Interchange"):
+        interchange_names = frappe.db.sql_list("SELECT name FROM `tabPart Interchange`")
+        print(f"  → {len(interchange_names)} legacy Part Interchange records to delete")
+        for i in range(0, len(interchange_names), batch_size):
+            batch = interchange_names[i:i + batch_size]
+            for name in batch:
+                try:
+                    frappe.delete_doc("Part Interchange", name, ignore_permissions=True, force=True)
+                except Exception:
+                    pass
+            frappe.db.commit()
+    else:
+        # New model: child table on Part Catalog; synthetic parents were deleted above.
+        orphaned = frappe.db.sql("""
+            SELECT name FROM `tabPart Catalog Interchange`
+            WHERE parenttype = 'Part Catalog'
+            AND parent NOT IN (SELECT name FROM `tabPart Catalog`)
+        """)
+        print(f"  → {len(orphaned)} orphaned Part Catalog Interchange rows to delete")
+        for row in orphaned:
             try:
-                frappe.delete_doc("Part Interchange", name, ignore_permissions=True, force=True)
+                frappe.db.delete("Part Catalog Interchange", {"name": row[0]})
             except Exception:
                 pass
         frappe.db.commit()

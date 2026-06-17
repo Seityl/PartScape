@@ -115,23 +115,21 @@ def import_from_csv(file_path: str, default_vehicle_make: str = "Toyota"):
                         ix_pc.insert(ignore_permissions=True)
                         ix_pc_name = ix_pc.name
 
-                    if not frappe.db.exists("Part Interchange", {
-                        "part_a": pc.name,
-                        "part_b": ix_pc_name,
-                    }) and not frappe.db.exists("Part Interchange", {
-                        "part_a": ix_pc_name,
-                        "part_b": pc.name,
-                    }):
-                        ix = frappe.get_doc({
-                            "doctype": "Part Interchange",
-                            "part_a": pc.name,
-                            "part_b": ix_pc_name,
-                            "relationship_type": row.get("relationship_type", "Equivalent"),
-                            "quality_tier": row.get("quality_tier", "Aftermarket"),
-                            "confidence_score": 1.0,
-                            "source": "Bulk Import",
-                        })
-                        ix.insert(ignore_permissions=True)
+                    existing = any(
+                        r.part == ix_pc_name for r in (pc.interchanges or [])
+                    )
+                    if not existing:
+                        pc.append(
+                            "interchanges",
+                            {
+                                "part": ix_pc_name,
+                                "relationship_type": row.get("relationship_type", "Equivalent"),
+                                "quality_tier": row.get("quality_tier", "Aftermarket"),
+                                "confidence_score": 1.0,
+                                "source": "Bulk Import",
+                            },
+                        )
+                        pc.save(ignore_permissions=True)
                         created_interchange += 1
 
             except Exception:
