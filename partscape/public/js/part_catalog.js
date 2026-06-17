@@ -1,22 +1,33 @@
 frappe.ui.form.on("Part Catalog", {
 	refresh(frm) {
-		// Set per-row variant filter based on the row's Vehicle Model.
-		frm.events.set_variant_query(frm);
-
-		// Ensure all existing applicable-vehicle rows are populated.
-		(frm.doc.applicable_vehicles || []).forEach((row) => {
-			if (row.vehicle_model && (!row.year_start || !row.year_end)) {
-				frm.events.populate_vehicle_fields(frm, "applicable_vehicles", row.name);
-			}
-		});
+		console.log("Part Catalog refresh fired", frm.doc.name, frm.is_new());
 
 		// Add action button to create ERPNext Stock Item from this Part Catalog.
+		console.log("Adding Create Stock Item action", !frm.is_new());
 		if (!frm.is_new()) {
-			frm.add_custom_button(
+			frm.page.add_action_item(
 				__("Create Stock Item"),
-				() => frm.events.create_stock_item(frm),
-				__("Actions")
+				() => frm.events.create_stock_item(frm)
 			);
+			console.log("Create Stock Item action added");
+		}
+
+		// Set per-row variant filter based on the row's Vehicle Model.
+		try {
+			frm.events.set_variant_query(frm);
+		} catch (e) {
+			console.error("Failed to set variant query", e);
+		}
+
+		// Ensure all existing applicable-vehicle rows are populated.
+		try {
+			(frm.doc.applicable_vehicles || []).forEach((row) => {
+				if (row.vehicle_model && (!row.year_start || !row.year_end)) {
+					frm.events.populate_vehicle_fields(frm, "applicable_vehicles", row.name);
+				}
+			});
+		} catch (e) {
+			console.error("Failed to populate vehicle fields", e);
 		}
 	},
 
