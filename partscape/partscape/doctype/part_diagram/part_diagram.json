@@ -30,9 +30,10 @@
   },
   {
    "fieldname": "parts_group",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Parts Group",
-   "description": "E.g., Brakes, Engine, Suspension",
+   "options": "Parts Group",
+   "description": "Standard parts group for this diagram",
    "in_list_view": 1,
    "in_standard_filter": 1
   },

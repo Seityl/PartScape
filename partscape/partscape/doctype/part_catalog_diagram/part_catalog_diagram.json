@@ -29,9 +29,10 @@
         },
         {
             "fieldname": "parts_group",
-            "fieldtype": "Data",
+            "fieldtype": "Link",
             "label": "Parts Group",
-            "description": "e.g. Brake System, Engine",
+            "options": "Parts Group",
+            "description": "Standard parts group for this diagram callout",
             "in_list_view": 1
         }
     ],

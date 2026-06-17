@@ -19,6 +19,8 @@ import requests
 import frappe
 from frappe import _
 
+from partscape.utils.parts_group import ensure_parts_group
+
 EPC_BASE = "https://toyota.epc-data.com"
 REQUEST_DELAY = 1.0
 
@@ -245,6 +247,8 @@ def save_diagram_to_doc(
     """
     if not image_bytes:
         return None
+
+    parts_group = ensure_parts_group(parts_group)
 
     # Check for duplicate by hash
     img_hash = hashlib.sha256(image_bytes).hexdigest()[:16]

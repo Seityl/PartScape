@@ -24,6 +24,8 @@ import frappe
 from frappe import _
 from frappe.utils.file_manager import save_file
 
+from partscape.utils.parts_group import ensure_parts_group
+
 DEFAULT_DELAY = 1.0
 
 
@@ -165,6 +167,7 @@ def _save_diagram_doc(
     source_brand: str,
 ) -> str:
     """Create Part Diagram doc and attach image. Returns doc name."""
+    parts_group = ensure_parts_group(parts_group)
     img_hash = hashlib.sha256(image_bytes).hexdigest()[:16]
 
     existing = frappe.db.get_value("Part Diagram", {"diagram_number": img_hash}, "name")
