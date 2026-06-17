@@ -1,5 +1,13 @@
 frappe.ui.form.on("Part Catalog", {
 	refresh(frm) {
+		// Set per-row variant filter based on the row's Vehicle Model.
+		frm.set_query("variant", "applicable_vehicles", (doc, cdt, cdn) => {
+			const row = locals[cdt][cdn];
+			return {
+				filters: row.vehicle_model ? { model: row.vehicle_model } : {},
+			};
+		});
+
 		// Ensure all existing applicable-vehicle rows are populated.
 		(frm.doc.applicable_vehicles || []).forEach((row) => {
 			if (row.vehicle_model && (!row.year_start || !row.year_end)) {
@@ -36,12 +44,14 @@ frappe.ui.form.on("Vehicle Part Applicability", {
 	vehicle_model(frm, cdt, cdn) {
 		frm.events.populate_vehicle_fields(frm, cdt, cdn);
 
-		// Filter variant options to the selected vehicle model.
+		// Clear variant if it no longer belongs to the newly selected model.
 		const row = locals[cdt][cdn];
-		if (row.vehicle_model) {
-			frm.fields_dict.applicable_vehicles.grid.get_field("variant").get_query = () => {
-				return { filters: { model: row.vehicle_model } };
-			};
+		if (row.variant && row.vehicle_model) {
+			frappe.db.get_value("Vehicle Engine Variant", row.variant, "model").then((r) => {
+				if (r.message && r.message.model !== row.vehicle_model) {
+					frappe.model.set_value(cdt, cdn, "variant", "");
+				}
+			});
 		}
 	},
 
