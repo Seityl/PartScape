@@ -47,7 +47,6 @@ They **cannot** create or edit catalogue data, settings, or vehicle masters.
 | Part Category | Full | Read only |
 | Part Interchange | Full | Read only |
 | Part Supplier Reference | Full | Read only |
-| Part Diagram | Full | Read only |
 | Vehicle | Full | Read only |
 | Vehicle Make / Model / Engine Variant | Full | Read only |
 | Customer Vehicle | Full | Read only |

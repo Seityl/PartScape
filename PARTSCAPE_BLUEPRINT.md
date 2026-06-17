@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets used-Japanese vehicle fleets worldwide (RHD, left-hand traffic markets with heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, exploded view diagrams, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data and diagram images), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
+This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets used-Japanese vehicle fleets worldwide (RHD, left-hand traffic markets with heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
 
 ---
 
@@ -19,20 +19,20 @@ This document blueprints **PartScape**, a native Frappe custom app that embeds a
 
 ### 2.1 GitHub Repository Audit — Top 10 Ranked
 
-| Rank | Repository | Lang/Framework | License | Data Source | VIN? | Diagrams? | Interchange? | Pricing? | Score | Notes |
-|------|-----------|----------------|---------|-------------|------|-----------|--------------|----------|-------|-------|
-| 1 | [Wal33D/nhtsa-vin-decoder](https://github.com/Wal33D/nhtsa-vin-decoder) | Python/Java | MIT | NHTSA vPIC + offline WMI | ✅ | ❌ | ❌ | ❌ | 7/10 | Best offline VIN decoder for US-market vehicles. 2,015+ WMI codes. Zero deps. JDM coverage limited. |
-| 2 | [cardog-ai/corgi](https://github.com/cardog-ai/corgi) | TypeScript/Node | ISC | NHTSA vPIC (SQLite) | ✅ | ❌ | ❌ | ❌ | 7/10 | ~20MB compressed offline DB. Fast <1ms decode. Good for browser/edge. |
-| 3 | [davidpeckham/vpic-api](https://github.com/davidpeckham/vpic-api) | Python | MIT | NHTSA vPIC REST | ✅ | ❌ | ❌ | ❌ | 6/10 | Clean Python client. Typed objects. Good for Frappe server-side integration. |
-| 4 | [ShaggyTech/nhtsa-api-wrapper](https://github.com/ShaggyTech/nhtsa-api-wrapper) | JavaScript/TS | MIT | NHTSA vPIC REST | ✅ | ❌ | ❌ | ❌ | 6/10 | Universal JS wrapper. Useful if we build a Frappe Page with Vue/React. |
-| 5 | [ronhartman/tecdoc-autoparts-catalog](https://github.com/ronhartman/tecdoc-autoparts-catalog) / catamc90 | PHP/Symfony | ? | External API (TecDoc-like) | ❌ | ❌ | ✅ | ❌ | 5/10 | Decent TecDoc alternative wrapper. Requires API key. Good schema reference. |
-| 6 | [ChanMeng666/Automotive-Repair-Management-System](https://github.com/ChanMeng666/Automotive-Repair-Management-System) | Python/Flask | MIT | Manual/MySQL | ❌ | ❌ | ❌ | ❌ | 5/10 | Good workshop job card schema inspiration. Not Frappe-native but useful reference. |
-| 7 | [taimoorgit/vin-lookup-mcp](https://github.com/taimoorgit/vin-lookup-mcp) | Python | ? | NHTSA vPIC | ✅ | ❌ | ❌ | ❌ | 5/10 | MCP server wrapper. Niche use. |
-| 8 | [tonycondone/modmaster-pro](https://github.com/tonycondone/modmaster-pro) | Python/Node/React | ? | AI + manual | ❌ | ❌ | ❌ | ❌ | 4/10 | AI image recognition for parts. Interesting future Phase 5 feature. |
-| 9 | [lifeofcapo/car-api](https://github.com/lifeofcapo/car-api) (auto-parts-db) | JS/TS | ? | Manual/JSON | ❌ | ❌ | ❌ | ❌ | 4/10 | Lightweight 1200-part JS DB. Too basic for production. |
-| 10 | [n8barr/automotive-model-year-data](https://github.com/n8barr/automotive-model-year-data) | CSV | ? | Community | ❌ | ❌ | ❌ | ❌ | 3/10 | Basic make/model/year CSV. Useful seed data only. |
+| Rank | Repository | Lang/Framework | License | Data Source | VIN? | Interchange? | Pricing? | Score | Notes |
+|------|-----------|----------------|---------|-------------|------|--------------|----------|-------|-------|
+| 1 | [Wal33D/nhtsa-vin-decoder](https://github.com/Wal33D/nhtsa-vin-decoder) | Python/Java | MIT | NHTSA vPIC + offline WMI | ✅ | ❌ | ❌ | 7/10 | Best offline VIN decoder for US-market vehicles. 2,015+ WMI codes. Zero deps. JDM coverage limited. |
+| 2 | [cardog-ai/corgi](https://github.com/cardog-ai/corgi) | TypeScript/Node | ISC | NHTSA vPIC (SQLite) | ✅ | ❌ | ❌ | 7/10 | ~20MB compressed offline DB. Fast <1ms decode. Good for browser/edge. |
+| 3 | [davidpeckham/vpic-api](https://github.com/davidpeckham/vpic-api) | Python | MIT | NHTSA vPIC REST | ✅ | ❌ | ❌ | 6/10 | Clean Python client. Typed objects. Good for Frappe server-side integration. |
+| 4 | [ShaggyTech/nhtsa-api-wrapper](https://github.com/ShaggyTech/nhtsa-api-wrapper) | JavaScript/TS | MIT | NHTSA vPIC REST | ✅ | ❌ | ❌ | 6/10 | Universal JS wrapper. Useful if we build a Frappe Page with Vue/React. |
+| 5 | [ronhartman/tecdoc-autoparts-catalog](https://github.com/ronhartman/tecdoc-autoparts-catalog) / catamc90 | PHP/Symfony | ? | External API (TecDoc-like) | ❌ | ✅ | ❌ | 5/10 | Decent TecDoc alternative wrapper. Requires API key. Good schema reference. |
+| 6 | [ChanMeng666/Automotive-Repair-Management-System](https://github.com/ChanMeng666/Automotive-Repair-Management-System) | Python/Flask | MIT | Manual/MySQL | ❌ | ❌ | ❌ | 5/10 | Good workshop job card schema inspiration. Not Frappe-native but useful reference. |
+| 7 | [taimoorgit/vin-lookup-mcp](https://github.com/taimoorgit/vin-lookup-mcp) | Python | ? | NHTSA vPIC | ✅ | ❌ | ❌ | 5/10 | MCP server wrapper. Niche use. |
+| 8 | [tonycondone/modmaster-pro](https://github.com/tonycondone/modmaster-pro) | Python/Node/React | ? | AI + manual | ❌ | ❌ | ❌ | 4/10 | AI image recognition for parts. Interesting future Phase 5 feature. |
+| 9 | [lifeofcapo/car-api](https://github.com/lifeofcapo/car-api) (auto-parts-db) | JS/TS | ? | Manual/JSON | ❌ | ❌ | ❌ | 4/10 | Lightweight 1200-part JS DB. Too basic for production. |
+| 10 | [n8barr/automotive-model-year-data](https://github.com/n8barr/automotive-model-year-data) | CSV | ? | Community | ❌ | ❌ | ❌ | 3/10 | Basic make/model/year CSV. Useful seed data only. |
 
-**Key Insight:** No single open-source project delivers VIN + diagrams + interchange + pricing together. We must **compose** multiple sources behind a unified Frappe data layer.
+**Key Insight:** No single open-source project delivers VIN + interchange + pricing together. We must **compose** multiple sources behind a unified Frappe data layer.
 
 ### 2.2 Commercial Data Sources & Reverse Engineering Notes
 
@@ -49,16 +49,15 @@ This document blueprints **PartScape**, a native Frappe custom app that embeds a
 #### B. Partsouq.com
 - **URL Patterns:**
   - VIN lookup: `https://partsouq.com/en/catalog/genuine/vehicle?c={make}&ssd={encoded}&vid=0&cid={cat}&cname={name}&q={vin}`
-  - Diagram view: `https://partsouq.com/en/catalog/genuine/diagram?c={make}&ssd={encoded}&vid={vid}&gid={group}&did={diagram}`
 - **API:** No public API. SSD parameter is a base64-like encoded state blob.
-- **Scraping:** Possible but protected by Cloudflare. Data includes genuine OEM part numbers, prices in USD, diagram references, fitment data.
+- **Scraping:** Possible but protected by Cloudflare. Data includes genuine OEM part numbers, prices in USD, fitment data.
 - **Ethics:** Respect `robots.txt`. Do not hammer. Cache heavily. Consider affiliate partnership instead of scraping.
 - **Verdict:** Ethical scraping is high-risk. Better to use as **reference UI** and manually seed catalog from purchased parts histories.
 
 #### C. Toyota EPC (toyota.epc-data.com) — FREE WEB EPC
 - **URL:** `https://toyota.epc-data.com/` — search by frame number (e.g., `GXE10-0088644`)
 - **Regions:** Japan, General, Europe, USA. For JDM import markets, use **Japan** or **General** region.
-- **Data:** Full genuine Toyota parts catalog with exploded diagrams, part numbers, applicability, and prices.
+- **Data:** Full genuine Toyota parts catalog with part numbers, applicability, and prices.
 - **Access:** Completely free, no registration required. Web-based interface.
 - **Connector Strategy:** Build a respectful scraper/connector that submits frame numbers, parses the resulting vehicle config page, then navigates parts groups to extract OEM numbers. Cache every page locally.
 - **Verdict:** This is our **primary Toyota data source**. Zero cost, official data, no copyright grey area.
@@ -203,7 +202,7 @@ partscape/
 └── setup.py
 ```
 
-### 3.2 DocType Schema (ER Diagram Summary)
+### 3.2 DocType Schema Summary
 
 ```text
 VehicleMake (1) ───< (N) VehicleModel (1) ───< (N) VehicleEngineVariant (1) ───< (N) VehiclePartApplicability (N) >─── (1) PartCatalog
@@ -216,11 +215,6 @@ Customer (1) ───< (N) CustomerVehicle (N) >─── (1) Vehicle
 PartCatalog (1) ───< (N) PartInterchange (N) >─── (1) PartCatalog (bidirectional graph edge)
 PartCatalog (1) ───< (N) PartSupplierReference (N) >─── (1) Supplier
 PartCatalog (1) ───< (N) VehiclePartApplicability
-PartCatalog (1) ───< (N) PartCatalogDiagram (N) >─── (1) PartDiagram
-
-VehicleModel (1) ───< (N) PartDiagram
-
-
 VINDecodeCache (standalone lookup)
 ```
 
@@ -292,7 +286,6 @@ VINDecodeCache (standalone lookup)
 | weight_kg | Float | |
 | dimensions | Data | LxWxH mm |
 | images | Attach Image | Primary image for this part |
-| diagrams | Table | Part Catalog Diagram (child table) — links to exploded view diagrams |
 | is_active | Check | |
 | estimated_cost_usd | Currency | Base cost before landed calc |
 | steering_position | Select | RHD, LHD, Universal |
@@ -312,27 +305,6 @@ VINDecodeCache (standalone lookup)
 
 **Model:** Interchange is a graph, not a list. `Toyota 04465-26421` ↔ `Bosch 0 986 494 046` is one undirected edge. Querying from either direction works. Aftermarket brands inherit vehicle applicability by walking the interchange graph from the OEM node.
 
-#### Part Diagram (Exploded View Image)
-| Field | Type | Notes |
-|-------|------|-------|
-| vehicle_model | Link | Vehicle Model this diagram belongs to |
-| parts_group | Data | e.g. "Brake System", "Engine" |
-| diagram_page | Data | e.g. "B-15", "Group 22" |
-| diagram_number | Data | SHA-256 hash (deduplication key) |
-| diagram_image | Attach Image | The actual exploded view image file |
-| source_url | Data | Original web URL where scraped |
-| source_brand | Data | e.g. "Toyota", "7zap", "RealOEM" |
-| is_active | Check | |
-
-**Storage:** Diagram images are stored as private Frappe file attachments. A single diagram (e.g., front brake assembly for Hiace KDH201) is stored once and linked to all 20-50 parts visible on that diagram via the `Part Catalog Diagram` child table.
-
-#### Part Catalog Diagram (Child Table)
-| Field | Type | Notes |
-|-------|------|-------|
-| part_diagram | Link | Part Diagram |
-| callout_number | Data | The number on the diagram pointing to this part |
-| parts_group | Data | Denormalized for quick reference |
-
 #### Vehicle Part Applicability (Child Table / Separate DocType)
 | Field | Type | Notes |
 |-------|------|-------|
@@ -343,7 +315,6 @@ VINDecodeCache (standalone lookup)
 | year_end | Int | |
 | steering_position | Select | RHD, LHD, Universal |
 | market_code | Data | |
-| diagram_page | Data | Text reference to diagram page |
 
 #### Part Supplier Reference (Child Table / Separate DocType)
 | Field | Type | Notes |
@@ -478,7 +449,7 @@ def decode_vin(vin: str) -> dict:
 - Extract known engine codes from prefix (e.g., `K` = 2KD-FTV in Toyota codes).
 - Manual mapping table for commonly imported JDM models is essential.
 
-### 4.2 Parts Diagram & OEM Data Ingestion
+### 4.2 Parts & OEM Data Ingestion
 
 **The epc-data.com Network (All Brands, Day One):**
 The `epc-data.com` domain operates a **free web EPC network** across multiple brands:
@@ -497,15 +468,14 @@ Every site accepts frame numbers or VINs and returns genuine OEM parts data. Zer
 2. Seed ALL brands in parallel from day one — not Toyota-first.
 3. Toyota gets priority for *depth* (more parts per model), but Nissan, Honda, Suzuki, and Mitsubishi get seeded in *parallel* for *breadth*.
 4. Every page and part number fetched is persisted in `Part Catalog` (brand + part_number) and `Vehicle Part Applicability`.
-5. **Diagram images are downloaded and cached.** Every exploded view diagram encountered during scraping is saved as a `Part Diagram` record with the actual image file attached. Parts are linked to their diagrams via the `Part Catalog Diagram` child table with callout numbers.
-6. After the initial seed, the system is offline-first: all external data, part numbers, fitment data, and diagram images are cached locally.
+5. After the initial seed, the system is offline-first: all external data, part numbers, and fitment data are cached locally.
 
 **Multibrand Free Aggregators (European / American / All Brands):**
 Several free web portals provide OEM parts data across dozens of brands without registration:
 
 | Source | Brands Covered | Access | Notes |
 |--------|---------------|--------|-------|
-| `7zap.com` | 60+ brands including Ford, VW, BMW, Mercedes, Audi, Opel, Renault, Volvo | Free web, VIN search | Exploded diagrams, OEM numbers, cross-references. Primary fallback for non-Japanese brands. |
+| `7zap.com` | 60+ brands including Ford, VW, BMW, Mercedes, Audi, Opel, Renault, Volvo | Free web, VIN search | OEM numbers and cross-references. Primary fallback for non-Japanese brands. |
 | `realoem.com` | BMW (primary), Audi, Mercedes, Porsche, Saab, VW | Free web, VIN/model search | Very clean interface. BMW coverage is exceptional. |
 | `ilcats.ru` | All major makes | Free web | Russian-registered but English-navigable. Deep catalog coverage. |
 | `nemigaparts.com` | BMW, Mercedes, Porsche, Audi, Mini, Smart | Free web | Clean ETK/EPC clones for German brands. |
@@ -527,7 +497,7 @@ Several free web portals provide OEM parts data across dozens of brands without 
 - **Chrysler / Jeep / Dodge (MOPAR):** `7zap.com` has limited coverage. Aftermarket interchange sheets are the primary source for common parts (brake pads, filters, belts).
 
 **European Brand Nuances:**
-- **BMW:** `realoem.com` is exceptional and free. VIN-based lookup with full ETK diagram navigation.
+- **BMW:** `realoem.com` is exceptional and free. VIN-based lookup with full ETK navigation.
 - **VW/Audi/Skoda/Seat:** `7zap.com` and `webautocats.com` (ETKA clone) provide genuine parts data.
 - **Mercedes/Smart:** `nemigaparts.com/mercedes` and `7zap.com` provide EPC data.
 - **Opel/Vauxhall:** `webautocats.com` and `7zap.com` cover European-market models.
@@ -596,7 +566,6 @@ scheduler_events = {
 ### Phase 3: Interchange + Aftermarket + Pricing (Weeks 5–6)
 - [ ] Build RockAuto scraper (respectful, cached) for pricing benchmarks.
 - [ ] Implement fuzzy matching engine (`difflib`/`rapidfuzz`) to link existing warehouse Items to Part Catalog.
-- [ ] Diagram image storage + viewer in Part Catalog form.
 - [ ] Build `Part Supplier Reference` table with MOQ/lead time.
 
 - [ ] Link Job Card → Stock Entry (consumption) and Purchase Order (ordering).
@@ -640,9 +609,8 @@ See file: `partscape/partscape/data_import/import_part_catalog.py`
 
 ### 7.1 Copyright / Database Rights
 - **OEM Part Numbers:** Generally considered factual data. In most jurisdictions (including US and Commonwealth Caribbean), raw part numbers, dimensions, and fitment data are **not copyrightable** (Feist v. Rural).
-- **Diagram Images:** Exploded view diagrams from Toyota/Nissan/BMW EPCs ARE copyrighted by their respective manufacturers. Our approach: download and cache them as **private file attachments** within Frappe for internal business use only (repair shop operations). They are never exposed publicly, redistributed, or included in customer-facing SaaS. This falls under fair use/dealing for internal repair reference.
 - **TecDoc:** Commercial database. Do not use gray-market dumps in customer-facing SaaS. Internal use within a single company's ERP is lower risk, but not zero.
-- **Mitigation:** Build our own `Part Catalog` from free web EPCs (factual data), public manufacturer cross-references, and manual curation. This creates a clean-room dataset. Diagram images are cached locally but treated as confidential internal assets.
+- **Mitigation:** Build our own `Part Catalog` from free web EPCs (factual data), public manufacturer cross-references, and manual curation. This creates a clean-room dataset.
 
 ### 7.2 Scraping Ethics
 - Always respect `robots.txt`.
@@ -669,11 +637,11 @@ See file: `partscape/partscape/data_import/import_part_catalog.py`
 |--------|------|----------|---------|-----------|------|--------------|-----------------|
 | NHTSA vPIC | Free | US/CA vehicles | Partial | Yes (field) | REST | None | Primary VIN decode for 17-char |
 | CarQuery | Freemium | Global specs | Partial | No | REST | Low | Vehicle specs fallback |
-| Toyota EPC Web | Free | Toyota/Lexus global | Yes | Yes | Web/Scrape | Low | OEM numbers + diagram images |
-| Nissan EPC Web | Free | Nissan/Infiniti global | Yes | Yes | Web/Scrape | Low | OEM numbers + diagram images |
-| Honda EPC Web | Free | Honda/Acura global | Yes | Yes | Web/Scrape | Low | OEM numbers + diagram images |
-| 7zap.com | Free | 60+ brands | Yes | Yes | Web/Scrape | Low | OEM numbers + diagram images |
-| RealOEM.com | Free | BMW + German brands | Partial | No | Web/Scrape | Low | OEM numbers + diagram images |
+| Toyota EPC Web | Free | Toyota/Lexus global | Yes | Yes | Web/Scrape | Low | OEM numbers |
+| Nissan EPC Web | Free | Nissan/Infiniti global | Yes | Yes | Web/Scrape | Low | OEM numbers |
+| Honda EPC Web | Free | Honda/Acura global | Yes | Yes | Web/Scrape | Low | OEM numbers |
+| 7zap.com | Free | 60+ brands | Yes | Yes | Web/Scrape | Low | OEM numbers |
+| RealOEM.com | Free | BMW + German brands | Partial | No | Web/Scrape | Low | OEM numbers |
 | Partsouq | Per-use | Toyota/Nissan/Honda/etc | Yes | Yes | None | Med (scraping) | Reference UI / manual seed |
 | RockAuto | Per-use | Aftermarket global | Partial | No | None | Med (scraping) | Pricing + interchange |
 | TecDoc | €€€€ | Aftermarket global | Yes | Yes | SOAP/REST | High (gray dumps) | Avoid officially |
@@ -685,7 +653,7 @@ See file: `partscape/partscape/data_import/import_part_catalog.py`
 ## 9. Next Steps / Action Items
 
 1. **Approve architecture** — Review this blueprint with Seityl stakeholders.
-2. **Procure data seeds** — Use `toyota.epc-data.com` (free) for Toyota parts. Download Bosch/Denso/Aisin cross-reference Excel sheets. Download exploded view diagrams from all accessible EPC sources.
+2. **Procure data seeds** — Use `toyota.epc-data.com` (free) for Toyota parts. Download Bosch/Denso/Aisin cross-reference Excel sheets.
 3. **Setup dev bench** — `bench new-app partscape` on local Frappe v15 dev environment.
 4. **Import Common JDM Models** — Create Vehicle Make/Model/Variant records for the top models listed in §2.3.
 5. **Build VIN decoder** — Implement NHTSA wrapper + cache. Test with 20 real VINs from your target market.

@@ -3,7 +3,7 @@ PartScape — Delete All Synthetic/Fake Data
 
 Removes all seeded synthetic data while preserving real imported data:
 - Keeps: NHTSA/n8barr/abhionlyone/Kaggle vehicles, FPI parts
-- Deletes: Synthetic parts, diagrams, interchanges, seeded vehicles, fake suppliers
+- Deletes: Synthetic parts, interchanges, seeded vehicles, fake suppliers
 """
 
 import frappe
@@ -18,7 +18,7 @@ def execute():
     # ------------------------------------------------------------------
     # [1] Identify real parts (those with FPI supplier references)
     # ------------------------------------------------------------------
-    print("\n[1/6] Identifying real parts...")
+    print("\n[1/5] Identifying real parts...")
     fpi_part_names = frappe.db.sql_list("""
         SELECT DISTINCT part_catalog FROM `tabPart Supplier Reference`
         WHERE supplier = 'FPI Auto Parts'
@@ -28,7 +28,7 @@ def execute():
     # ------------------------------------------------------------------
     # [2] Delete all Part Catalog entries NOT linked to FPI
     # ------------------------------------------------------------------
-    print("\n[2/6] Deleting synthetic Part Catalog entries...")
+    print("\n[2/5] Deleting synthetic Part Catalog entries...")
     all_part_names = frappe.db.sql_list("SELECT name FROM `tabPart Catalog`")
     synthetic_parts = [n for n in all_part_names if n not in fpi_part_names]
     print(f"  → {len(synthetic_parts)} synthetic parts to delete")
@@ -45,24 +45,9 @@ def execute():
         print(f"  → Deleted batch {i//batch_size + 1}/{(len(synthetic_parts)//batch_size)+1}")
 
     # ------------------------------------------------------------------
-    # [3] Delete all Part Diagrams (all are synthetic placeholders)
+    # [3] Delete all Part Interchanges (all are synthetic)
     # ------------------------------------------------------------------
-    print("\n[3/6] Deleting synthetic Part Diagrams...")
-    diagram_names = frappe.db.sql_list("SELECT name FROM `tabPart Diagram`")
-    print(f"  → {len(diagram_names)} diagrams to delete")
-    for i in range(0, len(diagram_names), batch_size):
-        batch = diagram_names[i:i + batch_size]
-        for name in batch:
-            try:
-                frappe.delete_doc("Part Diagram", name, ignore_permissions=True, force=True)
-            except Exception:
-                pass
-        frappe.db.commit()
-
-    # ------------------------------------------------------------------
-    # [4] Delete all Part Interchanges (all are synthetic)
-    # ------------------------------------------------------------------
-    print("\n[4/6] Deleting synthetic Part Interchanges...")
+    print("\n[3/5] Deleting synthetic Part Interchanges...")
     interchange_names = frappe.db.sql_list("SELECT name FROM `tabPart Interchange`")
     print(f"  → {len(interchange_names)} interchanges to delete")
     for i in range(0, len(interchange_names), batch_size):
@@ -77,7 +62,7 @@ def execute():
     # ------------------------------------------------------------------
     # [5] Delete synthetic suppliers and their refs
     # ------------------------------------------------------------------
-    print("\n[5/6] Deleting synthetic suppliers and references...")
+    print("\n[4/5] Deleting synthetic suppliers and references...")
     synthetic_suppliers = [
         "Bosch Automotive SEA",
         "Denso International",
@@ -115,7 +100,7 @@ def execute():
     # ------------------------------------------------------------------
     # [6] Delete synthetic vehicles (seeded ones with sample VINs)
     # ------------------------------------------------------------------
-    print("\n[6/6] Deleting synthetic Vehicles...")
+    print("\n[5/5] Deleting synthetic Vehicles...")
     # Synthetic vehicles were seeded with specific VIN patterns
     # They have colors like White, Silver, Black, Blue, Red, Grey, Pearl White
     # and are linked to the 26 seeded vehicles. We can identify them by checking
@@ -144,9 +129,9 @@ def execute():
     frappe.db.commit()
 
     # ------------------------------------------------------------------
-    # [7] Clean up orphaned Vehicle Part Applicability child records
+    # [6] Clean up orphaned Vehicle Part Applicability child records
     # ------------------------------------------------------------------
-    print("\n[7/7] Cleaning orphaned Vehicle Part Applicability records...")
+    print("\n[6/6] Cleaning orphaned Vehicle Part Applicability records...")
     # These are child table rows in Part Catalog; if the parent was deleted,
     # Frappe should have cascade-deleted them. But let's verify.
     orphaned = frappe.db.sql("""
@@ -169,7 +154,6 @@ def execute():
     print("CLEANUP COMPLETE")
     print("=" * 60)
     print(f"Synthetic parts deleted:        {len(synthetic_parts)}")
-    print(f"Diagrams deleted:               {len(diagram_names)}")
     print(f"Interchanges deleted:           {len(interchange_names)}")
     print(f"Supplier refs deleted:          {len(ref_names)}")
     print(f"Orphaned applicabilities:       {len(orphaned)}")

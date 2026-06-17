@@ -22,8 +22,6 @@
   "is_active",
   "section_break_1",
   "images",
-  "section_break_2",
-  "diagrams",
   "section_break_3",
   "applicable_vehicles"
  ],
@@ -153,18 +151,6 @@
    "fieldname": "images",
    "fieldtype": "Attach Image",
    "label": "Images"
-  },
-  {
-   "fieldname": "section_break_2",
-   "fieldtype": "Section Break",
-   "label": "Diagrams"
-  },
-  {
-   "fieldname": "diagrams",
-   "fieldtype": "Table",
-   "label": "Diagrams",
-   "options": "Part Catalog Diagram",
-   "description": "Exploded view diagrams showing this part"
   },
   {
    "fieldname": "section_break_3",

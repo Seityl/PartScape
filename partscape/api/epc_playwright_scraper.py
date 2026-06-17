@@ -35,7 +35,7 @@ def _get_playwright():
 def scrape_toyota_epc_frame(frame_no: str, region: str = "general") -> dict:
     """
     Use Playwright to query toyota.epc-data.com by frame number.
-    Returns vehicle config dict with parts list and diagram URLs.
+    Returns vehicle config dict with parts list.
     """
     if not frame_no:
         return {}
@@ -48,7 +48,6 @@ def scrape_toyota_epc_frame(frame_no: str, region: str = "general") -> dict:
         "engine_code": None,
         "transmission": None,
         "parts": [],
-        "diagrams": [],
     }
 
     try:
@@ -106,19 +105,6 @@ def scrape_toyota_epc_frame(frame_no: str, region: str = "general") -> dict:
                     "source": "toyota.epc-data.com",
                 })
             result["parts"] = parts
-
-            # Extract diagram image URLs
-            diagrams = []
-            img_pattern = re.compile(
-                r'<img[^>]+src=["\']([^"\']+diagram[^"\']+\.(?:png|jpg|jpeg|gif))["\'][^>]*>',
-                re.S | re.I,
-            )
-            for match in img_pattern.finditer(html):
-                img_url = match.group(1)
-                if not img_url.startswith("http"):
-                    img_url = f"https://toyota.epc-data.com{img_url}"
-                diagrams.append({"url": img_url, "source": "toyota.epc-data.com"})
-            result["diagrams"] = diagrams
 
             browser.close()
 
@@ -194,5 +180,4 @@ def seed_from_epc_playwright(frame_no: str, region: str = "general"):
         "model": data["model"],
         "model_code": data["model_code"],
         "parts_created": parts_created,
-        "diagrams_found": len(data.get("diagrams", [])),
     }

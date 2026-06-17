@@ -13,8 +13,7 @@
     "year_start",
     "year_end",
     "steering_position",
-    "market_code",
-    "diagram_page"
+    "market_code"
   ],
   "fields": [
     {
@@ -72,13 +71,6 @@
       "fieldtype": "Data",
       "label": "Market Code",
       "in_list_view": 1
-    },
-    {
-      "fieldname": "diagram_page",
-      "fieldtype": "Data",
-      "label": "Diagram Page",
-      "in_list_view": 1,
-      "description": "Page number within the parts group"
     }
   ],
   "index_web_pages_for_search": 1,

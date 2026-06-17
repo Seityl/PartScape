@@ -14,7 +14,7 @@ bench --site your-site.local migrate
 ## Features
 
 - **VIN Decode Cache** — NHTSA vPIC + VIN Decoder EU (Vincario) + JDM frame number lookups
-- **Part Catalog** — OEM part numbers with diagram references
+- **Part Catalog** — OEM part numbers and descriptions
 - **Part Interchange** — Aftermarket cross-references (Bosch, Denso, KYB, etc.)
 - **Vehicle Master** — Full fleet tracking with RHD/LHD awareness
 - **Landed Cost Estimator** — Configurable customs duty + VAT calculations

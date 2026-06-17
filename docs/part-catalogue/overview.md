@@ -26,7 +26,6 @@ PartScape solves this by:
 | **Estimated Cost (USD)** | Reference cost for purchase planning. |
 | **Superseded By** | If this part is replaced by another catalogue entry. |
 | **Applicable Vehicles** | Child table of Vehicle Part Applicability records. |
-| **Diagrams** | Linked Part Diagrams, if any. |
 
 ## How a catalogue entry becomes an Item
 

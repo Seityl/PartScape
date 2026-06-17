@@ -20,7 +20,6 @@ After selection, the Purchase Order item row is populated with:
 - **Item Name** — from the catalogue.
 - **Description** — combined part name, brand, and part number.
 - **Part Catalogue Reference** — link to the catalogue entry.
-- **Diagram Reference** — if the catalogue entry has one.
 
 ## Editing a row manually
 

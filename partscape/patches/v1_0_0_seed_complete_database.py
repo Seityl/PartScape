@@ -4,14 +4,12 @@ PartScape — Comprehensive Database Seeder
 Seeds the complete auto parts database:
 - Part Categories (taxonomy)
 - Part Catalog (OEM + aftermarket parts with realistic part numbers)
-- Part Diagrams (metadata placeholders)
 - Vehicle Part Applicability (fitment matrix)
 - Part Interchanges (cross-references)
 - Part Supplier References (supplier SKUs)
 - Vehicles (sample fleet)
 
 Uses actual OEM part numbering conventions for Toyota, Nissan, Honda, Suzuki.
-Does NOT include copyrighted diagram images — only metadata.
 """
 
 import random
@@ -200,27 +198,6 @@ SUPPLIERS = [
     {"name": "Singapore Motor Spares", "currency": "SGD", "lead_time": 10, "moq": 5},
 ]
 
-# ── Diagram Parts Groups ────────────────────────────────────────────────────
-
-DIAGRAM_GROUPS = [
-    "Engine / Transmission",
-    "Clutch & Manual Transmission",
-    "Propeller Shaft & Differential",
-    "Front Axle & Suspension",
-    "Rear Axle & Suspension",
-    "Brake System",
-    "Steering Column & Linkage",
-    "Radiator & Cooling",
-    "Heater & Air Conditioning",
-    "Fuel Tank & Lines",
-    "Exhaust System",
-    "Electrical / Starting & Charging",
-    "Body / Front",
-    "Body / Rear",
-    "Body / Interior",
-    "Lighting System",
-]
-
 # ── Helpers ─────────────────────────────────────────────────────────────────
 
 def _get_or_create_item_group(name):
@@ -322,7 +299,7 @@ def execute():
     print("=" * 60)
 
     # ── 1. Seed Item Groups for Part Categories ─────────────────────────────
-    print("\n[1/8] Seeding Item Groups...")
+    print("\n[1/7] Seeding Item Groups...")
     category_map = {}
     for cat in PART_CATEGORIES:
         name = _get_or_create_item_group(cat["category_name"])
@@ -330,7 +307,7 @@ def execute():
     print(f"   → {len(category_map)} item groups ready")
 
     # ── 2. Seed Suppliers ───────────────────────────────────────────────────
-    print("\n[2/8] Seeding Suppliers...")
+    print("\n[2/7] Seeding Suppliers...")
     supplier_map = {}
     for sup in SUPPLIERS:
         name = _get_or_create_supplier(sup["name"], sup["currency"], sup["lead_time"], sup["moq"])
@@ -344,7 +321,7 @@ def execute():
     print(f"   → {len(supplier_map)} suppliers ready")
 
     # ── 3. Seed Part Catalog ────────────────────────────────────────────────
-    print("\n[3/8] Seeding Part Catalog...")
+    print("\n[3/7] Seeding Part Catalog...")
     models = frappe.get_all("Vehicle Model", fields=["name", "model_name", "make", "year_start", "year_end", "body_type", "steering_position"])
     makes = frappe.get_all("Vehicle Make", fields=["name", "make_name"])
     make_name_to_doc = {m.make_name: m.name for m in makes}
@@ -411,7 +388,7 @@ def execute():
     print(f"   → {len(part_catalog_map)} parts in catalog")
 
     # ── 4. Seed Vehicle Part Applicability ──────────────────────────────────
-    print("\n[4/8] Seeding Vehicle Part Applicability...")
+    print("\n[4/7] Seeding Vehicle Part Applicability...")
     applicability_count = 0
 
     for make_name, model_list in make_models.items():
@@ -448,45 +425,8 @@ def execute():
 
     print(f"   → {applicability_count} applicability records created")
 
-    # ── 5. Seed Part Diagrams ───────────────────────────────────────────────
-    print("\n[5/8] Seeding Part Diagrams...")
-    diagram_map = {}
-    diagram_seq = 0
-
-    for model in models:
-        make_name = model.make
-        for group in DIAGRAM_GROUPS:
-            diagram_seq += 1
-            diagram_number = f"{make_name[:3].upper()}-{diagram_seq:04d}"
-
-            existing = frappe.db.get_value("Part Diagram", {
-                "vehicle_model": model.name,
-                "parts_group": group,
-            }, "name")
-            if existing:
-                diagram_map[(model.name, group)] = existing
-                continue
-
-            doc = frappe.get_doc({
-                "doctype": "Part Diagram",
-                "vehicle_model": model.name,
-                "parts_group": group,
-                "diagram_page": str(random.randint(1, 20)),
-                "diagram_number": diagram_number,
-                "source_brand": make_name,
-                "source_url": f"https://toyota.epc-data.com/{model.model_name.lower().replace(' ', '-')}/",
-                "is_active": 1,
-            })
-            try:
-                doc.insert(ignore_permissions=True, ignore_mandatory=True)
-                diagram_map[(model.name, group)] = doc.name
-            except Exception as e:
-                print(f"   WARN: Diagram error for {model.name}/{group}: {e}")
-
-    print(f"   → {len(diagram_map)} diagram metadata records created")
-
-    # ── 6. Seed Part Interchanges ───────────────────────────────────────────
-    print("\n[6/8] Seeding Part Interchanges...")
+    # ── 5. Seed Part Interchanges ───────────────────────────────────────────
+    print("\n[5/7] Seeding Part Interchanges...")
     interchange_count = 0
     part_list = list(part_catalog_map.values())
     random.shuffle(part_list)
@@ -527,7 +467,7 @@ def execute():
     print(f"   → {interchange_count} interchange records created")
 
     # ── 7. Seed Part Supplier References ────────────────────────────────────
-    print("\n[7/8] Seeding Part Supplier References...")
+    print("\n[6/7] Seeding Part Supplier References...")
     supplier_ref_count = 0
     supplier_list = list(supplier_map.values())
 
@@ -571,7 +511,7 @@ def execute():
     print(f"   → {supplier_ref_count} supplier reference records created")
 
     # ── 8. Seed Vehicles ────────────────────────────────────────────────────
-    print("\n[8/8] Seeding Vehicles...")
+    print("\n[7/7] Seeding Vehicles...")
     vehicle_count = 0
 
     sample_vins = [
@@ -657,7 +597,6 @@ def execute():
     print(f"Item Groups:            {len(category_map)}")
     print(f"Part Catalog:           {len(part_catalog_map)}")
     print(f"Applicability Records:  {applicability_count}")
-    print(f"Part Diagrams:          {len(diagram_map)}")
     print(f"Part Interchanges:      {interchange_count}")
     print(f"Supplier References:    {supplier_ref_count}")
     print(f"Vehicles:               {vehicle_count}")
