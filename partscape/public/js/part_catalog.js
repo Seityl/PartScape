@@ -60,22 +60,28 @@ frappe.ui.form.on("Part Catalog", {
 	},
 
 	create_stock_item(frm) {
-		frappe.call({
-			method: "partscape.utils.item_factory.create_item_from_part_catalog",
-			args: { part_catalog_name: frm.doc.name },
-			freeze: true,
-			freeze_message: __("Creating Stock Item..."),
-			callback(r) {
-				if (r.message) {
-					frappe.show_alert({
-						message: __("Stock Item {0} created/linked", [r.message]),
-						indicator: "green",
-					});
-					frm.reload_doc();
-					frappe.set_route("Form", "Item", r.message);
-				}
+		frappe.confirm(
+			__("Create a new Stock Item from {0} {1}?", [frm.doc.brand, frm.doc.part_number]),
+			() => {
+				frappe.call({
+					method: "partscape.utils.item_factory.create_item_from_part_catalog",
+					args: { part_catalog_name: frm.doc.name },
+					freeze: true,
+					freeze_message: __("Creating Stock Item..."),
+					callback(r) {
+						if (r.message) {
+							frappe.show_alert({
+								message: __("Stock Item {0} created/linked", [r.message]),
+								indicator: "green",
+							});
+							frm.reload_doc();
+							frappe.set_route("Form", "Item", r.message);
+						}
+					},
+				});
 			},
-		});
+			() => {}
+		);
 	},
 });
 
