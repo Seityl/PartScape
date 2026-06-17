@@ -52,7 +52,6 @@ doctype_js = {
     "Warehouse": "public/js/warehouse.js",
     "Stock Entry": "public/js/stock_entry.js",
     "Item Price": "public/js/item_price.js",
-    "Part Catalog": "public/js/part_catalog.js",
 }
 
 doctype_list_js = {
