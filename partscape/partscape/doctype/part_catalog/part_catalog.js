@@ -1,7 +1,7 @@
 frappe.ui.form.on("Part Catalog", {
 	refresh(frm) {
 		// Add action button to create ERPNext Stock Item from this Part Catalog.
-		if (!frm.is_new()) {
+		if (!frm.is_new() && !frm.doc.linked_item) {
 			frm.add_custom_button(
 				__("Create Stock Item"),
 				() => frm.events.create_stock_item(frm),
