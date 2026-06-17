@@ -80,9 +80,9 @@
   },
   {
    "fieldname": "primary_market",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Primary Market",
-   "options": "JDM\nUKDM\nAUM\nUSDM\nEUDM\nGlobal",
+   "options": "Market",
    "default": "JDM",
    "in_list_view": 1,
    "in_standard_filter": 1
@@ -90,7 +90,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-24 00:00:00.000000",
+ "modified": "2026-06-16 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "PartScape",
  "name": "Vehicle Model",
