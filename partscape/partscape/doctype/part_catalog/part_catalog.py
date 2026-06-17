@@ -43,15 +43,16 @@ class PartCatalog(Document):
             )
 
     def _auto_set_oem_flag(self):
-        """Set is_oem if the Brand matches the OEM Make name."""
+        """Auto-set is_oem when Brand matches the OEM Make name."""
         if self.oem_make and self.brand:
             make_name = frappe.db.get_value("Vehicle Make", self.oem_make, "make_name")
             brand_name = frappe.db.get_value("Brand", self.brand, "brand") or self.brand
             if make_name and make_name.strip().lower() == brand_name.strip().lower():
                 self.is_oem = 1
             else:
-                # Only auto-clear if explicitly mismatched; preserve manual override otherwise
-                pass
+                self.is_oem = 0
+        else:
+            self.is_oem = 0
 
     def _normalize_fields(self):
         self.part_number = (self.part_number or "").strip().upper()
