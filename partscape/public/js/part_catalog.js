@@ -1,12 +1,6 @@
 frappe.ui.form.on("Part Catalog", {
 	refresh(frm) {
-		// Set per-row variant filter based on the row's Vehicle Model.
-		frm.set_query("variant", "applicable_vehicles", (doc, cdt, cdn) => {
-			const row = locals[cdt][cdn];
-			return {
-				filters: row.vehicle_model ? { model: row.vehicle_model } : {},
-			};
-		});
+		frm.events.set_variant_query(frm);
 
 		// Ensure all existing applicable-vehicle rows are populated.
 		(frm.doc.applicable_vehicles || []).forEach((row) => {
@@ -14,6 +8,22 @@ frappe.ui.form.on("Part Catalog", {
 				frm.events.populate_vehicle_fields(frm, "applicable_vehicles", row.name);
 			}
 		});
+	},
+
+	set_variant_query(frm) {
+		// Filter the Engine Variant link to variants of the row's Vehicle Model.
+		const grid = frm.fields_dict.applicable_vehicles?.grid;
+		if (!grid) return;
+
+		const variant_field = grid.get_field("variant");
+		if (!variant_field) return;
+
+		variant_field.get_query = function(doc, cdt, cdn) {
+			const row = locals[cdt][cdn];
+			return {
+				filters: row.vehicle_model ? { model: row.vehicle_model } : {},
+			};
+		};
 	},
 
 	populate_vehicle_fields(frm, cdt, cdn) {
@@ -52,6 +62,8 @@ frappe.ui.form.on("Vehicle Part Applicability", {
 					frappe.model.set_value(cdt, cdn, "variant", "");
 				}
 			});
+		} else if (!row.vehicle_model) {
+			frappe.model.set_value(cdt, cdn, "variant", "");
 		}
 	},
 
@@ -60,5 +72,6 @@ frappe.ui.form.on("Vehicle Part Applicability", {
 		if (frm.doc.doctype === "Part Catalog") {
 			frappe.model.set_value(cdt, cdn, "part_catalog", frm.doc.name);
 		}
+		frm.events.set_variant_query(frm);
 	},
 });
