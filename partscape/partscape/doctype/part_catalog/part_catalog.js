@@ -4,7 +4,8 @@ frappe.ui.form.on("Part Catalog", {
 		if (!frm.is_new()) {
 			frm.add_custom_button(
 				__("Create Stock Item"),
-				() => frm.events.create_stock_item(frm)
+				() => frm.events.create_stock_item(frm),
+				__("Actions")
 			);
 		}
 
