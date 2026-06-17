@@ -174,7 +174,6 @@ partscape/
 │   │   ├── part_category/
 │   │   ├── part_interchange/
 │   │   ├── vin_decode_cache/
-│   │   ├── customer_vehicle/
 │   │   ├── vehicle_part_applicability/
 │   │   └── part_supplier_reference/
 │   ├── utils/
@@ -361,18 +360,6 @@ VINDecodeCache (standalone lookup)
 | actual_cost | Currency | At time of job |
 | supplied_via | Link | Stock Entry or Purchase Order |
 
-#### Customer Vehicle (Child Table on Customer)
-| Field | Type | Notes |
-|-------|------|-------|
-| vehicle | Link | Vehicle |
-| vin | Data | Fetched from Vehicle.vin (read-only) |
-| make_model | Data | Fetched from Vehicle.model (read-only) |
-| year | Int | Fetched from Vehicle.year (read-only) |
-| is_primary | Check | Only one vehicle per customer can be primary |
-| date_added | Date | |
-
-**Sync Logic:** When a Vehicle's `owner` is set to a Customer, the system auto-adds it to that Customer's `vehicles` child table. When a vehicle is removed from the Customer's table, its `owner` field is cleared. This ensures bidirectional integrity.
-
 ### 3.4 Custom Fields on Existing ERPNext DocTypes
 
 #### Item
@@ -398,10 +385,6 @@ VINDecodeCache (standalone lookup)
 - `part_brands_supplied` (Table) — brand + category
 - `preferred_shipping_method` (Data)
 - `average_lead_time_days` (Int)
-
-#### Customer
-- `vehicles` (Table → Customer Vehicle) — all vehicles owned by this customer
-- `primary_vehicle` (Link → Vehicle) — auto-set from the row marked `is_primary`
 
 ### 3.5 Permission Model
 

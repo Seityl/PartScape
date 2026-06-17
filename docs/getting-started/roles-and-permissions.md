@@ -49,7 +49,6 @@ They **cannot** create or edit catalogue data, settings, or vehicle masters.
 | Part Supplier Reference | Full | Read only |
 | Vehicle | Full | Read only |
 | Vehicle Make / Model / Engine Variant | Full | Read only |
-| Customer Vehicle | Full | Read only |
 | PartScape Settings | Full | No access |
 | Label Printer Settings | Full | Read only |
 | VIN Decode Cache | Full | Read only |

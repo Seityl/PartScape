@@ -11,3 +11,4 @@ partscape.patches.v1_0_0_migrate_part_catalog_links # 2026-06-16
 partscape.patches.v1_0_0_cleanup_part_catalog_columns # 2026-06-16
 partscape.patches.v1_0_0_drop_diagram_reference_columns # 2026-06-16
 partscape.patches.v1_0_0_remove_diagram_feature # 2026-06-16
+partscape.patches.v1_0_0_remove_customer_vehicle # 2026-06-16
