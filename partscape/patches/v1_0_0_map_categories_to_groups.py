@@ -1,17 +1,11 @@
 """
-PartScape Patch — Map all Part Categories to ERPNext Item Groups.
+PartScape Patch — Part Category → Item Group mapper (legacy).
 
-Runs the keyword mapper over all 688 Part Categories and caches
-results in the Part Category.item_group field.
+The Part Category DocType has been removed; categories are now represented
+directly by ERPNext Item Groups. This patch is retained as a no-op for
+sites where it was already executed.
 """
-
-from partscape.utils.category_mapper import map_all_categories
 
 
 def execute():
-    stats = map_all_categories()
-    print(
-        f"Category mapping complete: {stats['mapped']} mapped "
-        f"({stats['fallback_to_parent']} via parent), "
-        f"{stats['unmapped']} unmapped out of {stats['total']} total."
-    )
+    print("Part Category mapping skipped: Part Category DocType has been removed.")

@@ -76,6 +76,11 @@ def _migrate_brands():
 
 def _migrate_categories():
     print("[2/4] Mapping Part Catalog categories to Item Groups...")
+
+    if not frappe.db.table_exists("Part Category"):
+        print("  -> Part Category table not found; skipping category migration")
+        return
+
     fallback = _get_fallback_item_group()
 
     # 1. Bulk-remap rows whose current category matches a Part Category with an

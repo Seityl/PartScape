@@ -176,8 +176,12 @@ def execute():
     print(f"  → {vehicle_count} vehicle models imported/updated")
 
     print("\n[2/2] Importing part categories...")
-    category_count = import_categories()
-    print(f"  → {category_count} categories imported/updated")
+    if frappe.db.table_exists("Part Category"):
+        category_count = import_categories()
+        print(f"  → {category_count} categories imported/updated")
+    else:
+        category_count = 0
+        print("  → Part Category DocType has been removed; skipping category import")
 
     print("\n" + "=" * 60)
     print("KAGGLE IMPORT COMPLETE")
