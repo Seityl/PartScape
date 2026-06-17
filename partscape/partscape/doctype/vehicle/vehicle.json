@@ -19,12 +19,14 @@
   "registration_no",
   "customer",
   "section_break_1",
+  "image",
+  "section_break_2",
   "mileage",
   "column_break_2",
   "steering_position",
   "market_code",
   "status",
-  "section_break_2",
+  "section_break_3",
   "last_vin_decode"
  ],
  "fields": [
@@ -43,7 +45,7 @@
   {
    "fieldname": "chassis_number",
    "fieldtype": "Data",
-   "label": "Chassis Number (JDM)"
+   "label": "Chassis Number"
   },
   {
    "fieldname": "make",
@@ -85,12 +87,16 @@
   {
    "fieldname": "engine_code",
    "fieldtype": "Data",
-   "label": "Engine Code"
+   "label": "Engine Code",
+   "read_only": 1,
+   "description": "Auto-populated from Engine Variant"
   },
   {
    "fieldname": "transmission",
    "fieldtype": "Data",
-   "label": "Transmission"
+   "label": "Transmission",
+   "read_only": 1,
+   "description": "Auto-populated from Engine Variant"
   },
   {
    "fieldname": "color",
@@ -116,6 +122,16 @@
   },
   {
    "fieldname": "section_break_1",
+   "fieldtype": "Section Break",
+   "label": "Image"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "section_break_2",
    "fieldtype": "Section Break",
    "label": "Market & Status"
   },
@@ -154,19 +170,21 @@
    "in_standard_filter": 1
   },
   {
-   "fieldname": "section_break_2",
+   "fieldname": "section_break_3",
    "fieldtype": "Section Break",
-   "label": "VIN Decode"
+   "label": "VIN Decode",
+   "hidden": 1
   },
   {
    "fieldname": "last_vin_decode",
    "fieldtype": "Datetime",
-   "label": "Last VIN Decode"
+   "label": "Last VIN Decode",
+   "hidden": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-24 00:00:00.000000",
+ "modified": "2026-06-16 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "PartScape",
  "name": "Vehicle",
@@ -214,6 +232,7 @@
  "track_changes": 1,
  "autoname": "field:vin",
  "title_field": "vin",
+ "image_field": "image",
  "allow_import": 1,
  "search_fields": "vin,chassis_number,registration_no,customer"
 }
