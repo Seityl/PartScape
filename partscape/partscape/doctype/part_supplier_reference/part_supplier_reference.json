@@ -67,7 +67,7 @@
   {
    "fieldname": "unit_cost_usd",
    "fieldtype": "Currency",
-   "label": "Unit Cost (USD)",
+   "label": "Unit Cost",
    "in_list_view": 1
   },
   {

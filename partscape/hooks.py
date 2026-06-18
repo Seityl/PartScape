@@ -73,6 +73,7 @@ doctype_list_js = {
 doc_events = {
     "Vehicle": {
         "validate": "partscape.partscape.doctype.vehicle.vehicle.validate_vehicle",
+        "on_update": "partscape.partscape.doctype.vehicle.vehicle.on_update_vehicle",
         "after_insert": "partscape.partscape.doctype.vehicle.vehicle.after_insert_vehicle",
     },
     "Purchase Order": {
