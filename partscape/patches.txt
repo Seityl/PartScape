@@ -16,3 +16,4 @@ partscape.patches.v1_0_0_link_vehicle_model_market # 2026-06-16
 partscape.patches.v1_0_0_simplify_vehicle_status # 2026-06-16
 partscape.patches.v1_0_0_remove_part_category # 2026-06-16
 partscape.patches.v1_0_0_migrate_part_interchange_to_child_table # 2026-06-16
+partscape.patches.v1_0_0_map_interchange_relationship_types # 2026-06-16

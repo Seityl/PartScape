@@ -442,18 +442,13 @@ def execute():
         if any(r.part == part_b_name for r in (part_a.interchanges or [])):
             continue
 
-        rel_type = random.choice(["Equivalent", "Aftermarket Alternative", "OEM Equivalent"])
-        quality = random.choice(["OEM Equivalent", "Aftermarket", "Performance"])
-        confidence = round(random.uniform(0.7, 0.99), 2)
+        rel_type = random.choice(["Equivalent", "Aftermarket Alternative", "Superseded By"])
 
         part_a.append(
             "interchanges",
             {
                 "part": part_b_name,
                 "relationship_type": rel_type,
-                "quality_tier": quality,
-                "confidence_score": confidence,
-                "source": "PartScape Auto-Seed",
             },
         )
         try:

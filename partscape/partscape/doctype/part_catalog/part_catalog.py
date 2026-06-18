@@ -75,18 +75,19 @@ class PartCatalog(Document):
     # ---------------------------------------------------------------------------
 
     def _validate_interchanges(self):
-        """Prevent self-references and duplicate alternate parts on this record."""
+        """Prevent self-references and silently de-duplicate alternate parts."""
         seen = set()
+        cleaned = []
         for row in self.interchanges or []:
             if not row.part:
                 continue
             if row.part == self.name:
                 frappe.throw(_("A part cannot be an interchange of itself."))
             if row.part in seen:
-                frappe.throw(
-                    _("Duplicate interchange part: {0}").format(row.part)
-                )
+                continue
             seen.add(row.part)
+            cleaned.append(row)
+        self.interchanges = cleaned
 
     def _sync_interchange_reverse_rows(self):
         """Mirror interchange rows on the related Part Catalog records."""
@@ -131,10 +132,8 @@ class PartCatalog(Document):
 
     def _interchange_row_changed(self, old_row, new_row):
         """Compare fields that must stay in sync on the reverse row."""
-        fields = ["relationship_type", "quality_tier", "confidence_score", "source"]
-        return any(
-            (old_row.get(f) or "") != (new_row.get(f) or "")
-            for f in fields
+        return (old_row.get("relationship_type") or "") != (
+            new_row.get("relationship_type") or ""
         )
 
     def _upsert_reverse_row(self, other_part: str, source_row):
@@ -147,9 +146,6 @@ class PartCatalog(Document):
         for row in other.interchanges or []:
             if row.part == self.name:
                 row.relationship_type = source_row.relationship_type
-                row.quality_tier = source_row.quality_tier
-                row.confidence_score = source_row.confidence_score
-                row.source = source_row.source
                 break
         else:
             other.append(
@@ -157,9 +153,6 @@ class PartCatalog(Document):
                 {
                     "part": self.name,
                     "relationship_type": source_row.relationship_type,
-                    "quality_tier": source_row.quality_tier,
-                    "confidence_score": source_row.confidence_score,
-                    "source": source_row.source,
                 },
             )
 

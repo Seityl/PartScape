@@ -6,10 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "part",
-  "relationship_type",
-  "quality_tier",
-  "confidence_score",
-  "source"
+  "relationship_type"
  ],
  "fields": [
   {
@@ -29,27 +26,6 @@
    "default": "Equivalent",
    "in_list_view": 1,
    "reqd": 1
-  },
-  {
-   "fieldname": "quality_tier",
-   "fieldtype": "Select",
-   "label": "Quality Tier",
-   "options": "OEM\nOEM Equivalent\nAftermarket\nPerformance",
-   "default": "Aftermarket",
-   "in_list_view": 1,
-   "reqd": 1
-  },
-  {
-   "fieldname": "confidence_score",
-   "fieldtype": "Float",
-   "label": "Confidence Score",
-   "description": "0.0\u20131.0 confidence in this interchange"
-  },
-  {
-   "fieldname": "source",
-   "fieldtype": "Data",
-   "label": "Source",
-   "description": "Where this interchange claim came from"
   }
  ],
  "index_web_pages_for_search": 1,

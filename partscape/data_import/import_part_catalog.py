@@ -10,7 +10,7 @@ CSV Expected Columns:
     engine_code, steering_position, market_code
 
 Optional columns for interchange:
-    interchange_brand, interchange_part_number, quality_tier, relationship_type
+    interchange_brand, interchange_part_number, relationship_type
 """
 
 import csv
@@ -124,9 +124,6 @@ def import_from_csv(file_path: str, default_vehicle_make: str = "Toyota"):
                             {
                                 "part": ix_pc_name,
                                 "relationship_type": row.get("relationship_type", "Equivalent"),
-                                "quality_tier": row.get("quality_tier", "Aftermarket"),
-                                "confidence_score": 1.0,
-                                "source": "Bulk Import",
                             },
                         )
                         pc.save(ignore_permissions=True)
@@ -240,14 +237,14 @@ def download_csv_template():
         "weight_kg", "dimensions", "estimated_cost_usd",
         "vehicle_model", "year_start", "year_end", "engine_code",
         "steering_position", "market_code", "interchange_brand", "interchange_part_number",
-        "relationship_type", "quality_tier"
+        "relationship_type"
     ]
     sample = [
         "Toyota", "04465-26421", "Brake Pad Set, Disc", "Brake", "Front brake pad set for Hiace",
         "1.2", "145x55x18", "28.50",
         "Hiace", "2012", "2020", "1KD-FTV",
         "RHD", "JDM", "Bosch", "0 986 494 046",
-        "Equivalent", "OEM Equivalent"
+        "Equivalent"
     ]
     return {
         "filename": "partscape_part_catalog_template.csv",

@@ -393,6 +393,12 @@ def import_part_interchange(catalog_map: dict, article_map: dict) -> int:
     print("\n[2/2] Importing Part Interchange...")
     total_imported = 0
 
+    RELATIONSHIP_MAP = {
+        "New Number": "Superseded By",
+        "Replacement": "Equivalent",
+        "Equivalent": "Equivalent",
+    }
+
     def process_file(path: str, rel_type: str, source: str, target_idx: int = 1, target_supplier_idx: int = 2):
         nonlocal total_imported
         batch = []
@@ -417,6 +423,7 @@ def import_part_interchange(catalog_map: dict, article_map: dict) -> int:
                 skipped += 1
                 continue
 
+            rel_type = RELATIONSHIP_MAP.get(rel_type, rel_type)
             batch.append((part_a, part_b, rel_type, source))
             if len(batch) >= BATCH_SIZE:
                 _insert_interchange_batch(batch)
@@ -465,21 +472,20 @@ def _insert_interchange_batch(batch: list):
         value_tuples.append(
             f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', "
             f"0, 0, '{esc(pa)}', 'interchanges', 'Part Catalog', '{esc(pb)}', "
-            f"'{esc(rel)}', 'Aftermarket', 1.0, '{esc(src)}')"
+            f"'{esc(rel)}')"
         )
         # Reverse row: parent = pb, part = pa
         value_tuples.append(
             f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', "
             f"0, 0, '{esc(pb)}', 'interchanges', 'Part Catalog', '{esc(pa)}', "
-            f"'{esc(rel)}', 'Aftermarket', 1.0, '{esc(src)}')"
+            f"'{esc(rel)}')"
         )
 
     values = ", ".join(value_tuples)
     sql = f"""
         INSERT IGNORE INTO `tabPart Catalog Interchange`
         (name, creation, modified, modified_by, owner, docstatus, idx,
-         parent, parentfield, parenttype, part,
-         relationship_type, quality_tier, confidence_score, source)
+         parent, parentfield, parenttype, part, relationship_type)
         VALUES {values}
     """
     frappe.db.sql(sql)

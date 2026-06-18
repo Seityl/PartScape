@@ -20,7 +20,7 @@ def get_interchange_numbers(part_catalog: str) -> list:
     Return a list of human-readable interchange strings for a given Part Catalog doc.
 
     Example output:
-        ["Bosch 0 986 494 046 (OEM Equivalent)", "Akebono ACT1293 (Aftermarket)"]
+        ["Bosch 0 986 494 046 (Equivalent)", "Akebono ACT1293 (Aftermarket Alternative)"]
     """
     if not part_catalog:
         return []
@@ -32,7 +32,7 @@ def get_interchange_numbers(part_catalog: str) -> list:
             "Part Catalog", other, ["brand", "part_number"], as_dict=True
         )
         if pc:
-            results.append(f"{pc.brand} {pc.part_number} ({meta.quality_tier})")
+            results.append(f"{pc.brand} {pc.part_number} ({meta.relationship_type})")
     return results
 
 
@@ -71,8 +71,6 @@ def find_equivalents(brand: str, part_number: str) -> list:
                 "is_oem": pc.is_oem,
                 "estimated_cost_usd": pc.estimated_cost_usd,
                 "relationship_type": meta.relationship_type,
-                "quality_tier": meta.quality_tier,
-                "confidence_score": meta.confidence_score,
             })
     return results
 
@@ -110,8 +108,7 @@ def find_oem_by_aftermarket(brand: str, part_number: str) -> list:
                 "part_number": pc.part_number,
                 "part_name": pc.part_name,
                 "oem_make": oem_make_name or pc.oem_make,
-                "quality_tier": meta.quality_tier,
-                "confidence_score": meta.confidence_score,
+                "relationship_type": meta.relationship_type,
             })
     return results
 
@@ -133,7 +130,7 @@ def _find_interchange_rows(part_catalog_name: str):
     for row in frappe.get_all(
         "Part Catalog Interchange",
         filters={"parent": part_catalog_name},
-        fields=["part", "relationship_type", "quality_tier", "confidence_score"],
+        fields=["part", "relationship_type"],
     ):
         result[row.part] = row
 
@@ -141,9 +138,9 @@ def _find_interchange_rows(part_catalog_name: str):
     for row in frappe.get_all(
         "Part Catalog Interchange",
         filters={"part": part_catalog_name},
-        fields=["parent", "relationship_type", "quality_tier", "confidence_score"],
+        fields=["parent as part", "relationship_type"],
     ):
-        if row.parent not in result:
-            result[row.parent] = row
+        if row.part not in result:
+            result[row.part] = row
 
     return result

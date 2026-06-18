@@ -35,25 +35,20 @@ def _insert_batch(rows, now_str, user):
         value_tuples.append(
             f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', "
             f"0, 0, {_row_value(row, 'part_a')}, 'interchanges', 'Part Catalog', "
-            f"{_row_value(row, 'part_b')}, {_row_value(row, 'relationship_type')}, "
-            f"{_row_value(row, 'quality_tier')}, {_row_value(row, 'confidence_score')}, "
-            f"{_row_value(row, 'source')})"
+            f"{_row_value(row, 'part_b')}, {_row_value(row, 'relationship_type')})"
         )
         # Reverse row: parent = part_b, part = part_a
         value_tuples.append(
             f"('{frappe.generate_hash()[:10]}', '{now_str}', '{now_str}', '{user}', '{user}', "
             f"0, 0, {_row_value(row, 'part_b')}, 'interchanges', 'Part Catalog', "
-            f"{_row_value(row, 'part_a')}, {_row_value(row, 'relationship_type')}, "
-            f"{_row_value(row, 'quality_tier')}, {_row_value(row, 'confidence_score')}, "
-            f"{_row_value(row, 'source')})"
+            f"{_row_value(row, 'part_a')}, {_row_value(row, 'relationship_type')})"
         )
 
     values = ", ".join(value_tuples)
     sql = f"""
         INSERT INTO `tabPart Catalog Interchange`
         (name, creation, modified, modified_by, owner, docstatus, idx,
-         parent, parentfield, parenttype, part,
-         relationship_type, quality_tier, confidence_score, source)
+         parent, parentfield, parenttype, part, relationship_type)
         VALUES {values}
     """
     frappe.db.sql(sql)
