@@ -12,12 +12,18 @@ import frappe
 
 def _delete_child_table_rows():
     print("[1/4] Deleting Part Catalog Diagram child table rows...")
+    if not frappe.db.table_exists("Part Catalog Diagram"):
+        print("  -> Part Catalog Diagram table not found; skipping")
+        return
     count = frappe.db.sql("DELETE FROM `tabPart Catalog Diagram`")
-    print(f"  -> deleted")
+    print("  -> deleted")
 
 
 def _delete_part_diagrams():
     print("[2/4] Deleting Part Diagram records and attached files...")
+    if not frappe.db.table_exists("Part Diagram"):
+        print("  -> Part Diagram table not found; skipping")
+        return
     names = frappe.db.sql_list("SELECT name FROM `tabPart Diagram`")
     for name in names:
         # Delete attached File records first so files are cleaned up.
@@ -39,6 +45,9 @@ def _delete_part_diagrams():
 
 def _delete_parts_groups():
     print("[3/4] Deleting Parts Group records...")
+    if not frappe.db.table_exists("Parts Group"):
+        print("  -> Parts Group table not found; skipping")
+        return
     names = frappe.db.sql_list("SELECT name FROM `tabParts Group`")
     for name in names:
         try:
