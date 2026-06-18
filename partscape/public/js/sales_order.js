@@ -29,6 +29,14 @@ frappe.ui.form.on('Sales Order', {
 });
 
 frappe.ui.form.on('Sales Order Item', {
+    item_code(frm, cdt, cdn) {
+        _update_shelf_rack_tags(cdt, cdn);
+    },
+
+    warehouse(frm, cdt, cdn) {
+        _update_shelf_rack_tags(cdt, cdn);
+    },
+
     part_catalog_reference(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (!row.part_catalog_reference) return;
@@ -76,3 +84,23 @@ frappe.ui.form.on('Sales Order Item', {
             });
     },
 });
+
+function _update_shelf_rack_tags(cdt, cdn) {
+    const row = locals[cdt][cdn];
+    if (!row.item_code || !row.warehouse) {
+        frappe.model.set_value(cdt, cdn, 'shelf_rack_tags', '');
+        return;
+    }
+
+    frappe.call({
+        method: 'partscape.api.shelf_rack_api.get_item_shelf_rack_tags',
+        args: {
+            item_code: row.item_code,
+            warehouse: row.warehouse,
+        },
+        callback(res) {
+            const tags = (res.message || []).join(', ');
+            frappe.model.set_value(cdt, cdn, 'shelf_rack_tags', tags);
+        },
+    });
+}

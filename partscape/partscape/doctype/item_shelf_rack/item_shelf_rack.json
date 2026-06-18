@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-18 02:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "shelf_rack",
+  "shelf_rack_code",
+  "warehouse"
+ ],
+ "fields": [
+  {
+   "fieldname": "shelf_rack",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Shelf / Rack",
+   "options": "Shelf Rack",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "shelf_rack.shelf_rack_code",
+   "fieldname": "shelf_rack_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Code",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "shelf_rack.warehouse",
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-06-18 02:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "PartScape",
+ "name": "Item Shelf Rack",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

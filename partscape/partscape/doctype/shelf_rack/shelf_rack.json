@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-06-18 02:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "shelf_rack_code",
+  "warehouse",
+  "shelf_rack_title"
+ ],
+ "fields": [
+  {
+   "fieldname": "shelf_rack_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Shelf / Rack Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shelf_rack_title",
+   "fieldtype": "Data",
+   "hidden": 0,
+   "label": "Shelf / Rack Title",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-18 02:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "PartScape",
+ "name": "Shelf Rack",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
+   "print": 0,
+   "read": 1,
+   "report": 0,
+   "role": "Parts Clerk",
+   "share": 0,
+   "write": 0
+  }
+ ],
+ "sort_field": "shelf_rack_code",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "shelf_rack_title",
+ "track_changes": 1
+}
