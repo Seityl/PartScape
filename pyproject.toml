@@ -3,7 +3,7 @@ name = "partscape"
 authors = [
     { name = "Seityl Group Ltd.", email = "contact@seityl.com" }
 ]
-description = "Auto-parts intelligence system for Commonwealth of Dominica fleet management"
+description = "Auto-parts intelligence system for auto parts stores"
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "Proprietary"}

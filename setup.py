@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setup(
     name='partscape',
     version='1.0.0',
-    description='Auto-parts intelligence system for fleet and workshop management',
+    description='Auto-parts intelligence system for auto parts stores',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Seityl Group Ltd.',

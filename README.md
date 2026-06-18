@@ -1,6 +1,6 @@
 # PartScape
 
-Auto-parts intelligence system for fleet and workshop management, integrated natively into ERPNext.
+Auto-parts intelligence system for auto parts stores, integrated natively into ERPNext.
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ bench --site your-site.local migrate
 - **VIN Decode Cache** — NHTSA vPIC + VIN Decoder EU (Vincario) + JDM frame number lookups
 - **Part Catalog** — OEM part numbers and descriptions
 - **Part Interchange** — Aftermarket cross-references (Bosch, Denso, KYB, etc.)
-- **Vehicle Master** — Full fleet tracking with RHD/LHD awareness
+- **Vehicle Master** — Vehicle fitment and VIN lookup with RHD/LHD awareness
 - **Landed Cost Estimator** — Configurable customs duty + VAT calculations
 
 ## Documentation

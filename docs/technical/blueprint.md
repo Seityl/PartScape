@@ -1,5 +1,5 @@
 # PartScape — Strategic Blueprint
-## Auto-Parts Intelligence System for Fleet & Workshop Management
+## Auto-Parts Intelligence System for Auto Parts Stores
 ### Native Frappe/ERPNext Custom App | Seityl Group Ltd.
 
 **Version:** 1.0.0  
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets used-Japanese vehicle fleets worldwide (RHD, left-hand traffic markets with heavy import of JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi) plus European and American imports. It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
+This document blueprints **PartScape**, a native Frappe custom app that embeds automotive parts intelligence directly into ERPNext. The system targets auto parts stores worldwide that stock used-Japanese, European, and American vehicle parts (with a focus on RHD, left-hand traffic markets that import JDM Toyotas, Nissans, Hondas, Suzukis, and Mitsubishi). It replicates core capabilities of Partsouq, RockAuto, and OEM EPCs by auto-populating Purchase Orders with VIN-decoded vehicle data, OEM part numbers, cross-reference interchange data, and estimated landed costs. The architecture is **offline-first** (aggressive caching of all external API data), **RHD-aware** (tracking steering position and market-specific fitment), and **cost-effective** (avoiding TecDoc subscriptions by combining free NHTSA vPIC, scraped OEM data, community EPC dumps, and manual curation).
 
 ---
 
@@ -78,7 +78,7 @@ This document blueprints **PartScape**, a native Frappe custom app that embeds a
 - **API:** None found.
 - **Verdict:** Reference only. Manual curation of high-volume interchange pairs.
 
-### 2.3 Common JDM Vehicle Models (Best-Effort Fleet Profile)
+### 2.3 Common JDM Vehicle Models (Best-Effort Store Profile)
 
 Based on Japanese Car Trade import statistics, TCV popular rankings for Caribbean markets (c=212), BE FORWARD testimonials, and regional RHD JDM patterns.
 
@@ -389,7 +389,7 @@ VINDecodeCache (standalone lookup)
 ### 3.5 Permission Model
 
 |------|---------|--------------|------------------|-------------------|---------------|
-| Fleet Manager | R/W | R/W (seed) | R/W (seed) | R/W | R/W |
+| Parts Manager | R/W | R/W (seed) | R/W (seed) | R/W | R/W |
 | Parts Clerk | R | R | R | R/W | R/W |
 | Mechanic | R | R | R | R/W (own jobs) | R (consumption only) |
 | Purchase Officer | R | R | R | R | R/W |
