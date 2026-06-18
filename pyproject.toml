@@ -6,6 +6,7 @@ authors = [
 description = "Auto-parts intelligence system for Commonwealth of Dominica fleet management"
 requires-python = ">=3.10"
 readme = "README.md"
+license = {text = "Proprietary"}
 dynamic = ["version"]
 dependencies = [
     "requests>=2.28.0",

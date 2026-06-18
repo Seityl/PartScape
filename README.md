@@ -41,4 +41,4 @@ User-friendly documentation is available in the [`docs/`](docs/) folder:
 
 ## License
 
-MIT — Seityl Group Ltd.
+Proprietary — © Seityl Group Ltd. All rights reserved. See `license.txt` for details.
