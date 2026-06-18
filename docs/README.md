@@ -14,7 +14,7 @@ Welcome to the PartScape documentation. PartScape is a Frappe/ERPNext app built 
 
 ## Who this documentation is for
 
-These pages are written for day-to-day users — parts clerks, purchasers, warehouse staff, and administrators — not just developers. If you need technical/developer notes, see the source code comments and `LABEL_PRINTING.md` in the app root.
+These pages are written for day-to-day users — parts clerks, purchasers, warehouse staff, and administrators — not just developers. If you need technical/developer notes, see the source code comments and [`Label Printing (technical)`](technical/label-printing-technical.md).
 
 ## Quick navigation
 
@@ -41,6 +41,10 @@ These pages are written for day-to-day users — parts clerks, purchasers, wareh
 ### Administration
 - [Importing Data](admin/data-import.md)
 - [Troubleshooting](admin/troubleshooting.md)
+
+### Technical / Developer
+- [Label Printing — Technical Notes](technical/label-printing-technical.md)
+- [PartScape Blueprint](technical/blueprint.md)
 
 ## One-minute overview
 
