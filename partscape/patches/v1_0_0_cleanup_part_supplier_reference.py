@@ -41,29 +41,45 @@ def execute():
             print("[resume] temp table is empty; dropping and starting fresh")
             frappe.db.sql_ddl(f"DROP TABLE IF EXISTS {temp}")
 
-    # Deduplicate via temp table with unique index.
-    print("[1/3] Creating temp table with unique index...")
+    # Deduplicate via temp table. We create the temp table without indexes,
+    # insert the distinct rows using GROUP BY, then add the unique index.
+    # This is dramatically faster than INSERT IGNORE into an indexed table for
+    # tens of millions of rows.
+    print("[1/3] Creating empty temp table...")
     frappe.db.sql_ddl(f"CREATE TABLE {temp} LIKE {table}")
 
-    # CREATE TABLE ... LIKE copies indexes from the original table. If the
-    # original already has ux_psr (e.g., patch was run before), skip re-adding.
-    existing_indexes = {row[2] for row in frappe.db.sql(f"SHOW INDEX FROM {temp}")}
-    if "ux_psr" not in existing_indexes:
-        frappe.db.sql_ddl(
-            f"ALTER TABLE {temp} ADD UNIQUE INDEX ux_psr ("
-            f"part_catalog, supplier, supplier_part_number)"
-        )
+    # Drop all indexes copied from the original table so the INSERT is fast.
+    indexes = frappe.db.sql(f"SHOW INDEX FROM {temp}")
+    index_names = {row[2] for row in indexes}
+    # Keep the primary key; remove secondary indexes.
+    for idx_name in sorted(index_names):
+        if idx_name == "PRIMARY":
+            continue
+        frappe.db.sql_ddl(f"ALTER TABLE {temp} DROP INDEX `{idx_name}`")
 
     print("[2/3] Deduplicating Part Supplier Reference rows...")
     original_count = frappe.db.count("Part Supplier Reference")
     print(f"  -> original rows: {original_count}")
 
-    frappe.db.sql(f"INSERT IGNORE INTO {temp} SELECT * FROM {table} ORDER BY name")
+    # Relax ONLY_FULL_GROUP_BY for this session so we can deduplicate with
+    # SELECT * ... GROUP BY without listing every column in the GROUP BY.
+    frappe.db.sql("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))")
+
+    frappe.db.sql(
+        f"INSERT INTO {temp} SELECT * FROM {table} "
+        f"GROUP BY part_catalog, supplier, supplier_part_number"
+    )
 
     new_count = frappe.db.sql(f"SELECT COUNT(*) FROM {temp}")[0][0]
     print(f"  -> deduplicated rows: {new_count} (removed {original_count - new_count})")
 
-    # Commit the heavy INSERT so progress is preserved if the process dies here.
+    print("  -> adding unique index on temp table...")
+    frappe.db.sql_ddl(
+        f"ALTER TABLE {temp} ADD UNIQUE INDEX ux_psr ("
+        f"part_catalog, supplier, supplier_part_number)"
+    )
+
+    # Commit the heavy INSERT/ALTER so progress is preserved if the process dies here.
     frappe.db.commit()
     print("  -> committed deduplicated data to temp table")
 
