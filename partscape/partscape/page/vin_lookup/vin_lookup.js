@@ -1,3 +1,5 @@
+frappe.require('/assets/partscape/js/partscape_utils.js');
+
 frappe.pages["vin-lookup"].on_page_load = function (wrapper) {
 	let page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -74,7 +76,12 @@ class PartscapeVINLookup {
 		}
 
 		let me = this;
-		me.$btn_decode.prop("disabled", true).text(__("Decoding..."));
+		partscape.set_button_loading(me.$btn_decode, true, __("Decoding..."));
+
+		// Reset and show skeleton placeholders
+		me.$vehicle_section.removeClass("hidden");
+		me.$models_section.addClass("hidden");
+		me._show_vehicle_skeleton();
 
 		frappe.call({
 			method: "partscape.partscape.page.vin_lookup.vin_lookup.decode_vin_page",
@@ -83,7 +90,7 @@ class PartscapeVINLookup {
 				force_refresh: false,
 			},
 			callback: function (r) {
-				me.$btn_decode.prop("disabled", false).text(__("Decode VIN"));
+				partscape.set_button_loading(me.$btn_decode, false);
 				if (r.message) {
 					me.render_vehicle_info(r.message);
 					me.fetch_matching_models(r.message);
@@ -97,13 +104,21 @@ class PartscapeVINLookup {
 				}
 			},
 			error: function () {
-				me.$btn_decode.prop("disabled", false).text(__("Decode VIN"));
+				partscape.set_button_loading(me.$btn_decode, false);
+				me.$vehicle_section.addClass("hidden");
+				me.$models_section.addClass("hidden");
 				frappe.show_alert({
 					message: __("Error decoding VIN. Please try again."),
 					indicator: "red",
 				});
 			},
 		});
+	}
+
+	_show_vehicle_skeleton() {
+		this.$vehicle_section.find(".field-value").html(
+			`<div class="skeleton" style="width: 70%; height: 16px;"></div>`
+		);
 	}
 
 	render_vehicle_info(data) {
@@ -121,6 +136,11 @@ class PartscapeVINLookup {
 
 	fetch_matching_models(data) {
 		let me = this;
+		me.$models_section.removeClass("hidden");
+		me.$models_table.removeClass("hidden");
+		me.$no_models.addClass("hidden");
+		me.$models_table.find("tbody").html(partscape.skeleton_table_rows(7, 3));
+
 		frappe.call({
 			method: "partscape.partscape.page.vin_lookup.vin_lookup.get_vehicle_models",
 			args: {
@@ -130,6 +150,10 @@ class PartscapeVINLookup {
 			},
 			callback: function (r) {
 				me.render_vehicle_models(r.message || []);
+			},
+			error: function () {
+				me.$models_table.addClass("hidden");
+				me.$no_models.removeClass("hidden");
 			},
 		});
 	}
@@ -178,7 +202,18 @@ class PartscapeVINLookup {
 		let keyword = this.$parts_keyword.val().trim();
 		let me = this;
 
-		me.$btn_search_parts.prop("disabled", true).text(__("Searching..."));
+		if (!keyword) {
+			frappe.show_alert({
+				message: __("Please enter a keyword."),
+				indicator: "orange",
+			});
+			return;
+		}
+
+		partscape.set_button_loading(me.$btn_search_parts, true, __("Searching..."));
+		me.$parts_table.removeClass("hidden");
+		me.$no_parts.addClass("hidden");
+		me.$parts_table.find("tbody").html(partscape.skeleton_table_rows(8, 4));
 
 		frappe.call({
 			method: "partscape.partscape.page.vin_lookup.vin_lookup.search_part_catalog",
@@ -186,11 +221,13 @@ class PartscapeVINLookup {
 				keyword: keyword,
 			},
 			callback: function (r) {
-				me.$btn_search_parts.prop("disabled", false).text(__("Search"));
+				partscape.set_button_loading(me.$btn_search_parts, false);
 				me.render_parts_results(r.message || []);
 			},
 			error: function () {
-				me.$btn_search_parts.prop("disabled", false).text(__("Search"));
+				partscape.set_button_loading(me.$btn_search_parts, false);
+				me.$parts_table.addClass("hidden");
+				me.$no_parts.removeClass("hidden");
 				frappe.show_alert({
 					message: __("Error searching parts. Please try again."),
 					indicator: "red",

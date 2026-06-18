@@ -1,3 +1,5 @@
+frappe.require('/assets/partscape/js/partscape_utils.js');
+
 frappe.ui.form.on("Part Catalog", {
 	refresh(frm) {
 		// Add action button to create ERPNext Stock Item from this Part Catalog.
@@ -46,17 +48,28 @@ frappe.ui.form.on("Part Catalog", {
 			return;
 		}
 
-		frappe.db.get_doc("Vehicle Model", row.vehicle_model).then((model) => {
-			let steering = "Universal";
-			if (model.steering_position === "RHD") steering = "RHD";
-			if (model.steering_position === "LHD") steering = "LHD";
-			if (model.steering_position === "Both") steering = "Universal";
+		frappe.dom.freeze(__('Fetching vehicle model details...'));
+		frappe.db.get_doc("Vehicle Model", row.vehicle_model)
+			.then((model) => {
+				let steering = "Universal";
+				if (model.steering_position === "RHD") steering = "RHD";
+				if (model.steering_position === "LHD") steering = "LHD";
+				if (model.steering_position === "Both") steering = "Universal";
 
-			frappe.model.set_value(cdt, cdn, "year_start", model.year_start || "");
-			frappe.model.set_value(cdt, cdn, "year_end", model.year_end || "");
-			frappe.model.set_value(cdt, cdn, "steering_position", steering);
-			frappe.model.set_value(cdt, cdn, "market_code", model.primary_market || "");
-		});
+				frappe.model.set_value(cdt, cdn, "year_start", model.year_start || "");
+				frappe.model.set_value(cdt, cdn, "year_end", model.year_end || "");
+				frappe.model.set_value(cdt, cdn, "steering_position", steering);
+				frappe.model.set_value(cdt, cdn, "market_code", model.primary_market || "");
+			})
+			.catch(() => {
+				frappe.show_alert({
+					message: __('Unable to load vehicle model details.'),
+					indicator: 'red',
+				});
+			})
+			.finally(() => {
+				frappe.dom.unfreeze();
+			});
 	},
 
 	create_stock_item(frm) {

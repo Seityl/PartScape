@@ -6,6 +6,7 @@
  */
 
 frappe.provide('partscape');
+frappe.require('/assets/partscape/js/partscape_utils.js');
 
 function _escapeHtml(text) {
     if (!text) return '';
@@ -24,6 +25,7 @@ partscape.showPartCatalogPicker = function(opts) {
     let currentOffset = 0;
     const pageSize = 20;
     let currentResults = [];
+    let isSearching = false;
 
     const dialog = new frappe.ui.Dialog({
         title: __('Select from Part Catalog'),
@@ -83,27 +85,68 @@ partscape.showPartCatalogPicker = function(opts) {
                 frappe.msgprint(__('Please select a part from the results.'));
                 return;
             }
-            // Create/find Item from catalog selection
-            frappe.call({
-                method: 'partscape.api.part_catalog_search.create_item_from_catalog_dialog',
-                args: { part_catalog_name: selected.part_catalog_name },
-                callback: function(r) {
-                    if (r.message && r.message.error) {
-                        frappe.msgprint(r.message.error);
+
+            const $primary = dialog.get_primary_btn();
+            partscape.set_button_loading($primary, true, __('Creating Item...'));
+
+            partscape.call_with_freeze(
+                'partscape.api.part_catalog_search.create_item_from_catalog_dialog',
+                { part_catalog_name: selected.part_catalog_name },
+                __('Creating Item from Part Catalog...'),
+                function(result) {
+                    partscape.set_button_loading($primary, false);
+                    if (result && result.error) {
+                        frappe.msgprint(result.error);
                         return;
                     }
                     dialog.hide();
-                    onSelect(r.message);
-                },
+                    onSelect(result);
+                }
+            ).catch(() => {
+                partscape.set_button_loading($primary, false);
             });
         },
     });
 
     dialog.selected_row = null;
 
+    function setSearchLoading(loading) {
+        isSearching = loading;
+        const $searchBtn = dialog.fields_dict.search_btn.$input;
+        partscape.set_button_loading($searchBtn, loading, __('Searching...'));
+
+        if (loading) {
+            dialog.fields_dict.results_html.$wrapper.html(
+                _renderSkeletonResults()
+            );
+        }
+    }
+
+    function _renderSkeletonResults() {
+        return `<div class="partscape-catalog-grid">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30px;"></th>
+                        <th>${__('Brand')}</th>
+                        <th>${__('Part Number')}</th>
+                        <th>${__('Name')}</th>
+                        <th>${__('Category')}</th>
+                        <th>${__('Est. Cost')}</th>
+                        <th>${__('Item Status')}</th>
+                    </tr>
+                </thead>
+                ${partscape.skeleton_table_rows(7, 5)}
+            </table>
+        </div>`;
+    }
+
     function doSearch(offset) {
+        if (isSearching) return;
         currentOffset = offset || 0;
         const values = dialog.get_values();
+
+        setSearchLoading(true);
 
         frappe.call({
             method: 'partscape.api.part_catalog_search.search_part_catalog_for_transaction',
@@ -116,9 +159,16 @@ partscape.showPartCatalogPicker = function(opts) {
                 offset: currentOffset,
             },
             callback: function(r) {
+                setSearchLoading(false);
                 if (r.message) {
                     renderResults(r.message);
                 }
+            },
+            error: function() {
+                setSearchLoading(false);
+                dialog.fields_dict.results_html.$wrapper.html(
+                    partscape.spinner_html(__('Search failed. Please try again.'))
+                );
             },
         });
     }
@@ -248,6 +298,7 @@ partscape.showPartCatalogPicker = function(opts) {
     });
 
     dialog.show();
-    // Don't auto-search on open — wait for user to type + click Search
-    // to avoid hammering the 5.7M table on every dialog open.
+    dialog.fields_dict.results_html.$wrapper.html(
+        `<div class="text-muted text-center" style="padding: 40px;">${__('Enter filters and click Search.')}</div>`
+    );
 };

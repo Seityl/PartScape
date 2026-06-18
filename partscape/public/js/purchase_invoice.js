@@ -3,6 +3,7 @@
  */
 
 frappe.require('/assets/partscape/js/part_catalog_picker.js');
+frappe.require('/assets/partscape/js/partscape_utils.js');
 
 frappe.ui.form.on('Purchase Invoice', {
     refresh(frm) {
@@ -33,46 +34,27 @@ frappe.ui.form.on('Purchase Invoice Item', {
         const row = locals[cdt][cdn];
         if (!row.part_catalog_reference) return;
 
-        frappe.db.get_value('Part Catalog', row.part_catalog_reference,
-            ['brand', 'part_number', 'part_name', 'estimated_cost_usd', 'oem_make'])
-            .then(r => {
-                if (!r.message) return;
-                const pc = r.message;
-                frappe.model.set_value(cdt, cdn, 'item_name', pc.part_name);
-                frappe.model.set_value(cdt, cdn, 'description', `${pc.part_name} — ${pc.brand} ${pc.part_number}`);
-
-                if (!row.item_code) {
-                    frappe.db.get_value('Item', {part_catalog_reference: row.part_catalog_reference}, 'name')
-                        .then(ir => {
-                            if (ir.message && ir.message.name) {
-                                frappe.model.set_value(cdt, cdn, 'item_code', ir.message.name);
-                            }
-                        });
-                }
-
-                frappe.call({
-                    method: 'partscape.api.interchange_api.get_interchange_numbers',
-                    args: { part_catalog: row.part_catalog_reference },
-                    callback(res) {
-                        if (res.message) {
-                            frappe.model.set_value(cdt, cdn, 'alternative_part_numbers', res.message.join(', '));
-                        }
-                    }
-                });
-            });
+        partscape.call_with_freeze(
+            'partscape.api.transaction_helpers.get_part_catalog_line_details',
+            { part_catalog: row.part_catalog_reference },
+            __('Fetching part details...'),
+            function(details) {
+                partscape.apply_part_catalog_details(cdt, cdn, details);
+            }
+        );
     },
 
     vehicle(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (!row.vehicle) return;
-        frappe.db.get_value('Vehicle', row.vehicle, ['vin', 'make', 'model', 'year'])
-            .then(r => {
-                if (r.message) {
-                    frappe.model.set_value(cdt, cdn, 'vin', r.message.vin || '');
-                    frappe.model.set_value(cdt, cdn, 'applicable_models',
-                        `${r.message.year || ''} ${r.message.make || ''} ${r.message.model || ''}`.trim()
-                    );
-                }
-            });
+
+        partscape.call_with_freeze(
+            'partscape.api.transaction_helpers.get_vehicle_line_details',
+            { vehicle: row.vehicle },
+            __('Fetching vehicle details...'),
+            function(details) {
+                partscape.apply_vehicle_details(cdt, cdn, details);
+            }
+        );
     },
 });
