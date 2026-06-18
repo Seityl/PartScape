@@ -19,14 +19,16 @@ from frappe.utils import cint, cstr
 # -----------------------------------------------------------------------------
 # Label geometry (Brother QL-800 @ 300 dpi)
 # -----------------------------------------------------------------------------
+# Labels are generated in landscape orientation: the longer edge is the page
+# width and the roll width is the page height.
 LABEL_SIZES = {
     "62mm continuous": {
-        "mm": (62, 100),
-        "px": (696, 1124),
+        "mm": (100, 62),
+        "px": (1124, 696),
     },
     "29mmx90mm": {
-        "mm": (29, 90),
-        "px": (306, 991),
+        "mm": (90, 29),
+        "px": (991, 306),
     },
 }
 
@@ -470,9 +472,9 @@ def get_label_pdf(doctype: str, name: str, label_size: str, label_qty: int = 1) 
     """
     Generate a label PDF and return it as a base64 data URI.
 
-    The PDF has the exact label page size embedded (62x100 mm or 29x90 mm),
-    so the browser/OS print dialog defaults to the correct paper size and the
-    label is not scaled down to A4/Letter.
+    The PDF has the exact landscape label page size embedded
+    (100×62 mm or 90×29 mm), so the browser/OS print dialog defaults to the
+    correct paper size and the label is not scaled down to A4/Letter.
 
     If label_qty > 1, the label is repeated across multiple pages.
     """
