@@ -189,4 +189,7 @@ fixtures = [
     {"dt": "Print Format", "filters": [
         ["module", "=", "PartScape"]
     ]},
+    {"dt": "Workspace", "filters": [
+        ["module", "=", "PartScape"]
+    ]},
 ]
