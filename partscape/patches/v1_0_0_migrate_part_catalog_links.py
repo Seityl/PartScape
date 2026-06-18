@@ -161,17 +161,31 @@ def _verify_oem_make_rename():
     # fieldname changes; it adds the new column and leaves the old one. We use
     # a direct DDL rename so existing data is preserved.
     columns = {c["Field"].lower() for c in frappe.db.sql("SHOW COLUMNS FROM `tabPart Catalog`", as_dict=True)}
+    has_new = "oem_make" in columns
+    has_old = "vehicle_make" in columns
 
-    if "oem_make" in columns and "vehicle_make" in columns:
+    if has_old and has_new:
         # The new empty column was added by the DocType sync. Drop it, then
         # rename the old column so existing values are preserved.
-        frappe.db.sql_ddl("ALTER TABLE `tabPart Catalog` DROP COLUMN `oem_make`")
+        try:
+            frappe.db.sql_ddl("ALTER TABLE `tabPart Catalog` DROP COLUMN IF EXISTS `oem_make`")
+        except Exception as exc:
+            print(f"  -> warning: could not drop empty oem_make column ({exc}); copying data instead")
+            frappe.db.sql(
+                """
+                UPDATE `tabPart Catalog`
+                SET `oem_make` = `vehicle_make`
+                WHERE `oem_make` IS NULL OR `oem_make` = ''
+                """
+            )
+            print("  -> copied vehicle_make data into oem_make")
+            return
+        has_new = False
+
+    if has_old:
         frappe.db.rename_column("Part Catalog", "vehicle_make", "oem_make")
         print("  -> renamed vehicle_make column to oem_make (preserved existing data)")
-    elif "vehicle_make" in columns:
-        frappe.db.rename_column("Part Catalog", "vehicle_make", "oem_make")
-        print("  -> renamed vehicle_make column to oem_make (preserved existing data)")
-    elif "oem_make" in columns:
+    elif has_new:
         print("  -> oem_make column already present; nothing to rename")
     else:
         print("  -> neither vehicle_make nor oem_make column found; nothing to do")
