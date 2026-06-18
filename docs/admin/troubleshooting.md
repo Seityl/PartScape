@@ -36,7 +36,7 @@ See [Label Printing](../tools/label-printing.md) for detailed troubleshooting.
 Quick checks:
 
 - `wkhtmltopdf` is installed on the server.
-- Label Printer Settings has a default label size.
+
 - The user's Brother QL-800 is installed locally.
 - The browser is not blocking popups.
 

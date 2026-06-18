@@ -16,7 +16,9 @@
   "default_buying_cost_center",
   "default_selling_cost_center",
   "pricing_section",
-  "default_vat_rate"
+  "default_vat_rate",
+  "label_printing_section",
+  "default_label_size"
  ],
  "fields": [
   {
@@ -88,6 +90,19 @@
    "fieldtype": "Percent",
    "label": "Default VAT Rate",
    "description": "Used when entering VAT-inclusive prices on Item Price"
+  },
+  {
+   "fieldname": "label_printing_section",
+   "fieldtype": "Section Break",
+   "label": "Label Printing"
+  },
+  {
+   "default": "62mm continuous",
+   "fieldname": "default_label_size",
+   "fieldtype": "Select",
+   "label": "Default Label Size",
+   "options": "62mm continuous\n29mmx90mm",
+   "description": "Default label roll size used in the Item/Warehouse print dialog"
   }
  ],
  "index_web_pages_for_search": 1,

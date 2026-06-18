@@ -14,7 +14,7 @@ PartScape supports native thermal label printing for the **Brother QL-800** USB 
 - Brother QL-800 printer connected to the user's computer.
 - Correct label roll loaded.
 - `wkhtmltopdf` installed on the Frappe server.
-- Label Printer Settings configured.
+- PartScape Settings configured with a default label size.
 
 ## Setup
 
@@ -25,7 +25,7 @@ PartScape supports native thermal label printing for the **Brother QL-800** USB 
    ```bash
    bench pip install brother-ql python-barcode Pillow
    ```
-3. Go to **Label Printer Settings** and choose the **Default Label Size**.
+3. Go to **PartScape Settings** and choose the **Default Label Size** in the Label Printing section.
 
 ### User workstation
 

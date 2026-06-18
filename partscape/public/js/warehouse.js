@@ -15,7 +15,7 @@ frappe.ui.form.on('Warehouse', {
 });
 
 function _show_print_label_dialog(frm, doctype) {
-    frappe.db.get_single_value('Label Printer Settings', 'default_label_size')
+    frappe.db.get_single_value('PartScape Settings', 'default_label_size')
         .then(default_size => {
             const dialog = new frappe.ui.Dialog({
                 title: __('Print Label'),

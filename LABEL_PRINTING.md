@@ -6,7 +6,7 @@ This implementation uses a **browser-native workflow**: the server generates a l
 
 ## What is included
 
-- **Label Printer Settings** — Single DocType with the default label size.
+- **PartScape Settings** — includes the default label size for label printing.
 - **Custom fields** on Item (`partscape_barcode`) and Warehouse (`warehouse_code`, `warehouse_zone`).
 - **Server module** `partscape/print_label.py` with barcode generation and label PNG generation.
 - **Print Formats** — four Jinja thermal label layouts:
@@ -42,8 +42,8 @@ If it is missing, install wkhtmltopdf for your distribution.
 
 ## Frappe configuration
 
-1. Go to **Label Printer Settings** (search from the desk).
-2. Choose the **Default Label Size**:
+1. Go to **PartScape Settings** (search from the desk).
+2. In the **Label Printing** section, choose the **Default Label Size**:
    - `62mm continuous` (DK-22205)
    - `29mmx90mm` (DK-11201)
 3. Save.

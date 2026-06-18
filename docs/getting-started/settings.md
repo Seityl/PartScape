@@ -19,6 +19,8 @@ PartScape Settings is the single place where administrators configure defaults u
 | **Default Expense Account** | Expense account for Item Defaults. |
 | **Default Buying Cost Center** | Cost center used for purchases. |
 | **Default Selling Cost Center** | Cost center used for sales. |
+| **Default VAT Rate** | VAT rate used when entering VAT-inclusive prices on Item Price. |
+| **Default Label Size** | Default label roll size used in the Item/Warehouse print dialog. |
 
 ## Why these defaults matter
 
@@ -32,14 +34,11 @@ When a user selects a part from the catalogue in a transaction, PartScape create
 
 When a catalogue entry has its own category (Item Group), PartScape uses that. Otherwise it falls back to the settings here.
 
-## Label Printer Settings
+## Label printing
 
-Label printing has its own settings document:
+The **Default Label Size** in PartScape Settings controls the default label roll size pre-selected in the print dialog:
 
-1. Search for **Label Printer Settings**.
-2. Choose the **Default Label Size**:
-   - `62mm continuous` for DK-22205 rolls.
-   - `29mmx90mm` for DK-11201 die-cut labels.
-3. Save.
+- `62mm continuous` for DK-22205 rolls.
+- `29mmx90mm` for DK-11201 die-cut labels.
 
 The printer itself is not configured here. Each user selects their local Brother QL-800 in the browser/OS print dialog.

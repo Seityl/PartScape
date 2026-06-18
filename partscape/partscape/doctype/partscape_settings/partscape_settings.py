@@ -1,6 +1,8 @@
 """
-PartScape Settings — Single DocType for default values used when
-auto-creating ERPNext Items from Part Catalog entries.
+PartScape Settings — Single DocType for app-wide defaults.
+
+Includes defaults for auto-creating ERPNext Items from Part Catalog entries
+and for label printing.
 """
 
 import frappe

@@ -11,7 +11,7 @@ This is the standard ERPNext **Purchase Manager** role. Users with this role hav
 - Create and edit Part Interchange relationships.
 - Add and edit Part Supplier References.
 - Add and edit Vehicle Makes, Models, and Engine Variants.
-- Configure PartScape Settings and Label Printer Settings.
+- Configure PartScape Settings.
 - Use the Part Catalog Picker in transactions.
 - Print labels.
 
@@ -24,7 +24,7 @@ This is the standard ERPNext **Purchase Manager** role. Users with this role hav
 - View Part Interchange relationships.
 - View Part Supplier References.
 - View Vehicles, Vehicle Makes, Models, and Engine Variants.
-- View Label Printer Settings.
+
 - Use the Part Catalog Picker in transactions.
 - Print labels.
 
@@ -49,8 +49,7 @@ They **cannot** create or edit catalogue data, settings, or vehicle masters.
 | Part Supplier Reference | Full | Read only |
 | Vehicle | Full | Read only |
 | Vehicle Make / Model / Engine Variant | Full | Read only |
-| PartScape Settings | Full | No access |
-| Label Printer Settings | Full | Read only |
+| PartScape Settings | Full | Read only |
 | VIN Decode Cache | Full | Read only |
 
 ## Best practice

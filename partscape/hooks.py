@@ -189,5 +189,4 @@ fixtures = [
     {"dt": "Print Format", "filters": [
         ["module", "=", "PartScape"]
     ]},
-    {"dt": "Label Printer Settings"},
 ]
