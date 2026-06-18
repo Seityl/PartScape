@@ -10,7 +10,7 @@ frappe.ui.form.on('Warehouse', {
 
         frm.add_custom_button(__('Print Label'), () => {
             _show_print_label_dialog(frm, 'Warehouse');
-        });
+        }, __('Actions'));
     }
 });
 

@@ -16,7 +16,7 @@ def execute():
             "label": "Shelf / Rack Tags",
             "fieldtype": "Table",
             "options": "Item Shelf Rack",
-            "insert_after": "partscape_barcode",
+            "insert_after": "inventory_section",
             "read_only": 0,
         },
         {

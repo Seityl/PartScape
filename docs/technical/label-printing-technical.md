@@ -7,14 +7,15 @@ This implementation uses a **browser-native workflow**: the server generates a l
 ## What is included
 
 - **PartScape Settings** — includes the default label size for label printing.
-- **Custom fields** on Item (`partscape_barcode`) and Warehouse (`warehouse_code`, `warehouse_zone`).
+- **Custom fields** on Warehouse (`warehouse_code`, `warehouse_zone`).
+- Item barcodes use ERPNext's standard **Item Barcode** child table on the **Item** DocType.
 - **Server module** `partscape/print_label.py` with barcode generation and label PNG generation.
 - **Print Formats** — four Jinja thermal label layouts:
   - PartScape Item Label 62mm
   - PartScape Item Label 29mm
   - PartScape Warehouse Label 62mm
   - PartScape Warehouse Label 29mm
-- **Client scripts** — "Print Label" button on Item and Warehouse forms, plus a "Generate Barcode" button on Item when the barcode is empty.
+- **Client scripts** — "Print Label" and "Generate Barcode" actions under the **Actions** menu on the Item form, and "Print Label" under **Actions** on the Warehouse form.
 
 ## Dependencies
 
@@ -63,26 +64,29 @@ The printer itself is not configured here — each user selects it in their brow
 ### Item labels
 
 1. Open an **Item**.
-2. If the **PartScape Barcode** field is empty, click **Generate Barcode**.
-3. Click **Print Label** and choose the label size.
-4. Click **Print** — a label-sized PDF opens in a new tab.
-5. In the PDF viewer, click **Print** and select the local **Brother QL-800**.
+2. Click **Actions** and choose **Generate Barcode** if no barcodes exist. A random 13-digit EAN-13 barcode is appended to the Item's **Barcodes** table.
+3. Click **Actions** and choose **Print Label**.
+4. Choose the label size and quantity.
+5. A label-sized PDF opens in a new tab.
+6. In the PDF viewer, click **Print** and select the local **Brother QL-800**.
 
-The label includes company name, price, item name, brand, category, OEM/part number, and a scannable barcode.
+The label includes company name, price, item name, brand, category, OEM/part number, and a scannable barcode. The barcode printed is always the first entry in the Item's **Barcodes** table.
 
 ### Warehouse labels
 
 1. Open a **Warehouse**.
-2. Click **Print Label** and choose the label size.
-3. Click **Print** — a label-sized PDF opens in a new tab.
-4. In the PDF viewer, click **Print** and select the local **Brother QL-800**.
+2. Click **Actions** and choose **Print Label**.
+3. Choose the label size and quantity.
+4. A label-sized PDF opens in a new tab.
+5. In the PDF viewer, click **Print** and select the local **Brother QL-800**.
 
 The label includes warehouse name, warehouse code, zone/area, and a scannable barcode.
 
 ## Barcode generation
 
-- **Code 128** is used by default (works with any alphanumeric value).
-- If the source value is exactly 12 or 13 numeric digits, **EAN-13** is generated automatically to match the reference label style.
+- **Item barcodes** are generated as random, valid **13-digit EAN-13** codes and appended to ERPNext's standard **Item Barcode** child table.
+- **Warehouse barcodes** use **Code 128** for the warehouse code or warehouse name.
+- When an Item label is printed, the first barcode in the Item's **Barcodes** table is used.
 
 ## How it works
 

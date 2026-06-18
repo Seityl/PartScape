@@ -38,11 +38,12 @@ PartScape supports native thermal label printing for the **Brother QL-800** USB 
 ## Printing an Item label
 
 1. Open an **Item**.
-2. If the **PartScape Barcode** field is empty, click **Generate Barcode**.
-3. Click **Print Label**.
-4. Choose the label size.
-5. A label-sized PDF opens in a new tab.
-6. Click **Print** in the PDF viewer and select the local **Brother QL-800**.
+2. Click **Actions** in the form header.
+3. Choose **Generate Barcode** if the Item has no barcodes yet. This adds a random 13-digit EAN-13 barcode to the Item's existing **Barcodes** table.
+4. Choose **Print Label**.
+5. Pick the label size and quantity.
+6. A label-sized PDF opens in a new tab.
+7. Click **Print** in the PDF viewer and select the local **Brother QL-800**.
 
 The label shows:
 
@@ -50,14 +51,15 @@ The label shows:
 - Item name and brand
 - Category
 - OEM / part number
-- Scannable barcode
+- Scannable barcode (the first barcode in the Item's Barcodes table)
 
 ## Printing a Warehouse label
 
 1. Open a **Warehouse**.
-2. Click **Print Label**.
-3. Choose the label size.
-4. Print the PDF on the Brother QL-800.
+2. Click **Actions** in the form header.
+3. Choose **Print Label**.
+4. Pick the label size and quantity.
+5. Print the PDF on the Brother QL-800.
 
 The label shows:
 
@@ -68,8 +70,8 @@ The label shows:
 
 ## Barcode types
 
-- **Code 128** is used by default for any alphanumeric value.
-- If the source value is exactly 12 or 13 numeric digits, **EAN-13** is generated automatically.
+- Item barcodes are generated as random **13-digit EAN-13** codes.
+- Warehouse labels use **Code 128** for the warehouse code or name.
 
 ## Troubleshooting
 

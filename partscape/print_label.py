@@ -7,6 +7,7 @@ OS print dialog so the user can select a locally attached Brother QL-800.
 
 import base64
 import io
+import random
 import shutil
 import subprocess
 from typing import Optional
@@ -38,6 +39,27 @@ BARCODE_TYPES = {
 # -----------------------------------------------------------------------------
 # Barcode helpers
 # -----------------------------------------------------------------------------
+
+def _ean13_check_digit(payload: str) -> str:
+    """Return the EAN-13 check digit for a 12-digit numeric payload."""
+    total = sum(int(payload[i]) for i in range(0, 12, 2)) + 3 * sum(
+        int(payload[i]) for i in range(1, 12, 2)
+    )
+    return str((10 - total % 10) % 10)
+
+
+def _generate_random_ean13(max_attempts: int = 10) -> str:
+    """Generate a unique, valid 13-digit EAN-13 barcode."""
+    existing = {r[0] for r in frappe.db.sql("SELECT barcode FROM `tabItem Barcode`", as_list=True)}
+
+    for _ in range(max_attempts):
+        payload = "".join(random.choices("0123456789", k=12))
+        value = payload + _ean13_check_digit(payload)
+        if value not in existing:
+            return value
+
+    frappe.throw(_("Unable to generate a unique barcode. Please try again."))
+
 
 def _pick_barcode_type(value: str) -> str:
     """Pick EAN-13 for 12/13 digit numeric codes, otherwise Code 128."""
@@ -144,7 +166,8 @@ def get_barcode_image(
 @frappe.whitelist()
 def generate_barcode(item_code: str, barcode_type: Optional[str] = None) -> str:
     """
-    Generate and persist a barcode for the given Item.
+    Generate a random 13-digit EAN-13 barcode and append it to the Item's
+    existing Barcodes child table.
 
     :return: the barcode value stored on the Item
     """
@@ -152,17 +175,22 @@ def generate_barcode(item_code: str, barcode_type: Optional[str] = None) -> str:
         frappe.throw(_("Not permitted to generate barcode for this item."))
 
     item = frappe.get_doc("Item", item_code)
-    raw_value = item.part_number or item.item_code
-    if not barcode_type:
-        barcode_type = _pick_barcode_type(raw_value)
-
-    value = _normalize_for_barcode(raw_value, barcode_type)
-    item.partscape_barcode = value
+    value = _generate_random_ean13()
+    new_row = item.append(
+        "barcodes",
+        {"barcode": value, "barcode_type": barcode_type or "EAN"},
+    )
+    # Insert the new barcode at the top of the table so it is the one
+    # printed on labels (the first barcode in the list is used).
+    for row in item.barcodes:
+        row.idx += 1
+    new_row.idx = 1
+    item.barcodes = sorted(item.barcodes, key=lambda r: r.idx)
     item.save(ignore_permissions=True)
     frappe.db.commit()
 
     # Touch the file cache so the print format can embed a fresh image
-    get_barcode_image(value, barcode_type=barcode_type)
+    get_barcode_image(value, barcode_type=barcode_type or _pick_barcode_type(value))
 
     return value
 
@@ -190,9 +218,10 @@ def _get_company_context() -> dict:
 def _get_item_context(item_code: str) -> dict:
     """Collect Item data for the label template."""
     item = frappe.get_doc("Item", item_code)
-    barcode_value = item.partscape_barcode
+    barcode_value = next((b.barcode for b in item.barcodes if b.barcode), "")
     if not barcode_value:
         barcode_value = generate_barcode(item_code)
+        item.reload()
 
     barcode_type = _pick_barcode_type(barcode_value)
     barcode_image = get_barcode_image(barcode_value, barcode_type=barcode_type)

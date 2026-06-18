@@ -41,13 +41,11 @@ function _add_label_buttons(frm) {
 
     frm.add_custom_button(__('Print Label'), () => {
         _show_print_label_dialog(frm, 'Item');
-    });
+    }, __('Actions'));
 
-    if (!frm.doc.partscape_barcode) {
-        frm.add_custom_button(__('Generate Barcode'), () => {
-            _generate_barcode(frm);
-        });
-    }
+    frm.add_custom_button(__('Generate Barcode'), () => {
+        _generate_barcode(frm);
+    }, __('Actions'));
 }
 
 function _generate_barcode(frm) {
@@ -57,13 +55,13 @@ function _generate_barcode(frm) {
         freeze: true,
         freeze_message: __('Generating barcode...'),
         callback(r) {
-            if (r.exc) return;
-            frm.set_value('partscape_barcode', r.message);
-            frappe.show_alert({
-                message: __('Barcode generated: ') + r.message,
-                indicator: 'green'
+            if (r.exc || !r.message) return;
+            frm.reload_doc().then(() => {
+                frappe.show_alert({
+                    message: __('Barcode generated: ') + r.message,
+                    indicator: 'green'
+                });
             });
-            frm.save();
         }
     });
 }
