@@ -45,7 +45,7 @@ PartScape needs a few Python packages that are not included with ERPNext:
 bench pip install brother-ql python-barcode Pillow
 ```
 
-If you prefer, add them to your bench's `requirements.txt` and reinstall.
+These packages are also declared in the app's `pyproject.toml` and will be installed automatically when you run `bench get-app` or `bench setup requirements`.
 
 ## 4. Verify wkhtmltopdf
 

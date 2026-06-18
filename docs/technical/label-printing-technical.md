@@ -18,7 +18,7 @@ This implementation uses a **browser-native workflow**: the server generates a l
 
 ## Dependencies
 
-The following Python packages are added to `pyproject.toml`, `setup.py`, and `requirements.txt`:
+The following Python packages are declared in `pyproject.toml`:
 
 ```text
 brother-ql>=0.9

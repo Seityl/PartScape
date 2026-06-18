@@ -197,7 +197,7 @@ partscape/
 │   │   └── role.json
 │   └── config/
 │       └── desktop.py
-├── requirements.txt
+├── pyproject.toml
 └── setup.py
 ```
 
